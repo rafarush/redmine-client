@@ -9,9 +9,10 @@
 - [x] **F0-T01** Repo y scaffold — `git init`, Nuxt 4 SPA, dependencias base, estructura de carpetas, `CLAUDE.md`, `sdd/`. · ✔ c132831
   - _Acepta:_ `pnpm install && pnpm dev` arranca; `pnpm typecheck` y `pnpm test` pasan.
 
-- [~] **F0-T02** Lint y formato — ESLint con `@nuxt/eslint` (flat config) + Prettier o el formateador de `@nuxt/eslint`. Script `pnpm lint`. Regla que prohíbe hex sueltos en `app/components/**` (por ejemplo, `no-restricted-syntax` sobre literales `#[0-9a-f]{3,8}` en clases y estilos).
+- [x] **F0-T02** Lint y formato — ESLint con `@nuxt/eslint` (flat config) + Prettier o el formateador de `@nuxt/eslint`. Script `pnpm lint`. Regla que prohíbe hex sueltos en `app/components/**` (por ejemplo, `no-restricted-syntax` sobre literales `#[0-9a-f]{3,8}` en clases y estilos). · ✔ 73d35a4
   - _Depende:_ F0-T01
   - _Acepta:_ `pnpm lint` pasa en limpio; un hex en un componente produce error.
+  - _Nota:_ la regla vive en `eslint-rules/no-raw-hex-color.mjs` con test en `tests/unit/`. Reconoce hex de 3, 6 u 8 dígitos, así que un id de tarea (`#4821`) no la dispara; para una excepción puntual, `eslint-disable-next-line design/no-raw-hex-color` con el motivo.
 
 - [ ] **F0-T03** CI — GitHub Actions: `pnpm install --frozen-lockfile`, `lint`, `typecheck`, `test`, `build`. Cache de pnpm.
   - _Depende:_ F0-T02
