@@ -27,15 +27,17 @@
 - [x] **F0-T05** Layout base — `app/layouts/default.vue` con sidebar (ocultable, `Ctrl/⌘+\`), toolbar y zona de contenido; en compacto (< 900 px) tab bar inferior. Componentes `ui/` iniciales: `Button` (primario/secundario/fantasma/solo icono con `aria-label` obligatorio por tipo), `Tooltip`, `Kbd`.
   - _Depende:_ F0-T01
   - _Acepta:_ checklist de `02-diseno.md` (teclado, claro/oscuro, 375 px y 1280 px). La sidebar recuerda si estaba oculta. · ✔ 632b86b
-  - _Nota:_ verificado con `tests/e2e/layout.spec.ts`, que corre en los dos anchos. Incluye `playwright.config.ts`, que levanta el dev server solo.
+  - _Nota:_ verificado con `tests/e2e/layout.spec.ts` (9 tests en los dos anchos) · ✔ f997005. Destapó un fallo: en la variante de solo icono de `UiButton` la raíz es el tooltip, así que `aria-expanded` y los listeners se perdían.
 
-- [ ] **F0-T06** Redmine local con datos semilla — `docker/compose.dev.yml` funcionando. Script `scripts/seed-redmine.ts` que, usando la API key del admin, crea: 2 proyectos (uno con subproyecto), trackers y estados por defecto, 3 usuarios (admin, desarrollador con rol *Developer*, cliente con rol *Reporter* sin `log_time`), ~40 tareas, 2 versiones, entradas de tiempo y una página de wiki. Habilitar la API REST en Ajustes (documentar el paso).
+- [x] **F0-T06** Redmine local con datos semilla — `docker/compose.dev.yml` funcionando. Script `scripts/seed-redmine.ts` que, usando la API key del admin, crea: 2 proyectos (uno con subproyecto), trackers y estados por defecto, 3 usuarios (admin, desarrollador con rol *Developer*, cliente con rol *Reporter* sin `log_time`), ~40 tareas, 2 versiones, entradas de tiempo y una página de wiki. Habilitar la API REST en Ajustes (documentar el paso).
   - _Depende:_ F0-T01
-  - _Acepta:_ `docker compose ... up -d && pnpm seed` deja un Redmine navegable; README de `docker/` con las API keys de cada usuario de prueba.
+  - _Acepta:_ `docker compose ... up -d && pnpm seed` deja un Redmine navegable; README de `docker/` con las API keys de cada usuario de prueba. · ✔ 971e90c
+  - _Nota:_ el rol `Reporter` por defecto sí tiene `log_time`, así que el seed crea un rol **Cliente** sin ese permiso. Idempotencia verificada borrando el volumen y repitiendo.
 
-- [ ] **F0-T07** Fixtures y mock de API — capturar respuestas reales del Redmine local en `tests/fixtures/*.json` y montar un mock (MSW o un handler de Nitro en test) para tests sin Docker.
+- [x] **F0-T07** Fixtures y mock de API — capturar respuestas reales del Redmine local en `tests/fixtures/*.json` y montar un mock (MSW o un handler de Nitro en test) para tests sin Docker.
   - _Depende:_ F0-T06
-  - _Acepta:_ un test de ejemplo lee `/users/current.json` del mock.
+  - _Acepta:_ un test de ejemplo lee `/users/current.json` del mock. · ✔ 971e90c
+  - _Nota:_ 13 fixtures con la clave del desarrollador, incluidos los permisos de cada rol. El mock (MSW) ignora el orden de los parámetros y devuelve 501 con un mensaje accionable si falta una ruta.
 
 - [x] **F0-T08** Fuente de datos — empaquetar JetBrains Mono localmente (`@fontsource/jetbrains-mono` o archivo en `public/fonts`), solo pesos 400 y 600, `font-display: swap`. Sin peticiones a Google Fonts (Tauri tiene que funcionar offline).
   - _Depende:_ F0-T01
@@ -44,3 +46,5 @@
 ## Definición de hecho
 
 CI en verde con lint, typecheck, tests, build y contraste; layout base navegable con teclado; Redmine local con datos y usuarios con permisos distintos.
+
+**Cerrada.** `pnpm lint`, `pnpm typecheck`, `pnpm test` (17), `pnpm check:contrast` (40 pares) y `pnpm build` pasan; `pnpm test:e2e` pasa con 9 tests.

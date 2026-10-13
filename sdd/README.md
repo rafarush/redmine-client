@@ -16,7 +16,7 @@ Plan de desarrollo guiado por especificación. Lo puede ejecutar una persona o u
 
 | Fase | Objetivo | Depende de |
 |---|---|---|
-| [F0](fases/F0-fundaciones.md) | Fundaciones: tooling, CI, tokens, layout, Redmine local | — |
+| [F0](fases/F0-fundaciones.md) ✔ | Fundaciones: tooling, CI, tokens, layout, Redmine local | — |
 | [F1](fases/F1-setup-sesion-permisos.md) | Conexión, sesión, transport y permisos | F0 |
 | [F2](fases/F2-tareas-filtros.md) | Lista de tareas y filtros como frase | F1 |
 | [F3](fases/F3-detalle-edicion-creacion.md) | Detalle, edición y creación de tareas | F2 |
