@@ -14,17 +14,20 @@
   - _Acepta:_ `pnpm lint` pasa en limpio; un hex en un componente produce error.
   - _Nota:_ la regla vive en `eslint-rules/no-raw-hex-color.mjs` con test en `tests/unit/`. Reconoce hex de 3, 6 u 8 dígitos, así que un id de tarea (`#4821`) no la dispara; para una excepción puntual, `eslint-disable-next-line design/no-raw-hex-color` con el motivo.
 
-- [ ] **F0-T03** CI — GitHub Actions: `pnpm install --frozen-lockfile`, `lint`, `typecheck`, `test`, `build`. Cache de pnpm.
+- [x] **F0-T03** CI — GitHub Actions: `pnpm install --frozen-lockfile`, `lint`, `typecheck`, `test`, `build`. Cache de pnpm.
   - _Depende:_ F0-T02
-  - _Acepta:_ un PR muestra los 4 checks en verde.
+  - _Acepta:_ un PR muestra los 4 checks en verde. · ✔ 5011463
+  - _Nota:_ el workflow corre lint, typecheck, test, `check:contrast` y build. Los e2e no entran en CI todavía: necesitan descargar el navegador; se añaden en F9-T02 junto con axe.
 
-- [ ] **F0-T04** Verificador de contraste — script `scripts/check-contrast.ts` que lee `tokens.css` (claro, oscuro, alto contraste) y comprueba los pares de la tabla de `02-diseno.md › Color` (≥ 4.5:1 en texto). Se ejecuta en CI.
+- [x] **F0-T04** Verificador de contraste — script `scripts/check-contrast.ts` que lee `tokens.css` (claro, oscuro, alto contraste) y comprueba los pares de la tabla de `02-diseno.md › Color` (≥ 4.5:1 en texto). Se ejecuta en CI.
   - _Depende:_ F0-T01
-  - _Acepta:_ bajar `content-secondary` a `#8A8F99` hace fallar el script con un mensaje que indica el par y el ratio.
+  - _Acepta:_ bajar `content-secondary` a `#8A8F99` hace fallar el script con un mensaje que indica el par y el ratio. · ✔ 5011463
+  - _Nota:_ destapó un fallo real: el bloque suelto de `prefers-contrast: more` ganaba al de oscuro. Ahora el alto contraste se declara por tema y el script exige esa separación. Comprueba 10 pares en 4 modos.
 
-- [ ] **F0-T05** Layout base — `app/layouts/default.vue` con sidebar (ocultable, `Ctrl/⌘+\`), toolbar y zona de contenido; en compacto (< 900 px) tab bar inferior. Componentes `ui/` iniciales: `Button` (primario/secundario/fantasma/solo icono con `aria-label` obligatorio por tipo), `Tooltip`, `Kbd`.
+- [x] **F0-T05** Layout base — `app/layouts/default.vue` con sidebar (ocultable, `Ctrl/⌘+\`), toolbar y zona de contenido; en compacto (< 900 px) tab bar inferior. Componentes `ui/` iniciales: `Button` (primario/secundario/fantasma/solo icono con `aria-label` obligatorio por tipo), `Tooltip`, `Kbd`.
   - _Depende:_ F0-T01
-  - _Acepta:_ checklist de `02-diseno.md` (teclado, claro/oscuro, 375 px y 1280 px). La sidebar recuerda si estaba oculta.
+  - _Acepta:_ checklist de `02-diseno.md` (teclado, claro/oscuro, 375 px y 1280 px). La sidebar recuerda si estaba oculta. · ✔ 632b86b
+  - _Nota:_ verificado con `tests/e2e/layout.spec.ts`, que corre en los dos anchos. Incluye `playwright.config.ts`, que levanta el dev server solo.
 
 - [ ] **F0-T06** Redmine local con datos semilla — `docker/compose.dev.yml` funcionando. Script `scripts/seed-redmine.ts` que, usando la API key del admin, crea: 2 proyectos (uno con subproyecto), trackers y estados por defecto, 3 usuarios (admin, desarrollador con rol *Developer*, cliente con rol *Reporter* sin `log_time`), ~40 tareas, 2 versiones, entradas de tiempo y una página de wiki. Habilitar la API REST en Ajustes (documentar el paso).
   - _Depende:_ F0-T01
@@ -34,9 +37,9 @@
   - _Depende:_ F0-T06
   - _Acepta:_ un test de ejemplo lee `/users/current.json` del mock.
 
-- [ ] **F0-T08** Fuente de datos — empaquetar JetBrains Mono localmente (`@fontsource/jetbrains-mono` o archivo en `public/fonts`), solo pesos 400 y 600, `font-display: swap`. Sin peticiones a Google Fonts (Tauri tiene que funcionar offline).
+- [x] **F0-T08** Fuente de datos — empaquetar JetBrains Mono localmente (`@fontsource/jetbrains-mono` o archivo en `public/fonts`), solo pesos 400 y 600, `font-display: swap`. Sin peticiones a Google Fonts (Tauri tiene que funcionar offline).
   - _Depende:_ F0-T01
-  - _Acepta:_ la clase `.data` usa la fuente local; no aparecen peticiones de red externas en DevTools.
+  - _Acepta:_ la clase `.data` usa la fuente local; no aparecen peticiones de red externas en DevTools. · ✔ 632b86b
 
 ## Definición de hecho
 

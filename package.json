@@ -16,7 +16,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:contrast": "jiti scripts/check-contrast.ts",
-    "seed": "jiti scripts/seed-redmine.ts"
+    "seed": "jiti scripts/seed-redmine.ts",
+    "capture:fixtures": "jiti scripts/capture-fixtures.ts"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
@@ -48,6 +49,7 @@
     "@vue/test-utils": "^2.5.1",
     "eslint": "^10.12.0",
     "happy-dom": "^21.0.1",
+    "msw": "^3.0.3",
     "typescript": "^5.9.3",
     "vitest": "^5.0.4",
     "vue-tsc": "^3.3.13"
