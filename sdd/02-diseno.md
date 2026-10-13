@@ -44,7 +44,8 @@ Reglas:
 - **Por qué Ruby:** Redmine está escrito en Ruby on Rails y su identidad histórica es roja. El acento es un guiño al origen sin copiar el logo, y en la paleta neutra destaca sin estridencia.
 - Los estados de Redmine (Nueva, En curso, Resuelta...) se muestran con **icono + texto**; el color es apoyo, nunca el único portador (`accessibility.md`).
 - Se sigue la apariencia del sistema (`prefers-color-scheme`). No hay selector de tema en la app.
-- `prefers-contrast: more` oscurece el texto secundario y los separadores.
+- **Alto contraste, por tema.** `prefers-contrast: more` se declara combinado con `prefers-color-scheme`, porque un bloque suelto vendría después del de oscuro y le ganaría, dejando texto gris oscuro sobre fondo casi negro. En claro el texto secundario baja a `#3D434E` (9.28:1) y en oscuro sube a `#C3C9D4` (11.19:1); los separadores se refuerzan a `#767D8A` y `#6B7280`.
+- `pnpm check:contrast` comprueba los 10 pares en los 4 modos (claro, claro+alto contraste, oscuro, oscuro+alto contraste) y corre en CI. Cambiar un color sin actualizar esta tabla hace fallar el build.
 
 ## Tipografía
 
