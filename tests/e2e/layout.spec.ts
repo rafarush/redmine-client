@@ -28,11 +28,16 @@ test.describe('ancho regular', () => {
 
   test('el primer foco es saltar al contenido', async ({ page }) => {
     await page.goto('/')
+    // Es una SPA: hay que esperar a que monte antes de mandar teclas.
+    await expect(sidebar(page)).toBeVisible()
+
     await page.keyboard.press('Tab')
     await expect(page.getByRole('link', { name: 'Saltar al contenido' })).toBeFocused()
   })
 
   test('Ctrl+\\ oculta la sidebar y lo recuerda al recargar', async ({ page }) => {
+    const alternar = page.getByRole('button', { name: 'Mostrar u ocultar las secciones' })
+
     await page.goto('/')
     await expect(sidebar(page)).toBeVisible()
 
@@ -40,6 +45,7 @@ test.describe('ancho regular', () => {
     await expect(sidebar(page)).toBeHidden()
 
     await page.reload()
+    await expect(alternar).toBeVisible()
     await expect(sidebar(page)).toBeHidden()
 
     await page.keyboard.press('Control+\\')

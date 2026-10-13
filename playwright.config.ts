@@ -10,9 +10,17 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',
 
+  // El servidor de desarrollo compila cada ruta la primera vez que se pide, así que
+  // la carga inicial tarda bastante más que las siguientes.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
+
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    // El Chromium completo en modo headless nuevo, en vez del headless shell:
+    // un binario menos que descargar y se comporta como el navegador real.
+    channel: 'chromium',
   },
 
   projects: [

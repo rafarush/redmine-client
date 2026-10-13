@@ -24,6 +24,13 @@ const props = withDefaults(defineProps<{
   type: 'button',
 })
 
+/*
+ * En la variante de solo icono la raíz es el tooltip, así que los atributos sueltos
+ * (`aria-expanded`, `@click`, `data-*`) caerían en él y se perderían. Se bindean a mano
+ * sobre el botón, que es donde tienen sentido.
+ */
+defineOptions({ inheritAttrs: false })
+
 const ESTILOS = {
   primary: 'bg-accent text-on-accent hover:brightness-110',
   secondary: 'bg-raised text-content border border-separator hover:border-secondary',
@@ -52,6 +59,7 @@ const clases = computed(() => [
       :disabled="to ? undefined : disabled"
       :aria-label="label"
       :class="clases"
+      v-bind="$attrs"
     >
       <Icon
         v-if="icon"
@@ -69,6 +77,7 @@ const clases = computed(() => [
     :type="to ? undefined : type"
     :disabled="to ? undefined : disabled"
     :class="clases"
+    v-bind="$attrs"
   >
     <Icon
       v-if="icon"
