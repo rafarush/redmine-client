@@ -1,0 +1,40 @@
+{
+  "issue_statuses": [
+    {
+      "id": 1,
+      "name": "Nueva",
+      "is_closed": false,
+      "description": null
+    },
+    {
+      "id": 2,
+      "name": "En curso",
+      "is_closed": false,
+      "description": null
+    },
+    {
+      "id": 3,
+      "name": "Resuelta",
+      "is_closed": false,
+      "description": null
+    },
+    {
+      "id": 4,
+      "name": "Comentarios",
+      "is_closed": false,
+      "description": null
+    },
+    {
+      "id": 5,
+      "name": "Cerrada",
+      "is_closed": true,
+      "description": null
+    },
+    {
+      "id": 6,
+      "name": "Rechazada",
+      "is_closed": true,
+      "description": null
+    }
+  ]
+}

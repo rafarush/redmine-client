@@ -1,0 +1,35 @@
+{
+  "versions": [
+    {
+      "id": 1,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "name": "1.0 · Lanzamiento",
+      "description": "",
+      "status": "open",
+      "due_date": "2026-11-28",
+      "sharing": "none",
+      "wiki_page_title": null,
+      "created_on": "2026-10-13T23:34:10Z",
+      "updated_on": "2026-10-13T23:34:10Z"
+    },
+    {
+      "id": 2,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "name": "1.1 · Mejoras",
+      "description": "",
+      "status": "open",
+      "due_date": "2027-01-30",
+      "sharing": "none",
+      "wiki_page_title": null,
+      "created_on": "2026-10-13T23:34:10Z",
+      "updated_on": "2026-10-13T23:34:10Z"
+    }
+  ],
+  "total_count": 2
+}

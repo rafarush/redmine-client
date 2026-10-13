@@ -1,0 +1,34 @@
+{
+  "issue_priorities": [
+    {
+      "id": 1,
+      "name": "Baja",
+      "is_default": false,
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Normal",
+      "is_default": true,
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Alta",
+      "is_default": false,
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Urgente",
+      "is_default": false,
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Inmediata",
+      "is_default": false,
+      "active": true
+    }
+  ]
+}

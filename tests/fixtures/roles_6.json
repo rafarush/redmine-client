@@ -1,0 +1,20 @@
+{
+  "role": {
+    "id": 6,
+    "name": "Cliente",
+    "assignable": true,
+    "issues_visibility": "default",
+    "time_entries_visibility": "all",
+    "users_visibility": "members_of_visible_projects",
+    "permissions": [
+      "view_issues",
+      "add_issues",
+      "add_issue_notes",
+      "save_queries",
+      "view_time_entries",
+      "view_wiki_pages",
+      "view_news",
+      "view_files"
+    ]
+  }
+}

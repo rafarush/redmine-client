@@ -7,7 +7,7 @@
  * normal es el caso que hay que poder reproducir en los tests.
  */
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const BASE = process.env.REDMINE_URL ?? 'http://localhost:3080'
@@ -16,7 +16,11 @@ const DESTINO = fileURLToPath(new URL('../tests/fixtures/', import.meta.url))
 /** Rutas que la app pide al arrancar y en la lista de tareas. */
 const RUTAS = [
   '/users/current.json?include=memberships,groups',
+  '/roles.json',
   '/projects.json?include=trackers,enabled_modules&limit=100',
+  '/projects/portal-web.json?include=trackers,issue_categories,issue_custom_fields,time_entry_activities,enabled_modules',
+  '/projects/portal-web/memberships.json',
+  '/projects/portal-web/versions.json',
   '/trackers.json',
   '/issue_statuses.json',
   '/enumerations/issue_priorities.json',
@@ -60,6 +64,24 @@ for (const ruta of RUTAS) {
   writeFileSync(`${DESTINO}${archivo}`, `${JSON.stringify(cuerpo, null, 2)}\n`)
   indice[ruta] = archivo
   console.log(`  ${ruta} → ${archivo}`)
+}
+
+/*
+ * El detalle de cada rol, que F1 necesita para armar los permisos. Los ids dependen
+ * de la instancia, así que se resuelven aquí en vez de escribirlos a mano.
+ */
+const { roles } = JSON.parse(
+  readFileSync(`${DESTINO}${indice['/roles.json']!}`, 'utf8'),
+) as { roles: Array<{ id: number, name: string }> }
+
+for (const rol of roles) {
+  const ruta = `/roles/${rol.id}.json`
+  const respuesta = await fetch(`${BASE}${ruta}`, { headers: { 'X-Redmine-API-Key': apiKey } })
+  if (!respuesta.ok) throw new Error(`GET ${ruta} → ${respuesta.status}`)
+  const archivo = nombreArchivo(ruta)
+  writeFileSync(`${DESTINO}${archivo}`, `${JSON.stringify(await respuesta.json(), null, 2)}\n`)
+  indice[ruta] = archivo
+  console.log(`  ${ruta} (${rol.name}) → ${archivo}`)
 }
 
 /** También el 401, para probar el camino de clave inválida. */

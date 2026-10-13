@@ -1,0 +1,43 @@
+{
+  "role": {
+    "id": 4,
+    "name": "Desarrollador",
+    "assignable": true,
+    "issues_visibility": "default",
+    "time_entries_visibility": "all",
+    "users_visibility": "members_of_visible_projects",
+    "permissions": [
+      "manage_versions",
+      "manage_categories",
+      "view_issues",
+      "add_issues",
+      "edit_issues",
+      "view_private_notes",
+      "set_notes_private",
+      "manage_issue_relations",
+      "manage_subtasks",
+      "add_issue_notes",
+      "save_queries",
+      "view_gantt",
+      "view_calendar",
+      "log_time",
+      "view_time_entries",
+      "view_news",
+      "comment_news",
+      "view_documents",
+      "view_wiki_pages",
+      "view_wiki_edits",
+      "edit_wiki_pages",
+      "delete_wiki_pages",
+      "view_messages",
+      "add_messages",
+      "edit_own_messages",
+      "view_files",
+      "manage_files",
+      "browse_repository",
+      "view_changesets",
+      "commit_access",
+      "manage_related_issues"
+    ]
+  }
+}

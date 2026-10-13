@@ -1,0 +1,19 @@
+{
+  "/users/current.json?include=memberships,groups": "users_current-include-memberships-groups.json",
+  "/roles.json": "roles.json",
+  "/projects.json?include=trackers,enabled_modules&limit=100": "projects-include-trackers-enabled_modules-limit-100.json",
+  "/projects/portal-web.json?include=trackers,issue_categories,issue_custom_fields,time_entry_activities,enabled_modules": "projects_portal-web-include-trackers-issue_categories-issue_custom_fields-time_entry_activities-enabled_modules.json",
+  "/projects/portal-web/memberships.json": "projects_portal-web_memberships.json",
+  "/projects/portal-web/versions.json": "projects_portal-web_versions.json",
+  "/trackers.json": "trackers.json",
+  "/issue_statuses.json": "issue_statuses.json",
+  "/enumerations/issue_priorities.json": "enumerations_issue_priorities.json",
+  "/enumerations/time_entry_activities.json": "enumerations_time_entry_activities.json",
+  "/issues.json?assigned_to_id=me&status_id=open&limit=25": "issues-assigned_to_id-me-status_id-open-limit-25.json",
+  "/issues.json?status_id=*&limit=25": "issues-status_id-limit-25.json",
+  "/time_entries.json?user_id=me&limit=25": "time_entries-user_id-me-limit-25.json",
+  "/roles/3.json": "roles_3.json",
+  "/roles/4.json": "roles_4.json",
+  "/roles/5.json": "roles_5.json",
+  "/roles/6.json": "roles_6.json"
+}

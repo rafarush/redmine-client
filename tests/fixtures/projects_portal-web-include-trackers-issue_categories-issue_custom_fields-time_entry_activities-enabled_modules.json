@@ -1,0 +1,62 @@
+{
+  "project": {
+    "id": 1,
+    "name": "Portal Web",
+    "identifier": "portal-web",
+    "description": "Portal público de clientes.",
+    "homepage": "",
+    "status": 1,
+    "is_public": false,
+    "inherit_members": false,
+    "trackers": [
+      {
+        "id": 1,
+        "name": "Errores"
+      },
+      {
+        "id": 2,
+        "name": "Tareas"
+      },
+      {
+        "id": 3,
+        "name": "Soporte"
+      }
+    ],
+    "issue_categories": [],
+    "time_entry_activities": [
+      {
+        "id": 8,
+        "name": "Diseño"
+      },
+      {
+        "id": 9,
+        "name": "Desarrollo"
+      }
+    ],
+    "enabled_modules": [
+      {
+        "id": 1,
+        "name": "issue_tracking"
+      },
+      {
+        "id": 2,
+        "name": "time_tracking"
+      },
+      {
+        "id": 3,
+        "name": "news"
+      },
+      {
+        "id": 4,
+        "name": "files"
+      },
+      {
+        "id": 5,
+        "name": "wiki"
+      }
+    ],
+    "issue_custom_fields": [],
+    "created_on": "2026-10-13T23:34:09Z",
+    "updated_on": "2026-10-13T23:34:09Z"
+  }
+}

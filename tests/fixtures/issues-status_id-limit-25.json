@@ -1,0 +1,1072 @@
+{
+  "issues": [
+    {
+      "id": 42,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 2,
+        "name": "Normal"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Exportar el listado a CSV (3)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 20,
+      "is_private": false,
+      "estimated_hours": 2,
+      "total_estimated_hours": 2,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:20Z",
+      "updated_on": "2026-10-13T23:34:20Z",
+      "closed_on": null
+    },
+    {
+      "id": 41,
+      "project": {
+        "id": 3,
+        "name": "Soporte Interno"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 1,
+        "name": "Baja"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "subject": "Arreglar el inicio de sesión con SSO (3)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 0,
+      "is_private": false,
+      "estimated_hours": 1,
+      "total_estimated_hours": 1,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:20Z",
+      "updated_on": "2026-10-13T23:34:20Z",
+      "closed_on": null
+    },
+    {
+      "id": 40,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 5,
+        "name": "Inmediata"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Registrar tiempo desde el listado (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 8,
+      "total_estimated_hours": 8,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:20Z",
+      "updated_on": "2026-10-13T23:34:20Z",
+      "closed_on": null
+    },
+    {
+      "id": 39,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 4,
+        "name": "Urgente"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Soportar atajos de teclado (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 60,
+      "is_private": false,
+      "estimated_hours": 7,
+      "total_estimated_hours": 7,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:20Z",
+      "updated_on": "2026-10-13T23:34:20Z",
+      "closed_on": null
+    },
+    {
+      "id": 38,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 3,
+        "name": "Alta"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Recordar el ancho del panel (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 40,
+      "is_private": false,
+      "estimated_hours": 6,
+      "total_estimated_hours": 6,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:20Z",
+      "updated_on": "2026-10-13T23:34:20Z",
+      "closed_on": null
+    },
+    {
+      "id": 37,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 2,
+        "name": "Normal"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Validar el correo al registrarse (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 20,
+      "is_private": false,
+      "estimated_hours": 5,
+      "total_estimated_hours": 5,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:19Z",
+      "updated_on": "2026-10-13T23:34:19Z",
+      "closed_on": null
+    },
+    {
+      "id": 36,
+      "project": {
+        "id": 3,
+        "name": "Soporte Interno"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 1,
+        "name": "Baja"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "subject": "Mejorar el mensaje de sesión caducada (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 4,
+      "total_estimated_hours": 4,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:19Z",
+      "updated_on": "2026-10-13T23:34:19Z",
+      "closed_on": null
+    },
+    {
+      "id": 35,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 5,
+        "name": "Inmediata"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Guardar el último filtro usado (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 80,
+      "is_private": false,
+      "estimated_hours": 3,
+      "total_estimated_hours": 3,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:19Z",
+      "updated_on": "2026-10-13T23:34:19Z",
+      "closed_on": null
+    },
+    {
+      "id": 34,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 4,
+        "name": "Urgente"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Permitir reordenar columnas (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 60,
+      "is_private": false,
+      "estimated_hours": 2,
+      "total_estimated_hours": 2,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:19Z",
+      "updated_on": "2026-10-13T23:34:19Z",
+      "closed_on": null
+    },
+    {
+      "id": 33,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 3,
+        "name": "Alta"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Quitar el doble scroll en móvil (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 40,
+      "is_private": false,
+      "estimated_hours": 1,
+      "total_estimated_hours": 1,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:18Z",
+      "updated_on": "2026-10-13T23:34:18Z",
+      "closed_on": null
+    },
+    {
+      "id": 32,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 2,
+        "name": "Normal"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Avisar cuando la tarea vence hoy (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 8,
+      "total_estimated_hours": 8,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:18Z",
+      "updated_on": "2026-10-13T23:34:18Z",
+      "closed_on": null
+    },
+    {
+      "id": 31,
+      "project": {
+        "id": 3,
+        "name": "Soporte Interno"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 1,
+        "name": "Baja"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "subject": "Paginar el listado de proyectos (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 0,
+      "is_private": false,
+      "estimated_hours": 7,
+      "total_estimated_hours": 7,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:18Z",
+      "updated_on": "2026-10-13T23:34:18Z",
+      "closed_on": null
+    },
+    {
+      "id": 30,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 5,
+        "name": "Inmediata"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Traducir los mensajes de error (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 80,
+      "is_private": false,
+      "estimated_hours": 6,
+      "total_estimated_hours": 6,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:18Z",
+      "updated_on": "2026-10-13T23:34:18Z",
+      "closed_on": null
+    },
+    {
+      "id": 29,
+      "project": {
+        "id": 2,
+        "name": "Portal Web · Móvil"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 4,
+        "name": "Urgente"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "subject": "Subida de adjuntos falla con PDF grandes (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 60,
+      "is_private": false,
+      "estimated_hours": 5,
+      "total_estimated_hours": 5,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:17Z",
+      "updated_on": "2026-10-13T23:34:17Z",
+      "closed_on": null
+    },
+    {
+      "id": 28,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 3,
+        "name": "Alta"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Cerrar sesión no limpia la caché (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 4,
+      "total_estimated_hours": 4,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:17Z",
+      "updated_on": "2026-10-13T23:34:17Z",
+      "closed_on": null
+    },
+    {
+      "id": 27,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 2,
+        "name": "Normal"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Corregir el formato de fechas (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 20,
+      "is_private": false,
+      "estimated_hours": 3,
+      "total_estimated_hours": 3,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:17Z",
+      "updated_on": "2026-10-13T23:34:17Z",
+      "closed_on": null
+    },
+    {
+      "id": 26,
+      "project": {
+        "id": 3,
+        "name": "Soporte Interno"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 1,
+        "name": "Baja"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "subject": "Añadir filtro por versión (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 0,
+      "is_private": false,
+      "estimated_hours": 2,
+      "total_estimated_hours": 2,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:17Z",
+      "updated_on": "2026-10-13T23:34:17Z",
+      "closed_on": null
+    },
+    {
+      "id": 25,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 5,
+        "name": "Inmediata"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Acelerar la búsqueda de clientes (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 80,
+      "is_private": false,
+      "estimated_hours": 1,
+      "total_estimated_hours": 1,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:16Z",
+      "updated_on": "2026-10-13T23:34:16Z",
+      "closed_on": null
+    },
+    {
+      "id": 24,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 4,
+        "name": "Urgente"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Revisar el contraste del tema oscuro (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 8,
+      "total_estimated_hours": 8,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:16Z",
+      "updated_on": "2026-10-13T23:34:16Z",
+      "closed_on": null
+    },
+    {
+      "id": 23,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 3,
+        "name": "Alta"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Error en el paso de pago (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 40,
+      "is_private": false,
+      "estimated_hours": 7,
+      "total_estimated_hours": 7,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:16Z",
+      "updated_on": "2026-10-13T23:34:16Z",
+      "closed_on": null
+    },
+    {
+      "id": 22,
+      "project": {
+        "id": 2,
+        "name": "Portal Web · Móvil"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 2,
+        "name": "Normal"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "subject": "Exportar el listado a CSV (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 20,
+      "is_private": false,
+      "estimated_hours": 6,
+      "total_estimated_hours": 6,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:16Z",
+      "updated_on": "2026-10-13T23:34:16Z",
+      "closed_on": null
+    },
+    {
+      "id": 21,
+      "project": {
+        "id": 3,
+        "name": "Soporte Interno"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 1,
+        "name": "Baja"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "subject": "Arreglar el inicio de sesión con SSO (2)",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 0,
+      "is_private": false,
+      "estimated_hours": 5,
+      "total_estimated_hours": 5,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:15Z",
+      "updated_on": "2026-10-13T23:34:15Z",
+      "closed_on": null
+    },
+    {
+      "id": 20,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 2,
+        "name": "Tareas"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 5,
+        "name": "Inmediata"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Registrar tiempo desde el listado",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 100,
+      "is_private": false,
+      "estimated_hours": 4,
+      "total_estimated_hours": 4,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:15Z",
+      "updated_on": "2026-10-13T23:34:15Z",
+      "closed_on": null
+    },
+    {
+      "id": 19,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 1,
+        "name": "Errores"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 4,
+        "name": "Urgente"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "fixed_version": {
+        "id": 1,
+        "name": "1.0 · Lanzamiento"
+      },
+      "subject": "Soportar atajos de teclado",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 60,
+      "is_private": false,
+      "estimated_hours": 3,
+      "total_estimated_hours": 3,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:15Z",
+      "updated_on": "2026-10-13T23:34:15Z",
+      "closed_on": null
+    },
+    {
+      "id": 18,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "tracker": {
+        "id": 3,
+        "name": "Soporte"
+      },
+      "status": {
+        "id": 1,
+        "name": "Nueva",
+        "is_closed": false
+      },
+      "priority": {
+        "id": 3,
+        "name": "Alta"
+      },
+      "author": {
+        "id": 1,
+        "name": "Redmine Admin"
+      },
+      "assigned_to": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "fixed_version": {
+        "id": 2,
+        "name": "1.1 · Mejoras"
+      },
+      "subject": "Recordar el ancho del panel",
+      "description": "Tarea de prueba creada por `pnpm seed`.",
+      "start_date": "2026-10-13",
+      "due_date": null,
+      "done_ratio": 40,
+      "is_private": false,
+      "estimated_hours": 2,
+      "total_estimated_hours": 2,
+      "spent_hours": 0,
+      "total_spent_hours": 0,
+      "created_on": "2026-10-13T23:34:15Z",
+      "updated_on": "2026-10-13T23:34:15Z",
+      "closed_on": null
+    }
+  ],
+  "total_count": 42,
+  "offset": 0,
+  "limit": 25
+}

@@ -1,0 +1,31 @@
+{
+  "role": {
+    "id": 5,
+    "name": "Informador",
+    "assignable": true,
+    "issues_visibility": "default",
+    "time_entries_visibility": "all",
+    "users_visibility": "members_of_visible_projects",
+    "permissions": [
+      "view_issues",
+      "add_issues",
+      "add_issue_notes",
+      "save_queries",
+      "view_gantt",
+      "view_calendar",
+      "log_time",
+      "view_time_entries",
+      "view_news",
+      "comment_news",
+      "view_documents",
+      "view_wiki_pages",
+      "view_wiki_edits",
+      "view_messages",
+      "add_messages",
+      "edit_own_messages",
+      "view_files",
+      "browse_repository",
+      "view_changesets"
+    ]
+  }
+}

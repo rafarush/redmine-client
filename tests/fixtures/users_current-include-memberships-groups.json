@@ -1,0 +1,56 @@
+{
+  "user": {
+    "id": 5,
+    "login": "desarrollador",
+    "admin": false,
+    "firstname": "Dani",
+    "lastname": "Desarrollo",
+    "created_on": "2026-10-13T23:34:09Z",
+    "updated_on": "2026-10-13T23:34:09Z",
+    "last_login_on": null,
+    "passwd_changed_on": "2026-10-13T23:34:09Z",
+    "twofa_scheme": null,
+    "api_key": "5b7befefcd78f39f7a1a793dfc206f37c6437360",
+    "memberships": [
+      {
+        "id": 1,
+        "project": {
+          "id": 1,
+          "name": "Portal Web"
+        },
+        "roles": [
+          {
+            "id": 4,
+            "name": "Desarrollador"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "project": {
+          "id": 2,
+          "name": "Portal Web · Móvil"
+        },
+        "roles": [
+          {
+            "id": 4,
+            "name": "Desarrollador"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "project": {
+          "id": 3,
+          "name": "Soporte Interno"
+        },
+        "roles": [
+          {
+            "id": 4,
+            "name": "Desarrollador"
+          }
+        ]
+      }
+    ]
+  }
+}

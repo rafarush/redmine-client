@@ -1,0 +1,41 @@
+{
+  "memberships": [
+    {
+      "id": 1,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "user": {
+        "id": 5,
+        "name": "Dani Desarrollo"
+      },
+      "roles": [
+        {
+          "id": 4,
+          "name": "Desarrollador"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "project": {
+        "id": 1,
+        "name": "Portal Web"
+      },
+      "user": {
+        "id": 6,
+        "name": "Carmen Cliente"
+      },
+      "roles": [
+        {
+          "id": 6,
+          "name": "Cliente"
+        }
+      ]
+    }
+  ],
+  "total_count": 2,
+  "offset": 0,
+  "limit": 25
+}

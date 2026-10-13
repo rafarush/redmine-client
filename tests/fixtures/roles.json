@@ -1,0 +1,20 @@
+{
+  "roles": [
+    {
+      "id": 3,
+      "name": "Jefe de proyecto"
+    },
+    {
+      "id": 4,
+      "name": "Desarrollador"
+    },
+    {
+      "id": 5,
+      "name": "Informador"
+    },
+    {
+      "id": 6,
+      "name": "Cliente"
+    }
+  ]
+}

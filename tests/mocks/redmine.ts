@@ -47,12 +47,13 @@ export const servidorRedmine = setupServer(
     const url = new URL(request.url)
     const archivo = porClave.get(clave(url))
     if (!archivo) {
-      const disponibles = [...porClave.keys()].join('\n  ')
-      throw new Error(
-        `El mock no tiene fixture para ${clave(url)}.\n`
-        + `Añade la ruta a scripts/capture-fixtures.ts y ejecuta pnpm capture:fixtures.\n`
-        + `Disponibles:\n  ${disponibles}`,
-      )
+      // MSW convierte una excepción en un 500 anónimo, así que el aviso va en el
+      // cuerpo y también en stderr, para que se vea en la salida del test.
+      const mensaje
+        = `El mock no tiene fixture para ${clave(url)}. `
+          + `Añade la ruta a scripts/capture-fixtures.ts y ejecuta pnpm capture:fixtures.`
+      console.error(`\n${mensaje}\nDisponibles:\n  ${[...porClave.keys()].join('\n  ')}\n`)
+      return HttpResponse.json({ errors: [mensaje] }, { status: 501 })
     }
 
     return HttpResponse.json(JSON.parse(readFileSync(`${FIXTURES}${archivo}`, 'utf8')))

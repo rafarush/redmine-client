@@ -97,7 +97,8 @@ const rolDesarrollador = buscar(roles, 'name', 'Desarrollador') ?? buscar(roles,
 const rolCliente = buscar(roles, 'name', 'Cliente')
 if (!rolDesarrollador || !rolCliente) throw new Error('Faltan los roles Desarrollador o Cliente')
 
-const usuariosExistentes = await paginar<{ id: number, login: string }>('/users.json?status=', 'users')
+// Sin `status`: Redmine devuelve los activos, que es lo que el seed necesita.
+const usuariosExistentes = await paginar<{ id: number, login: string }>('/users.json', 'users')
 
 async function asegurarUsuario(login: string, firstname: string, lastname: string): Promise<number> {
   const existente = buscar(usuariosExistentes, 'login', login)
@@ -186,11 +187,12 @@ const ASUNTOS = [
   'Soportar atajos de teclado', 'Registrar tiempo desde el listado',
 ]
 
-const existentesPortal = await api<{ total_count: number }>('GET', `/issues.json?project_id=${idPortal}&status_id=*&limit=1`)
+// Cuenta todas las tareas, no solo las de un proyecto: el seed las reparte entre los tres.
+const { total_count: tareasExistentes } = await api<{ total_count: number }>('GET', '/issues.json?status_id=*&limit=1')
 
 const tareasCreadas: number[] = []
 
-if (existentesPortal.total_count < 40) {
+if (tareasExistentes < 40) {
   const objetivo = 42
   for (let i = 0; i < objetivo; i++) {
     const proyecto = i % 5 === 0 ? idSoporte : i % 7 === 0 ? idMovil : idPortal
@@ -217,7 +219,7 @@ if (existentesPortal.total_count < 40) {
   console.log(`  ${objetivo} tareas creadas`)
 }
 else {
-  console.log('  las tareas ya existían')
+  console.log(`  las tareas ya existían (${tareasExistentes})`)
 }
 
 // ---------------------------------------------------------------- tiempo
@@ -232,6 +234,8 @@ if (tiemposExistentes === 0 && tareasCreadas.length > 0) {
     await api('POST', '/time_entries.json', {
       time_entry: {
         issue_id: tareasCreadas[i]!,
+        // A nombre del desarrollador, no del admin: es el usuario con el que se prueba.
+        user_id: idDesarrollador,
         hours: [0.5, 1, 1.5, 2, 3][i % 5],
         activity_id: actividades[i % actividades.length]!.id,
         spent_on: fecha.toISOString().slice(0, 10),
@@ -259,7 +263,7 @@ await api('PUT', `/projects/${idPortal}/wiki/Wiki.json`, {
     comments: 'Creada por el seed',
   },
 })
-console.log('  página de wiki creada')
+console.log('  página de wiki al día')
 
 // ---------------------------------------------------------------- resumen
 
