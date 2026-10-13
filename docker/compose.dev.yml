@@ -1,0 +1,24 @@
+# Redmine local para desarrollo y pruebas de integración (F0-T06).
+# Uso: docker compose -f docker/compose.dev.yml up -d  ->  http://localhost:3080 (admin/admin)
+services:
+  redmine:
+    image: redmine:6
+    ports:
+      - "3080:3000"
+    environment:
+      REDMINE_DB_POSTGRES: db
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: redmine
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: redmine
+      POSTGRES_PASSWORD: redmine
+      POSTGRES_DB: redmine
+    volumes:
+      - redmine-db:/var/lib/postgresql/data
+
+volumes:
+  redmine-db:

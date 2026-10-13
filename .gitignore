@@ -1,0 +1,21 @@
+node_modules
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+coverage
+test-results
+playwright-report
+
+# Tauri (F8)
+src-tauri/target
+src-tauri/gen
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+*.log

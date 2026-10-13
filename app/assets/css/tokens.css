@@ -1,0 +1,62 @@
+/*
+ * Tokens del sistema de diseño. Fuente de verdad: sdd/02-diseno.md
+ * Los contrastes se verifican en F0-T04; no cambiar valores sin actualizar ese documento.
+ */
+:root {
+  --surface: #f6f7f9;
+  --raised: #ffffff;
+  --content: #16181d;
+  --content-secondary: #5b6270;
+  --separator: #e3e6eb;
+  --accent: #b4233a;          /* Ruby: solo acciones primarias y foco */
+  --on-accent: #ffffff;
+  --signal-success: #1f7a4d;
+  --signal-warning: #8a5a00;
+  --signal-info: #2557c4;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-data: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+
+  /* Desktop: 13 px por defecto, mínimo 10 px (HIG typography.md) */
+  --text-body: 13px;
+  --text-caption: 11px;
+  --text-title: 17px;
+  --text-large-title: 22px;
+
+  --radius-control: 6px;
+  --radius-surface: 10px;
+  --control-min: 28px;        /* objetivo mínimo en desktop */
+}
+
+@media (pointer: coarse) {
+  :root {
+    /* Móvil: 17 px por defecto, objetivos de 44 pt */
+    --text-body: 17px;
+    --text-caption: 13px;
+    --text-title: 20px;
+    --text-large-title: 28px;
+    --control-min: 44px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #111316;
+    --raised: #1b1e22;
+    --content: #eceef1;
+    --content-secondary: #9aa1ad;
+    --separator: #2a2e34;
+    --accent: #ff7088;
+    --on-accent: #1a0a0e;
+    --signal-success: #4cc38a;
+    --signal-warning: #e0a63a;
+    --signal-info: #7aa2ff;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --content-secondary: #3d434e;
+    --separator: #9aa1ad;
+  }
+}
