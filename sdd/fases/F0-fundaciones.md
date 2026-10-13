@@ -6,7 +6,7 @@
 
 ## Tareas
 
-- [x] **F0-T01** Repo y scaffold — `git init`, Nuxt 4 SPA, dependencias base, estructura de carpetas, `CLAUDE.md`, `sdd/`.
+- [x] **F0-T01** Repo y scaffold — `git init`, Nuxt 4 SPA, dependencias base, estructura de carpetas, `CLAUDE.md`, `sdd/`. · ✔ c132831
   - _Acepta:_ `pnpm install && pnpm dev` arranca; `pnpm typecheck` y `pnpm test` pasan.
 
 - [ ] **F0-T02** Lint y formato — ESLint con `@nuxt/eslint` (flat config) + Prettier o el formateador de `@nuxt/eslint`. Script `pnpm lint`. Regla que prohíbe hex sueltos en `app/components/**` (por ejemplo, `no-restricted-syntax` sobre literales `#[0-9a-f]{3,8}` en clases y estilos).
