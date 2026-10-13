@@ -1,0 +1,6 @@
+# Scripts de instalación aprobados (pnpm ya no lee esta lista desde package.json).
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - unrs-resolver
+  - vue-demi

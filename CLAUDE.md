@@ -33,9 +33,12 @@ pnpm dev            # http://localhost:3000
 pnpm lint           # ESLint + formato (@stylistic); pnpm lint:fix para corregir
 pnpm typecheck
 pnpm test           # unitarios
-pnpm test:e2e       # Playwright
+pnpm test:e2e       # Playwright en 1280 y 375 px; levanta el dev server solo
+pnpm check:contrast # contrastes de la paleta en los 4 modos
 pnpm build          # SPA + servidor Nitro (.output)
+
 docker compose -f docker/compose.dev.yml up -d   # Redmine local en :3080
+pnpm seed           # datos de prueba y claves de API (ver docker/README.md)
 ```
 
 Copia `.env.example` a `.env` antes de `pnpm dev`.

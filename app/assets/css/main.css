@@ -1,4 +1,12 @@
 @import 'tailwindcss';
+
+/*
+ * JetBrains Mono empaquetada: solo latín, pesos 400 y 600, con font-display: swap.
+ * Nada de Google Fonts, porque la app de escritorio (Tauri) tiene que arrancar sin red.
+ */
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+
 @import './tokens.css';
 
 /* Tokens -> utilidades de Tailwind (bg-surface, text-content, etc.) */
@@ -15,6 +23,15 @@
   --color-info: var(--signal-info);
   --font-sans: var(--font-ui);
   --font-mono: var(--font-data);
+
+  /* Corte entre el layout compacto (tab bar) y el regular (sidebar). */
+  --breakpoint-wide: 900px;
+}
+
+/* Lucide al mismo peso que el texto (sdd/02-diseno.md › Iconos). */
+.iconify,
+.iconify * {
+  stroke-width: 1.75;
 }
 
 html {
