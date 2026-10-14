@@ -6,41 +6,46 @@
 
 ## Tareas
 
-- [ ] **F1-T01** Tipos y cliente — `shared/redmine/types.ts` (User, Membership, Role, Project, Tracker, IssueStatus, Priority, Activity, Issue, Journal, TimeEntry, Version, WikiPage, News, Attachment, Paginated<T>) con esquemas Zod tolerantes. `shared/redmine/client.ts`: métodos tipados sobre un `RedmineTransport` (`getCurrentUser`, `getRole`, `listProjects`, ...), paginación automática para catálogos y mapeo a `RedmineError`.
+- [x] **F1-T01** Tipos y cliente — `shared/redmine/types.ts` (User, Membership, Role, Project, Tracker, IssueStatus, Priority, Activity, Issue, Journal, TimeEntry, Version, WikiPage, News, Attachment, Paginated<T>) con esquemas Zod tolerantes. `shared/redmine/client.ts`: métodos tipados sobre un `RedmineTransport` (`getCurrentUser`, `getRole`, `listProjects`, ...), paginación automática para catálogos y mapeo a `RedmineError`.
   - _Depende:_ F0-T07
-  - _Acepta:_ tests unitarios contra fixtures; un 422 de Redmine produce `RedmineError` con `errors[]`.
+  - _Acepta:_ tests unitarios contra fixtures; un 422 de Redmine produce `RedmineError` con `errors[]`. · ✔ 6d8d2c9
 
-- [ ] **F1-T02** Proxy y sesión en Nitro — `server/api/session/{login,logout,me}.ts` y `server/api/redmine/[...path].ts` según `01-arquitectura.md › ADR-002` (sesión sellada, allowlist de hosts, solo rutas de API, reenvío de binarios para `/uploads.json`, sin loguear la key).
+- [x] **F1-T02** Proxy y sesión en Nitro — `server/api/session/{login,logout,me}.ts` y `server/api/redmine/[...path].ts` según `01-arquitectura.md › ADR-002` (sesión sellada, allowlist de hosts, solo rutas de API, reenvío de binarios para `/uploads.json`, sin loguear la key).
   - _Depende:_ F1-T01
-  - _Acepta:_ tests de servidor: host fuera de la allowlist → 403; sin sesión → 401; `login` con una key mala → 401 con el mensaje de Redmine; la cookie es `httpOnly`; la key no aparece en `/api/session/me`.
+  - _Acepta:_ tests de servidor: host fuera de la allowlist → 403; sin sesión → 401; `login` con una key mala → 401 con el mensaje de Redmine; la cookie es `httpOnly`; la key no aparece en `/api/session/me`. · ✔ 6d8d2c9
 
-- [ ] **F1-T03** ProxyTransport — implementación web de `RedmineTransport` sobre `$fetch('/api/redmine/...')`. Plugin `app/plugins/redmine.client.ts` que elige el transport con `isTauri()` y provee el cliente (`useRedmine()`).
+- [x] **F1-T03** ProxyTransport — implementación web de `RedmineTransport` sobre `$fetch('/api/redmine/...')`. Plugin `app/plugins/redmine.client.ts` que elige el transport con `isTauri()` y provee el cliente (`useRedmine()`).
   - _Depende:_ F1-T02
-  - _Acepta:_ test de contrato compartido (`tests/unit/transport.contract.ts`) que pasa con ProxyTransport y que luego reutilizará TauriTransport.
+  - _Acepta:_ test de contrato compartido (`tests/unit/transport.contract.ts`) que pasa con ProxyTransport y que luego reutilizará TauriTransport. · ✔ 6d8d2c9
 
-- [ ] **F1-T04** Pantalla de conexión — `pages/conectar.vue`: campos *URL de Redmine* y *API key* (tipo password con botón mostrar/ocultar), ayuda inline "Encuéntrala en Redmine → Mi cuenta → Clave de acceso a la API" con enlace directo a `<url>/my/account`, botón primario "Conectar". Normaliza la URL (quita `/` final, añade `https://` si falta). Errores en el campo: URL inalcanzable, la API REST no está habilitada (respuesta 403/HTML), key inválida.
+- [x] **F1-T04** Pantalla de conexión — `pages/connect.vue`: campos *URL de Redmine* y *API key* (tipo password con botón mostrar/ocultar), ayuda inline "Encuéntrala en Redmine → Mi cuenta → Clave de acceso a la API" con enlace directo a `<url>/my/account`, botón primario "Conectar". Normaliza la URL (quita `/` final, añade `https://` si falta). Errores en el campo: URL inalcanzable, la API REST no está habilitada (respuesta 403/HTML), key inválida.
   - _Depende:_ F1-T03, F0-T05
-  - _Acepta:_ conectar con el usuario *desarrollador* del Redmine local lleva a la lista; cada error tiene un texto específico (`02-diseno.md › Escritura`); no hay pasos extra ni tutorial obligatorio (`onboarding.md`).
+  - _Acepta:_ conectar con el usuario *desarrollador* del Redmine local lleva a la lista; cada error tiene un texto específico (`02-diseno.md › Escritura`); no hay pasos extra ni tutorial obligatorio (`onboarding.md`). · ✔ 8068f25
 
-- [ ] **F1-T05** Permisos — `shared/redmine/permissions.ts`: `buildPermissionMap(user, roles, projects)` y `can(map, projectId, permission)`, incluyendo admin, grupos, y módulos habilitados. Modo degradado si `/roles/:id.json` falla (ver `03-api-redmine.md › Permisos`).
+- [x] **F1-T05** Permisos — `shared/redmine/permissions.ts`: `buildPermissionMap(user, roles, projects)` y `can(map, projectId, permission)`, incluyendo admin, grupos, y módulos habilitados. Modo degradado si `/roles/:id.json` falla (ver `03-api-redmine.md › Permisos`).
   - _Depende:_ F1-T01
-  - _Acepta:_ tests: *Reporter* no tiene `log_time`; un proyecto sin módulo `time_tracking` niega `log_time` aunque el rol lo tenga; admin puede todo; el modo degradado se activa con un 403 en roles.
+  - _Acepta:_ tests: *Reporter* no tiene `log_time`; un proyecto sin módulo `time_tracking` niega `log_time` aunque el rol lo tenga; admin puede todo; el modo degradado se activa con un 403 en roles. · ✔ 6d8d2c9
 
-- [ ] **F1-T06** Store de sesión y arranque — Pinia `useSessionStore`: usuario, `permissionMap`, catálogos globales; carga en el orden de `03-api-redmine.md › Arranque` con peticiones paralelas. Middleware de ruta: sin sesión → `/conectar`. Skeleton mientras carga (sin spinners a pantalla completa).
+- [x] **F1-T06** Store de sesión y arranque — Pinia `useSessionStore`: usuario, `permissionMap`, catálogos globales; carga en el orden de `03-api-redmine.md › Arranque` con peticiones paralelas. Middleware de ruta: sin sesión → `/connect`. Skeleton mientras carga (sin spinners a pantalla completa).
   - _Depende:_ F1-T04, F1-T05
-  - _Acepta:_ recargar la app con sesión válida lleva directo a la lista; con key revocada lleva a `/conectar` con la URL rellenada y el mensaje de 401.
+  - _Acepta:_ recargar la app con sesión válida lleva directo a la lista; con key revocada lleva a `/connect` con la URL rellenada y el mensaje de 401. · ✔ 8068f25
 
-- [ ] **F1-T07** `<Can>` y `v-can` — componente y directiva que muestran su contenido solo si `can(projectId, permission)`. Modo `disabled` opcional con tooltip explicativo.
+- [x] **F1-T07** `<Can>` y `v-can` — componente y directiva que muestran su contenido solo si `can(projectId, permission)`. Modo `disabled` opcional con tooltip explicativo.
   - _Depende:_ F1-T06
-  - _Acepta:_ test de componente; documentado en `CLAUDE.md` con un ejemplo.
+  - _Acepta:_ test de componente; documentado en `CLAUDE.md` con un ejemplo. · ✔ 8068f25
 
-- [ ] **F1-T08** Menú de cuenta — en la sidebar: avatar/iniciales, nombre, host de Redmine, "Abrir en Redmine", "Preferencias", "Desconectar". Desconectar borra la sesión y la caché de vue-query.
+- [x] **F1-T08** Menú de cuenta — en la sidebar: avatar/iniciales, nombre, host de Redmine, "Abrir en Redmine", "Preferencias", "Desconectar". Desconectar borra la sesión y la caché de vue-query.
   - _Depende:_ F1-T06
-  - _Acepta:_ tras desconectar, el botón atrás del navegador no muestra datos cacheados.
+  - _Acepta:_ tras desconectar, el botón atrás del navegador no muestra datos cacheados. · ✔ 8068f25
+  - _Nota:_ la entrada "Preferencias" se añade en F3-T03, que es la primera que le da contenido (el formato de texto). Un menú con una opción vacía confundiría más que ayudar.
 
-- [ ] **F1-T09** vue-query — plugin con `QueryClient` y defaults de `01-arquitectura.md › ADR-004`; manejo global de 401 (vuelve a `/conectar`) y 403 (refresca permisos).
+- [x] **F1-T09** vue-query — plugin con `QueryClient` y defaults de `01-arquitectura.md › ADR-004`; manejo global de 401 (vuelve a `/connect`) y 403 (refresca permisos).
   - _Depende:_ F1-T03
-  - _Acepta:_ simular 401 en una consulta lleva a `/conectar` una sola vez (sin bucles).
+  - _Acepta:_ simular 401 en una consulta lleva a `/connect` una sola vez (sin bucles). · ✔ 8068f25
+
+- [x] **F1-T10** Host fijo en los e2e — `pnpm dev` escucha solo en `[::1]` y Chromium resuelve `localhost` a `127.0.0.1`, así que las pruebas caían a ratos con `ERR_CONNECTION_REFUSED`. `playwright.config.ts` fija `--host 127.0.0.1` y usa esa IP como `baseURL`.
+  - _Depende:_ F1-T04
+  - _Acepta:_ `pnpm test:e2e` pasa entero varias veces seguidas, sin fallos de conexión.
 
 ## Definición de hecho
 

@@ -10,11 +10,11 @@
   - _Depende:_ F1-T06
   - _Acepta:_ fijar/desfijar con teclado; un proyecto archivado no aparece.
 
-- [ ] **F6-T02** Página de proyecto — `/proyectos/:id`: cabecera con nombre, descripción (render sanitizado), módulos habilitados como accesos (Tareas, Tiempo, Wiki, Noticias, Archivos, solo los habilitados y permitidos). Resumen: tareas por tracker (abiertas / cerradas), horas del mes si hay `view_time_entries`.
+- [ ] **F6-T02** Página de proyecto — `/projects/:id`: cabecera con nombre, descripción (render sanitizado), módulos habilitados como accesos (Tareas, Tiempo, Wiki, Noticias, Archivos, solo los habilitados y permitidos). Resumen: tareas por tracker (abiertas / cerradas), horas del mes si hay `view_time_entries`.
   - _Depende:_ F6-T01
   - _Acepta:_ cada número es un enlace a la lista con la frase de filtros correspondiente.
 
-- [ ] **F6-T03** Roadmap de versiones — `/proyectos/:id/versiones`: versiones abiertas por fecha, con barra de avance (cerradas / total y % por `done_ratio`, con texto "18 de 25 · 72 %"), fecha y días restantes, estimado vs. registrado. Versiones cerradas plegadas.
+- [ ] **F6-T03** Roadmap de versiones — `/projects/:id/versions`: versiones abiertas por fecha, con barra de avance (cerradas / total y % por `done_ratio`, con texto "18 de 25 · 72 %"), fecha y días restantes, estimado vs. registrado. Versiones cerradas plegadas.
   - _Depende:_ F6-T02
   - _Acepta:_ el avance coincide con el roadmap de Redmine para la misma versión.
 

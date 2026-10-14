@@ -6,7 +6,7 @@
 
 ## Tareas
 
-- [ ] **F7-T01** Índice de wiki — `/proyectos/:id/wiki`: árbol de páginas (`index.json`, jerarquía por `parent`), búsqueda por título, página de inicio destacada.
+- [ ] **F7-T01** Índice de wiki — `/projects/:id/wiki`: árbol de páginas (`index.json`, jerarquía por `parent`), búsqueda por título, página de inicio destacada.
   - _Depende:_ F1-T06
   - _Acepta:_ solo visible con módulo `wiki` y `view_wiki_pages`.
 

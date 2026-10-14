@@ -2,7 +2,14 @@ import { defineConfig, devices } from '@playwright/test'
 import { SESSION_STATE } from './tests/e2e/_session'
 
 const PORT = 3124
-const BASE_URL = `http://localhost:${PORT}`
+
+/*
+ * IP explícita, no `localhost`: en Windows `nuxt dev` escucha solo en `[::1]` y
+ * Chromium resuelve `localhost` a 127.0.0.1, así que la mitad de las pruebas
+ * caían con ERR_CONNECTION_REFUSED. Fijar el host en los dos lados lo evita.
+ */
+const HOST = '127.0.0.1'
+const BASE_URL = `http://${HOST}:${PORT}`
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -41,7 +48,7 @@ export default defineConfig({
 
   // Reutiliza un `pnpm dev` ya abierto; si no hay ninguno, levanta uno.
   webServer: {
-    command: `pnpm dev --port ${PORT}`,
+    command: `pnpm dev --host ${HOST} --port ${PORT}`,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
