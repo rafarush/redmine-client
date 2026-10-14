@@ -8,7 +8,7 @@
 
 - [x] **F2-T01** Modelo de filtros — `shared/redmine/filters.ts`: tipo `FilterSentence` (lista de condiciones `{ field, operator, values }`), `toRedmineQuery(sentence)` según la tabla de `03-api-redmine.md › Filtros`, `toUrl` / `fromUrl` para el parámetro `?f=`, y `describe(sentence)` para el texto accesible.
   - _Depende:_ F1-T01
-  - _Acepta:_ tests de ida y vuelta (URL → frase → URL); fechas relativas ("esta semana") se resuelven al consultar, no al guardar.
+  - _Acepta:_ tests de ida y vuelta (URL → frase → URL); fechas relativas ("esta semana") se resuelven al consultar, no al guardar. · ✔ e2a3d24
 
 - [ ] **F2-T02** `useIssues` — composable con vue-query: paginación por `offset` en páginas de 100, `keepPreviousData` al cambiar filtros, `sort` por columna, total visible.
   - _Depende:_ F2-T01, F1-T09
