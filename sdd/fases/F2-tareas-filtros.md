@@ -14,7 +14,7 @@
   - _Depende:_ F2-T01, F1-T09
   - _Acepta:_ cambiar un filtro no deja la lista vacía mientras carga (se ve la anterior atenuada). · ✔ ea2b150
 
-- [ ] **F2-T03** Lista virtualizada — `components/issues/IssueTable.vue` con TanStack Table + Virtual: columnas por defecto `#`, Asunto, Estado (icono + texto), Prioridad, Asignado, Actualizada, Horas (`.data`), botón ⏱. Columnas configurables (menú de cabecera, se guardan en Pinia persistido). Fila seleccionada resaltada de forma persistente (`lists-and-tables.md`). Navegación `J/K`, `Enter` abre detalle.
+- [~] **F2-T03** Lista virtualizada — `components/issues/IssueTable.vue` con TanStack Table + Virtual: columnas por defecto `#`, Asunto, Estado (icono + texto), Prioridad, Asignado, Actualizada, Horas (`.data`), botón ⏱. Columnas configurables (menú de cabecera, se guardan en Pinia persistido). Fila seleccionada resaltada de forma persistente (`lists-and-tables.md`). Navegación `J/K`, `Enter` abre detalle.
   - _Depende:_ F2-T02, F0-T05
   - _Acepta:_ 2 000 tareas con scroll fluido; teclado completo; anuncio `aria-live` "N tareas".
 
