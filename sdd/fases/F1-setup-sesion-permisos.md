@@ -45,7 +45,7 @@
 
 - [x] **F1-T10** Host fijo en los e2e — `pnpm dev` escucha solo en `[::1]` y Chromium resuelve `localhost` a `127.0.0.1`, así que las pruebas caían a ratos con `ERR_CONNECTION_REFUSED`. `playwright.config.ts` fija `--host 127.0.0.1` y usa esa IP como `baseURL`.
   - _Depende:_ F1-T04
-  - _Acepta:_ `pnpm test:e2e` pasa entero varias veces seguidas, sin fallos de conexión.
+  - _Acepta:_ `pnpm test:e2e` pasa entero varias veces seguidas, sin fallos de conexión. · ✔ 7ac3b4e
 
 ## Definición de hecho
 
