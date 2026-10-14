@@ -14,9 +14,9 @@
   - _Depende:_ F2-T01, F1-T09
   - _Acepta:_ cambiar un filtro no deja la lista vacía mientras carga (se ve la anterior atenuada). · ✔ ea2b150
 
-- [~] **F2-T03** Lista virtualizada — `components/issues/IssueTable.vue` con TanStack Table + Virtual: columnas por defecto `#`, Asunto, Estado (icono + texto), Prioridad, Asignado, Actualizada, Horas (`.data`), botón ⏱. Columnas configurables (menú de cabecera, se guardan en Pinia persistido). Fila seleccionada resaltada de forma persistente (`lists-and-tables.md`). Navegación `J/K`, `Enter` abre detalle.
+- [x] **F2-T03** Lista virtualizada — `components/issues/IssueTable.vue` con TanStack Table + Virtual: columnas por defecto `#`, Asunto, Estado (icono + texto), Prioridad, Asignado, Actualizada, Horas (`.data`), botón ⏱. Columnas configurables (menú de cabecera, se guardan en Pinia persistido). Fila seleccionada resaltada de forma persistente (`lists-and-tables.md`). Navegación `J/K`, `Enter` abre detalle.
   - _Depende:_ F2-T02, F0-T05
-  - _Acepta:_ 2 000 tareas con scroll fluido; teclado completo; anuncio `aria-live` "N tareas".
+  - _Acepta:_ 2 000 tareas con scroll fluido; teclado completo; anuncio `aria-live` "N tareas". · ✔ 67af5b0
 
 - [ ] **F2-T04** Frase de filtros — `components/filters/FilterSentence.vue` + `FilterToken.vue` (Popover de Reka con Listbox multi-selección con búsqueda, rango de fechas con atajos) + `AddCondition.vue`. Valores ofrecidos según catálogos y proyectos visibles; campos personalizados con `is_filter`. Un popover abierto a la vez. Atajo `/` enfoca la frase. En compacto, la frase se desplaza horizontalmente y se colapsa en "N filtros ▾".
   - _Depende:_ F2-T01, F1-T06
