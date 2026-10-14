@@ -14,7 +14,7 @@ const BASE = process.env.REDMINE_URL ?? 'http://localhost:3080'
 const COMPOSE = ['compose', '-f', 'docker/compose.dev.yml']
 
 /** Permisos del rol Cliente: puede mirar y comentar, pero no registrar tiempo. */
-const PERMISOS_CLIENTE = [
+const CLIENT_ROLE_PERMISSIONS = [
   'view_issues', 'add_issues', 'add_issue_notes', 'save_queries',
   'view_time_entries', 'view_wiki_pages', 'view_news', 'view_files',
 ]
@@ -29,31 +29,31 @@ function rails(ruby: string): string {
 let apiKey = ''
 
 async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const respuesta = await fetch(`${BASE}${path}`, {
+  const response = await fetch(`${BASE}${path}`, {
     method,
     headers: { 'Content-Type': 'application/json', 'X-Redmine-API-Key': apiKey },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
-  if (!respuesta.ok) {
-    const texto = await respuesta.text()
-    throw new Error(`${method} ${path} → ${respuesta.status}: ${texto.slice(0, 400)}`)
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`${method} ${path} → ${response.status}: ${text.slice(0, 400)}`)
   }
-  return respuesta.status === 204 ? (undefined as T) : await respuesta.json() as T
+  return response.status === 204 ? (undefined as T) : await response.json() as T
 }
 
 /** Devuelve el id del primer elemento cuyo campo coincide, o null. */
-function buscar<T extends Record<string, unknown>>(lista: T[], campo: keyof T, valor: unknown): T | null {
-  return lista.find(item => item[campo] === valor) ?? null
+function findBy<T extends Record<string, unknown>>(list: T[], field: keyof T, value: unknown): T | null {
+  return list.find(item => item[field] === value) ?? null
 }
 
-async function paginar<T>(path: string, clave: string): Promise<T[]> {
-  const todos: T[] = []
+async function paginate<T>(path: string, key: string): Promise<T[]> {
+  const all: T[] = []
   for (let offset = 0; ; offset += 100) {
-    const separador = path.includes('?') ? '&' : '?'
-    const pagina = await api<Record<string, unknown>>('GET', `${path}${separador}limit=100&offset=${offset}`)
-    const lote = pagina[clave] as T[]
-    todos.push(...lote)
-    if (todos.length >= Number(pagina.total_count ?? 0) || lote.length === 0) return todos
+    const separator = path.includes('?') ? '&' : '?'
+    const page = await api<Record<string, unknown>>('GET', `${path}${separator}limit=100&offset=${offset}`)
+    const batch = page[key] as T[]
+    all.push(...batch)
+    if (all.length >= Number(page.total_count ?? 0) || batch.length === 0) return all
   }
 }
 
@@ -69,7 +69,7 @@ rails(`
     puts 'datos por defecto cargados'
   end
   unless Role.find_by(name: 'Cliente')
-    rol = Role.new(name: 'Cliente', permissions: ${JSON.stringify(PERMISOS_CLIENTE).replace(/"/g, '\'')}.map(&:to_sym))
+    rol = Role.new(name: 'Cliente', permissions: ${JSON.stringify(CLIENT_ROLE_PERMISSIONS).replace(/"/g, '\'')}.map(&:to_sym))
     rol.issues_visibility = 'default'
     rol.save!
     puts 'rol Cliente creado'
@@ -82,27 +82,27 @@ if (!/^[0-9a-f]{40}$/.test(apiKey)) throw new Error(`No se obtuvo la API key del
 // ---------------------------------------------------------------- catálogos
 
 const { trackers } = await api<{ trackers: Array<{ id: number, name: string }> }>('GET', '/trackers.json')
-const { issue_statuses: estados } = await api<{ issue_statuses: Array<{ id: number, name: string, is_closed?: boolean }> }>('GET', '/issue_statuses.json')
-const { issue_priorities: prioridades } = await api<{ issue_priorities: Array<{ id: number, name: string }> }>('GET', '/enumerations/issue_priorities.json')
-const { time_entry_activities: actividades } = await api<{ time_entry_activities: Array<{ id: number, name: string }> }>('GET', '/enumerations/time_entry_activities.json')
+const { issue_statuses: statuses } = await api<{ issue_statuses: Array<{ id: number, name: string, is_closed?: boolean }> }>('GET', '/issue_statuses.json')
+const { issue_priorities: priorities } = await api<{ issue_priorities: Array<{ id: number, name: string }> }>('GET', '/enumerations/issue_priorities.json')
+const { time_entry_activities: activities } = await api<{ time_entry_activities: Array<{ id: number, name: string }> }>('GET', '/enumerations/time_entry_activities.json')
 
-const idsTracker = trackers.map(t => t.id)
-const abiertos = estados.filter(e => !e.is_closed)
-const cerrados = estados.filter(e => e.is_closed)
+const trackerIds = trackers.map(t => t.id)
+const openStatuses = statuses.filter(e => !e.is_closed)
+const closedStatuses = statuses.filter(e => e.is_closed)
 
 // ---------------------------------------------------------------- usuarios
 
 const { roles } = await api<{ roles: Array<{ id: number, name: string }> }>('GET', '/roles.json')
-const rolDesarrollador = buscar(roles, 'name', 'Desarrollador') ?? buscar(roles, 'name', 'Developer')
-const rolCliente = buscar(roles, 'name', 'Cliente')
-if (!rolDesarrollador || !rolCliente) throw new Error('Faltan los roles Desarrollador o Cliente')
+const developerRole = findBy(roles, 'name', 'Desarrollador') ?? findBy(roles, 'name', 'Developer')
+const clientRole = findBy(roles, 'name', 'Cliente')
+if (!developerRole || !clientRole) throw new Error('Faltan los roles Desarrollador o Cliente')
 
 // Sin `status`: Redmine devuelve los activos, que es lo que el seed necesita.
-const usuariosExistentes = await paginar<{ id: number, login: string }>('/users.json', 'users')
+const existingUsers = await paginate<{ id: number, login: string }>('/users.json', 'users')
 
-async function asegurarUsuario(login: string, firstname: string, lastname: string): Promise<number> {
-  const existente = buscar(usuariosExistentes, 'login', login)
-  if (existente) return existente.id
+async function ensureUser(login: string, firstname: string, lastname: string): Promise<number> {
+  const existing = findBy(existingUsers, 'login', login)
+  if (existing) return existing.id
   const { user } = await api<{ user: { id: number } }>('POST', '/users.json', {
     user: { login, firstname, lastname, mail: `${login}@ejemplo.local`, password: 'Prueba.1234', must_change_passwd: false },
   })
@@ -110,21 +110,21 @@ async function asegurarUsuario(login: string, firstname: string, lastname: strin
   return user.id
 }
 
-const idDesarrollador = await asegurarUsuario('desarrollador', 'Dani', 'Desarrollo')
-const idCliente = await asegurarUsuario('cliente', 'Carmen', 'Cliente')
+const developerId = await ensureUser('desarrollador', 'Dani', 'Desarrollo')
+const clientId = await ensureUser('cliente', 'Carmen', 'Cliente')
 
 // ---------------------------------------------------------------- proyectos
 
-const proyectosExistentes = await paginar<{ id: number, identifier: string }>('/projects.json', 'projects')
+const existingProjects = await paginate<{ id: number, identifier: string }>('/projects.json', 'projects')
 
-async function asegurarProyecto(
+async function ensureProject(
   identifier: string,
   name: string,
   description: string,
   parentId?: number,
 ): Promise<number> {
-  const existente = buscar(proyectosExistentes, 'identifier', identifier)
-  if (existente) return existente.id
+  const existing = findBy(existingProjects, 'identifier', identifier)
+  if (existing) return existing.id
   const { project } = await api<{ project: { id: number } }>('POST', '/projects.json', {
     project: {
       name,
@@ -132,7 +132,7 @@ async function asegurarProyecto(
       description,
       parent_id: parentId,
       is_public: false,
-      tracker_ids: idsTracker,
+      tracker_ids: trackerIds,
       enabled_module_names: ['issue_tracking', 'time_tracking', 'wiki', 'news', 'files'],
     },
   })
@@ -140,11 +140,11 @@ async function asegurarProyecto(
   return project.id
 }
 
-const idPortal = await asegurarProyecto('portal-web', 'Portal Web', 'Portal público de clientes.')
-const idMovil = await asegurarProyecto('portal-movil', 'Portal Web · Móvil', 'App móvil del portal.', idPortal)
-const idSoporte = await asegurarProyecto('soporte-interno', 'Soporte Interno', 'Incidencias del equipo interno.')
+const portalId = await ensureProject('portal-web', 'Portal Web', 'Portal público de clientes.')
+const mobileId = await ensureProject('portal-movil', 'Portal Web · Móvil', 'App móvil del portal.', portalId)
+const supportId = await ensureProject('soporte-interno', 'Soporte Interno', 'Incidencias del equipo interno.')
 
-async function asegurarMiembro(projectId: number, userId: number, roleId: number): Promise<void> {
+async function ensureMember(projectId: number, userId: number, roleId: number): Promise<void> {
   const { memberships } = await api<{ memberships: Array<{ user?: { id: number } }> }>(
     'GET', `/projects/${projectId}/memberships.json?limit=100`,
   )
@@ -154,17 +154,17 @@ async function asegurarMiembro(projectId: number, userId: number, roleId: number
   })
 }
 
-for (const proyecto of [idPortal, idMovil, idSoporte]) {
-  await asegurarMiembro(proyecto, idDesarrollador, rolDesarrollador.id)
-  await asegurarMiembro(proyecto, idCliente, rolCliente.id)
+for (const projectId of [portalId, mobileId, supportId]) {
+  await ensureMember(projectId, developerId, developerRole.id)
+  await ensureMember(projectId, clientId, clientRole.id)
 }
 
 // ---------------------------------------------------------------- versiones
 
-async function asegurarVersion(projectId: number, name: string, dueDate: string): Promise<number> {
+async function ensureVersion(projectId: number, name: string, dueDate: string): Promise<number> {
   const { versions } = await api<{ versions: Array<{ id: number, name: string }> }>('GET', `/projects/${projectId}/versions.json`)
-  const existente = buscar(versions, 'name', name)
-  if (existente) return existente.id
+  const existing = findBy(versions, 'name', name)
+  if (existing) return existing.id
   const { version } = await api<{ version: { id: number } }>('POST', `/projects/${projectId}/versions.json`, {
     version: { name, due_date: dueDate, status: 'open' },
   })
@@ -172,12 +172,12 @@ async function asegurarVersion(projectId: number, name: string, dueDate: string)
   return version.id
 }
 
-const version1 = await asegurarVersion(idPortal, '1.0 · Lanzamiento', '2026-11-28')
-const version2 = await asegurarVersion(idPortal, '1.1 · Mejoras', '2027-01-30')
+const version1 = await ensureVersion(portalId, '1.0 · Lanzamiento', '2026-11-28')
+const version2 = await ensureVersion(portalId, '1.1 · Mejoras', '2027-01-30')
 
 // ---------------------------------------------------------------- tareas
 
-const ASUNTOS = [
+const SUBJECTS = [
   'Arreglar el inicio de sesión con SSO', 'Exportar el listado a CSV', 'Error en el paso de pago',
   'Revisar el contraste del tema oscuro', 'Acelerar la búsqueda de clientes', 'Añadir filtro por versión',
   'Corregir el formato de fechas', 'Cerrar sesión no limpia la caché', 'Subida de adjuntos falla con PDF grandes',
@@ -188,57 +188,57 @@ const ASUNTOS = [
 ]
 
 // Cuenta todas las tareas, no solo las de un proyecto: el seed las reparte entre los tres.
-const { total_count: tareasExistentes } = await api<{ total_count: number }>('GET', '/issues.json?status_id=*&limit=1')
+const { total_count: existingIssues } = await api<{ total_count: number }>('GET', '/issues.json?status_id=*&limit=1')
 
-const tareasCreadas: number[] = []
+const createdIssues: number[] = []
 
-if (tareasExistentes < 40) {
-  const objetivo = 42
-  for (let i = 0; i < objetivo; i++) {
-    const proyecto = i % 5 === 0 ? idSoporte : i % 7 === 0 ? idMovil : idPortal
-    const cerrada = i % 4 === 3
-    const estado = cerrada ? cerrados[i % cerrados.length]! : abiertos[i % abiertos.length]!
-    const asignado = i % 3 === 0 ? idDesarrollador : i % 3 === 1 ? undefined : idCliente
+if (existingIssues < 40) {
+  const target = 42
+  for (let i = 0; i < target; i++) {
+    const projectId = i % 5 === 0 ? supportId : i % 7 === 0 ? mobileId : portalId
+    const closed = i % 4 === 3
+    const status = closed ? closedStatuses[i % closedStatuses.length]! : openStatuses[i % openStatuses.length]!
+    const assignedTo = i % 3 === 0 ? developerId : i % 3 === 1 ? undefined : clientId
 
     const { issue } = await api<{ issue: { id: number } }>('POST', '/issues.json', {
       issue: {
-        project_id: proyecto,
-        tracker_id: idsTracker[i % idsTracker.length],
-        subject: `${ASUNTOS[i % ASUNTOS.length]}${i >= ASUNTOS.length ? ` (${Math.floor(i / ASUNTOS.length) + 1})` : ''}`,
+        project_id: projectId,
+        tracker_id: trackerIds[i % trackerIds.length],
+        subject: `${SUBJECTS[i % SUBJECTS.length]}${i >= SUBJECTS.length ? ` (${Math.floor(i / SUBJECTS.length) + 1})` : ''}`,
         description: 'Tarea de prueba creada por `pnpm seed`.',
-        status_id: estado.id,
-        priority_id: prioridades[i % prioridades.length]!.id,
-        assigned_to_id: asignado,
-        fixed_version_id: proyecto === idPortal ? (i % 2 === 0 ? version1 : version2) : undefined,
+        status_id: status.id,
+        priority_id: priorities[i % priorities.length]!.id,
+        assigned_to_id: assignedTo,
+        fixed_version_id: projectId === portalId ? (i % 2 === 0 ? version1 : version2) : undefined,
         estimated_hours: (i % 8) + 1,
-        done_ratio: cerrada ? 100 : (i % 5) * 20,
+        done_ratio: closed ? 100 : (i % 5) * 20,
       },
     })
-    tareasCreadas.push(issue.id)
+    createdIssues.push(issue.id)
   }
-  console.log(`  ${objetivo} tareas creadas`)
+  console.log(`  ${target} tareas creadas`)
 }
 else {
-  console.log(`  las tareas ya existían (${tareasExistentes})`)
+  console.log(`  las tareas ya existían (${existingIssues})`)
 }
 
 // ---------------------------------------------------------------- tiempo
 
-const { total_count: tiemposExistentes } = await api<{ total_count: number }>('GET', '/time_entries.json?limit=1')
+const { total_count: existingTimeEntries } = await api<{ total_count: number }>('GET', '/time_entries.json?limit=1')
 
-if (tiemposExistentes === 0 && tareasCreadas.length > 0) {
-  const hoy = new Date()
+if (existingTimeEntries === 0 && createdIssues.length > 0) {
+  const today = new Date()
   for (let i = 0; i < 12; i++) {
-    const fecha = new Date(hoy)
-    fecha.setDate(hoy.getDate() - (i % 6))
+    const date = new Date(today)
+    date.setDate(today.getDate() - (i % 6))
     await api('POST', '/time_entries.json', {
       time_entry: {
-        issue_id: tareasCreadas[i]!,
+        issue_id: createdIssues[i]!,
         // A nombre del desarrollador, no del admin: es el usuario con el que se prueba.
-        user_id: idDesarrollador,
+        user_id: developerId,
         hours: [0.5, 1, 1.5, 2, 3][i % 5],
-        activity_id: actividades[i % actividades.length]!.id,
-        spent_on: fecha.toISOString().slice(0, 10),
+        activity_id: activities[i % activities.length]!.id,
+        spent_on: date.toISOString().slice(0, 10),
         comments: 'Trabajo de prueba.',
       },
     })
@@ -248,7 +248,7 @@ if (tiemposExistentes === 0 && tareasCreadas.length > 0) {
 
 // ---------------------------------------------------------------- wiki
 
-await api('PUT', `/projects/${idPortal}/wiki/Wiki.json`, {
+await api('PUT', `/projects/${portalId}/wiki/Wiki.json`, {
   wiki_page: {
     text: [
       '# Portal Web',
@@ -267,7 +267,7 @@ console.log('  página de wiki al día')
 
 // ---------------------------------------------------------------- resumen
 
-const claves = rails(`
+const keys = rails(`
   %w[admin desarrollador cliente].each do |login|
     u = User.find_by_login(login)
     puts "#{login}\\t#{u.api_key}" if u
@@ -276,8 +276,8 @@ const claves = rails(`
 
 console.log('\nListo. Redmine en', BASE)
 console.log('\nUsuario        Contraseña      API key')
-for (const linea of claves.split('\n')) {
-  const [login, key] = linea.trim().split('\t')
+for (const line of keys.split('\n')) {
+  const [login, key] = line.trim().split('\t')
   const password = login === 'admin' ? 'admin' : 'Prueba.1234'
   console.log(`${login!.padEnd(14)} ${password.padEnd(15)} ${key}`)
 }

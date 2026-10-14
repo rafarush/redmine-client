@@ -25,5 +25,9 @@ const items = useNavItems()
     </nav>
 
     <!-- Proyectos fijados: F6-T01. -->
+
+    <div class="mt-auto border-t border-separator pt-1">
+      <LayoutAccountMenu />
+    </div>
   </aside>
 </template>

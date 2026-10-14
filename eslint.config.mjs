@@ -47,6 +47,13 @@ export default [
     rules: { 'design/no-raw-hex-color': 'error' },
   },
 
+  // `<Can permission="log_time">` se lee como una frase; el nombre de una palabra es deliberado.
+  {
+    name: 'redmine-client/can',
+    files: ['app/components/Can.vue'],
+    rules: { 'vue/multi-word-component-names': 'off' },
+  },
+
   // Scripts y tests: pueden escribir en consola.
   {
     name: 'redmine-client/tests',

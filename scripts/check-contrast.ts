@@ -16,17 +16,17 @@ const TOKENS = fileURLToPath(new URL('../app/assets/css/tokens.css', import.meta
 const MIN_RATIO = 4.5
 
 /** Pares `texto sobre fondo` que la interfaz usa de verdad. */
-const PAIRS: ReadonlyArray<{ fg: string, bg: string, uso: string }> = [
-  { fg: 'content', bg: 'surface', uso: 'Texto principal' },
-  { fg: 'content', bg: 'raised', uso: 'Texto en popover o diálogo' },
-  { fg: 'content-secondary', bg: 'surface', uso: 'Metadatos y conjunciones de la frase' },
-  { fg: 'content-secondary', bg: 'raised', uso: 'Metadatos sobre superficie elevada' },
-  { fg: 'accent', bg: 'surface', uso: 'Enlace o acción primaria en texto' },
-  { fg: 'accent', bg: 'raised', uso: 'Acción primaria en popover' },
-  { fg: 'on-accent', bg: 'accent', uso: 'Texto del botón primario' },
-  { fg: 'signal-success', bg: 'raised', uso: 'Estado correcto' },
-  { fg: 'signal-warning', bg: 'raised', uso: 'Aviso' },
-  { fg: 'signal-info', bg: 'raised', uso: 'Enlace o novedad' },
+const PAIRS: ReadonlyArray<{ fg: string, bg: string, usage: string }> = [
+  { fg: 'content', bg: 'surface', usage: 'Texto principal' },
+  { fg: 'content', bg: 'raised', usage: 'Texto en popover o diálogo' },
+  { fg: 'content-secondary', bg: 'surface', usage: 'Metadatos y conjunciones de la frase' },
+  { fg: 'content-secondary', bg: 'raised', usage: 'Metadatos sobre superficie elevada' },
+  { fg: 'accent', bg: 'surface', usage: 'Enlace o acción primaria en texto' },
+  { fg: 'accent', bg: 'raised', usage: 'Acción primaria en popover' },
+  { fg: 'on-accent', bg: 'accent', usage: 'Texto del botón primario' },
+  { fg: 'signal-success', bg: 'raised', usage: 'Estado correcto' },
+  { fg: 'signal-warning', bg: 'raised', usage: 'Aviso' },
+  { fg: 'signal-info', bg: 'raised', usage: 'Enlace o novedad' },
 ]
 
 type Palette = Map<string, string>
@@ -105,39 +105,39 @@ if (lightMore.size === 0 || darkMore.size === 0) {
 }
 
 const light = withOverrides(root, null)
-const MODES: ReadonlyArray<{ nombre: string, palette: Palette }> = [
-  { nombre: 'claro', palette: light },
-  { nombre: 'claro + alto contraste', palette: withOverrides(light, lightMore) },
-  { nombre: 'oscuro', palette: withOverrides(light, dark) },
-  { nombre: 'oscuro + alto contraste', palette: withOverrides(withOverrides(light, dark), darkMore) },
+const MODES: ReadonlyArray<{ name: string, palette: Palette }> = [
+  { name: 'claro', palette: light },
+  { name: 'claro + alto contraste', palette: withOverrides(light, lightMore) },
+  { name: 'oscuro', palette: withOverrides(light, dark) },
+  { name: 'oscuro + alto contraste', palette: withOverrides(withOverrides(light, dark), darkMore) },
 ]
 
-let fallos = 0
+let failures = 0
 
-for (const { nombre, palette } of MODES) {
-  console.log(`\n${nombre}`)
-  for (const { fg, bg, uso } of PAIRS) {
+for (const { name, palette } of MODES) {
+  console.log(`\n${name}`)
+  for (const { fg, bg, usage } of PAIRS) {
     const fgHex = palette.get(fg)
     const bgHex = palette.get(bg)
     if (!fgHex || !bgHex) {
       console.error(`  ✖ ${fg} sobre ${bg}: token no definido`)
-      fallos++
+      failures++
       continue
     }
     const ratio = contrast(fgHex, bgHex)
     const ok = ratio >= MIN_RATIO
-    if (!ok) fallos++
-    const marca = ok ? '✔' : '✖'
-    const detalle = `${fg} (${fgHex}) sobre ${bg} (${bgHex})`
-    console.log(`  ${marca} ${ratio.toFixed(2)}:1  ${detalle} — ${uso}`)
+    if (!ok) failures++
+    const mark = ok ? '✔' : '✖'
+    const detail = `${fg} (${fgHex}) sobre ${bg} (${bgHex})`
+    console.log(`  ${mark} ${ratio.toFixed(2)}:1  ${detail} — ${usage}`)
     if (!ok) {
       console.error(`      falla: necesita ${MIN_RATIO}:1 para texto. Ajusta el token en tokens.css y actualiza la tabla de sdd/02-diseno.md › Color.`)
     }
   }
 }
 
-if (fallos > 0) {
-  console.error(`\n${fallos} par(es) por debajo de ${MIN_RATIO}:1.`)
+if (failures > 0) {
+  console.error(`\n${failures} par(es) por debajo de ${MIN_RATIO}:1.`)
   process.exit(1)
 }
 

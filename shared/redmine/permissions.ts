@@ -10,7 +10,7 @@ import type { CurrentUser, Project, RoleDetail } from './types'
 export type RedminePermission = string
 
 /** Módulo de Redmine que tiene que estar activo para que el permiso sirva. */
-const MODULO_POR_PERMISO: Record<string, string> = {
+const MODULE_BY_PERMISSION: Record<string, string> = {
   view_issues: 'issue_tracking',
   add_issues: 'issue_tracking',
   edit_issues: 'issue_tracking',
@@ -65,11 +65,11 @@ export function buildPermissionMap(
   }
 
   for (const membership of user.memberships) {
-    const acumulados = byProject.get(membership.project.id) ?? new Set<RedminePermission>()
-    for (const rol of membership.roles) {
-      for (const permiso of roles.get(rol.id)?.permissions ?? []) acumulados.add(permiso)
+    const accumulated = byProject.get(membership.project.id) ?? new Set<RedminePermission>()
+    for (const role of membership.roles) {
+      for (const permission of roles.get(role.id)?.permissions ?? []) accumulated.add(permission)
     }
-    byProject.set(membership.project.id, acumulados)
+    byProject.set(membership.project.id, accumulated)
   }
 
   return { admin: user.admin, byProject, modulesByProject, degraded: options.degraded ?? false }
@@ -87,10 +87,10 @@ export function can(map: PermissionMap, permission: RedminePermission, projectId
     return [...map.byProject.keys()].some(id => can(map, permission, id))
   }
 
-  const modulo = MODULO_POR_PERMISO[permission]
-  const modulos = map.modulesByProject.get(projectId)
+  const requiredModule = MODULE_BY_PERMISSION[permission]
+  const projectModules = map.modulesByProject.get(projectId)
   // Si no sabemos los módulos del proyecto, no bloqueamos por esa vía.
-  if (modulo && modulos && !modulos.has(modulo)) return false
+  if (requiredModule && projectModules && !projectModules.has(requiredModule)) return false
 
   if (map.admin) return true
   if (map.degraded) return true

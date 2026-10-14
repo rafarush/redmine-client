@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { quitarApiKey } from '../../shared/redmine/guards'
+import { stripApiKey } from '../../shared/redmine/guards'
 
 /**
  * Redmine de mentira para los tests, servido desde tests/fixtures (F0-T07).
@@ -15,12 +15,12 @@ import { quitarApiKey } from '../../shared/redmine/guards'
 const FIXTURES = fileURLToPath(new URL('../fixtures/', import.meta.url))
 
 /** Clave válida en el mock; cualquier otra devuelve 401, como Redmine. */
-export const API_KEY_VALIDA = 'a'.repeat(40)
+export const VALID_API_KEY = 'a'.repeat(40)
 
-export const BASE_REDMINE = 'https://redmine.ejemplo.local'
-export const BASE_PROXY = 'http://localhost:3000'
+export const REDMINE_BASE = 'https://redmine.ejemplo.local'
+export const PROXY_BASE = 'http://localhost:3000'
 
-function leerIndice(): Record<string, string> {
+function readIndex(): Record<string, string> {
   try {
     return JSON.parse(readFileSync(`${FIXTURES}index.json`, 'utf8')) as Record<string, string>
   }
@@ -30,33 +30,33 @@ function leerIndice(): Record<string, string> {
 }
 
 /** `/issues.json?status_id=open&limit=25` → clave normalizada, sin importar el orden. */
-function clave(url: URL, prefijo = ''): string {
-  const ruta = prefijo ? url.pathname.replace(prefijo, '') : url.pathname
+function keyFor(url: URL, prefix = ''): string {
+  const path = prefix ? url.pathname.replace(prefix, '') : url.pathname
   const params = [...url.searchParams.entries()].sort(([a], [b]) => a.localeCompare(b))
   const query = params.map(([k, v]) => `${k}=${v}`).join('&')
-  return query ? `${ruta}?${query}` : ruta
+  return query ? `${path}?${query}` : path
 }
 
-const porClave = new Map(
-  Object.entries(leerIndice()).map(([ruta, archivo]) => [clave(new URL(ruta, BASE_REDMINE)), archivo]),
+const byKey = new Map(
+  Object.entries(readIndex()).map(([path, file]) => [keyFor(new URL(path, REDMINE_BASE)), file]),
 )
 
-function responder(ruta: string, { ocultarApiKey = false } = {}): Response {
-  const archivo = porClave.get(ruta)
-  if (!archivo) {
-    const mensaje
-      = `El mock no tiene fixture para ${ruta}. `
+function respond(path: string, { hideApiKey = false } = {}): Response {
+  const file = byKey.get(path)
+  if (!file) {
+    const message
+      = `El mock no tiene fixture para ${path}. `
         + `Añade la ruta a scripts/capture-fixtures.ts y ejecuta pnpm capture:fixtures.`
-    console.error(`\n${mensaje}\nDisponibles:\n  ${[...porClave.keys()].join('\n  ')}\n`)
-    return HttpResponse.json({ errors: [mensaje] }, { status: 501 })
+    console.error(`\n${message}\nDisponibles:\n  ${[...byKey.keys()].join('\n  ')}\n`)
+    return HttpResponse.json({ errors: [message] }, { status: 501 })
   }
 
-  const cuerpo = JSON.parse(readFileSync(`${FIXTURES}${archivo}`, 'utf8'))
-  return HttpResponse.json(ocultarApiKey ? quitarApiKey(cuerpo) : cuerpo)
+  const body = JSON.parse(readFileSync(`${FIXTURES}${file}`, 'utf8'))
+  return HttpResponse.json(hideApiKey ? stripApiKey(body) : body)
 }
 
 /** Redmine rechaza una tarea sin asunto con 422 y la lista de errores. */
-function validarTareaNueva(body: unknown): Response | null {
+function validateNewIssue(body: unknown): Response | null {
   const issue = (body as { issue?: Record<string, unknown> })?.issue
   if (issue?.subject) return null
   return HttpResponse.json(
@@ -65,31 +65,31 @@ function validarTareaNueva(body: unknown): Response | null {
   )
 }
 
-export const servidorRedmine = setupServer(
+export const redmineServer = setupServer(
   // --- Forma directa (Tauri)
-  http.post(`${BASE_REDMINE}/issues.json`, async ({ request }) => {
-    if (request.headers.get('X-Redmine-API-Key') !== API_KEY_VALIDA) return new HttpResponse(null, { status: 401 })
-    return validarTareaNueva(await request.json()) ?? HttpResponse.json({ issue: { id: 999 } }, { status: 201 })
+  http.post(`${REDMINE_BASE}/issues.json`, async ({ request }) => {
+    if (request.headers.get('X-Redmine-API-Key') !== VALID_API_KEY) return new HttpResponse(null, { status: 401 })
+    return validateNewIssue(await request.json()) ?? HttpResponse.json({ issue: { id: 999 } }, { status: 201 })
   }),
 
-  http.all(`${BASE_REDMINE}/*`, ({ request }) => {
-    if (request.headers.get('X-Redmine-API-Key') !== API_KEY_VALIDA) return new HttpResponse(null, { status: 401 })
-    return responder(clave(new URL(request.url)))
+  http.all(`${REDMINE_BASE}/*`, ({ request }) => {
+    if (request.headers.get('X-Redmine-API-Key') !== VALID_API_KEY) return new HttpResponse(null, { status: 401 })
+    return respond(keyFor(new URL(request.url)))
   }),
 
   // --- Forma por proxy (web)
-  http.post(`${BASE_PROXY}/api/redmine/issues.json`, async ({ request }) => {
+  http.post(`${PROXY_BASE}/api/redmine/issues.json`, async ({ request }) => {
     if (request.headers.get('X-Requested-With') !== 'redmine-client') {
       return HttpResponse.json({ statusMessage: 'Petición no reconocida.' }, { status: 403 })
     }
-    return validarTareaNueva(await request.json()) ?? HttpResponse.json({ issue: { id: 999 } }, { status: 201 })
+    return validateNewIssue(await request.json()) ?? HttpResponse.json({ issue: { id: 999 } }, { status: 201 })
   }),
 
-  http.all(`${BASE_PROXY}/api/redmine/*`, ({ request }) => {
-    const metodo = request.method.toUpperCase()
-    if (metodo !== 'GET' && request.headers.get('X-Requested-With') !== 'redmine-client') {
+  http.all(`${PROXY_BASE}/api/redmine/*`, ({ request }) => {
+    const method = request.method.toUpperCase()
+    if (method !== 'GET' && request.headers.get('X-Requested-With') !== 'redmine-client') {
       return HttpResponse.json({ statusMessage: 'Petición no reconocida.' }, { status: 403 })
     }
-    return responder(clave(new URL(request.url), '/api/redmine'), { ocultarApiKey: true })
+    return respond(keyFor(new URL(request.url), '/api/redmine'), { hideApiKey: true })
   }),
 )

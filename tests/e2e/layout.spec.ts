@@ -36,7 +36,7 @@ test.describe('ancho regular', () => {
   })
 
   test('Ctrl+\\ oculta la sidebar y lo recuerda al recargar', async ({ page }) => {
-    const alternar = page.getByRole('button', { name: 'Mostrar u ocultar las secciones' })
+    const toggle = page.getByRole('button', { name: 'Mostrar u ocultar las secciones' })
 
     await page.goto('/')
     await expect(sidebar(page)).toBeVisible()
@@ -45,7 +45,7 @@ test.describe('ancho regular', () => {
     await expect(sidebar(page)).toBeHidden()
 
     await page.reload()
-    await expect(alternar).toBeVisible()
+    await expect(toggle).toBeVisible()
     await expect(sidebar(page)).toBeHidden()
 
     await page.keyboard.press('Control+\\')
@@ -56,19 +56,19 @@ test.describe('ancho regular', () => {
     await page.goto('/')
     await sidebar(page).getByRole('link', { name: 'Tiempo' }).focus()
     await page.keyboard.press('Enter')
-    await expect(page).toHaveURL(/\/tiempo$/)
+    await expect(page).toHaveURL(/\/time$/)
     await expect(page.getByRole('heading', { name: 'Tiempo' })).toBeVisible()
   })
 
   test('el botón de solo icono tiene nombre accesible y foco visible', async ({ page }) => {
     await page.goto('/')
-    const alternar = page.getByRole('button', { name: 'Mostrar u ocultar las secciones' })
-    await expect(alternar).toBeVisible()
-    await expect(alternar).toHaveAttribute('aria-expanded', 'true')
+    const toggle = page.getByRole('button', { name: 'Mostrar u ocultar las secciones' })
+    await expect(toggle).toBeVisible()
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
 
-    await alternar.focus()
-    const grosorOutline = await alternar.evaluate(el => getComputedStyle(el).outlineWidth)
-    expect(grosorOutline).not.toBe('0px')
+    await toggle.focus()
+    const outlineWidth = await toggle.evaluate(el => getComputedStyle(el).outlineWidth)
+    expect(outlineWidth).not.toBe('0px')
   })
 
   test('usa los tokens de cada apariencia', async ({ page }) => {
@@ -93,9 +93,9 @@ test.describe('ancho compacto', () => {
 
   test('no provoca scroll horizontal', async ({ page }) => {
     await page.goto('/')
-    const desborde = await page.evaluate(
+    const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     )
-    expect(desborde).toBeLessThanOrEqual(0)
+    expect(overflow).toBeLessThanOrEqual(0)
   })
 })

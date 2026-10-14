@@ -8,52 +8,59 @@ import { RedmineError } from './transport'
 export class ProxyTransport implements RedmineTransport {
   readonly kind = 'proxy' as const
 
-  constructor(private readonly fetchImpl: typeof globalThis.fetch = globalThis.fetch, private readonly base = '') {}
+  private readonly fetchImpl: typeof globalThis.fetch
+
+  constructor(fetchImpl: typeof globalThis.fetch = globalThis.fetch, private readonly base = '') {
+    // El navegador exige que `fetch` se llame con `window` como receptor: guardado
+    // suelto en una propiedad lanzaría "Illegal invocation". En Node no pasa, así
+    // que sin este bind el fallo solo aparece en el navegador.
+    this.fetchImpl = fetchImpl.bind(globalThis)
+  }
 
   async request<T>(req: RedmineRequest): Promise<T> {
     const method = req.method ?? 'GET'
     const url = new URL(`${this.base}/api/redmine${req.path}`, globalThis.location?.origin ?? 'http://localhost')
 
-    for (const [clave, valor] of Object.entries(req.query ?? {})) {
-      if (valor !== undefined) url.searchParams.set(clave, String(valor))
+    for (const [key, value] of Object.entries(req.query ?? {})) {
+      if (value !== undefined) url.searchParams.set(key, String(value))
     }
 
-    const esBinario = req.rawBody !== undefined
+    const isBinary = req.rawBody !== undefined
     const headers: Record<string, string> = { Accept: 'application/json' }
 
     // El proxy exige esta cabecera en los métodos que escriben (defensa CSRF).
     if (method !== 'GET') headers['X-Requested-With'] = 'redmine-client'
-    if (esBinario) headers['Content-Type'] = 'application/octet-stream'
+    if (isBinary) headers['Content-Type'] = 'application/octet-stream'
     else if (req.body !== undefined) headers['Content-Type'] = 'application/json'
 
-    const respuesta = await this.fetchImpl(url.toString(), {
+    const response = await this.fetchImpl(url.toString(), {
       method,
       headers,
       credentials: 'same-origin',
-      body: esBinario
+      body: isBinary
         ? req.rawBody as BodyInit
         : req.body === undefined ? undefined : JSON.stringify(req.body),
     })
 
-    if (!respuesta.ok) throw await leerError(respuesta)
+    if (!response.ok) throw await readError(response)
 
-    if (respuesta.status === 204) return undefined as T
-    const texto = await respuesta.text()
-    return (texto ? JSON.parse(texto) : undefined) as T
+    if (response.status === 204) return undefined as T
+    const text = await response.text()
+    return (text ? JSON.parse(text) : undefined) as T
   }
 }
 
 /** Convierte la respuesta fallida en un RedmineError con los mensajes utilizables. */
-export async function leerError(respuesta: Response): Promise<RedmineError> {
-  let mensajes: string[] = []
+export async function readError(response: Response): Promise<RedmineError> {
+  let messages: string[] = []
   try {
-    const cuerpo = await respuesta.json() as { errors?: string[], statusMessage?: string, message?: string }
-    if (Array.isArray(cuerpo.errors)) mensajes = cuerpo.errors
-    else if (cuerpo.statusMessage) mensajes = [cuerpo.statusMessage]
-    else if (cuerpo.message) mensajes = [cuerpo.message]
+    const body = await response.json() as { errors?: string[], statusMessage?: string, message?: string }
+    if (Array.isArray(body.errors)) messages = body.errors
+    else if (body.statusMessage) messages = [body.statusMessage]
+    else if (body.message) messages = [body.message]
   }
   catch {
     // Sin cuerpo JSON: queda el status, que ya da un mensaje por defecto.
   }
-  return new RedmineError(respuesta.status, mensajes)
+  return new RedmineError(response.status, messages)
 }

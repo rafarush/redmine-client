@@ -26,7 +26,7 @@ import {
 } from './types'
 
 /** Tope de Redmine por página. */
-const LIMITE = 100
+const PAGE_LIMIT = 100
 
 export type Query = Record<string, string | number | boolean | undefined>
 
@@ -42,13 +42,13 @@ export class RedmineClient {
   }
 
   /** Recorre todas las páginas. Para catálogos, que son pocos cientos como mucho. */
-  private async getAll<T>(path: string, clave: string, item: z.ZodTypeAny, query: Query = {}): Promise<T[]> {
-    const schema = paginatedSchema(clave, item)
-    const todos: T[] = []
-    for (let offset = 0; ; offset += LIMITE) {
-      const pagina = await this.get(path, schema, { ...query, limit: LIMITE, offset }) as Paginated<T>
-      todos.push(...pagina.items)
-      if (pagina.items.length === 0 || todos.length >= pagina.totalCount) return todos
+  private async getAll<T>(path: string, key: string, item: z.ZodTypeAny, query: Query = {}): Promise<T[]> {
+    const schema = paginatedSchema(key, item)
+    const all: T[] = []
+    for (let offset = 0; ; offset += PAGE_LIMIT) {
+      const page = await this.get(path, schema, { ...query, limit: PAGE_LIMIT, offset }) as Paginated<T>
+      all.push(...page.items)
+      if (page.items.length === 0 || all.length >= page.totalCount) return all
     }
   }
 
@@ -126,10 +126,10 @@ export class RedmineClient {
   }
 
   async createIssue(issue: Record<string, unknown>): Promise<Issue> {
-    const respuesta = await this.transport.request<{ issue: unknown }>({
+    const response = await this.transport.request<{ issue: unknown }>({
       method: 'POST', path: '/issues.json', body: { issue },
     })
-    return issueSchema.parse(respuesta.issue)
+    return issueSchema.parse(response.issue)
   }
 
   async updateIssue(id: number, issue: Record<string, unknown>): Promise<void> {
@@ -143,10 +143,10 @@ export class RedmineClient {
   }
 
   async createTimeEntry(timeEntry: Record<string, unknown>): Promise<TimeEntry> {
-    const respuesta = await this.transport.request<{ time_entry: unknown }>({
+    const response = await this.transport.request<{ time_entry: unknown }>({
       method: 'POST', path: '/time_entries.json', body: { time_entry: timeEntry },
     })
-    return timeEntrySchema.parse(respuesta.time_entry)
+    return timeEntrySchema.parse(response.time_entry)
   }
 
   async deleteTimeEntry(id: number): Promise<void> {

@@ -11,102 +11,102 @@ import { currentUserSchema, projectSchema, roleDetailSchema } from '../../shared
  * El caso que importa: el rol Cliente no puede registrar tiempo.
  */
 const FIXTURES = fileURLToPath(new URL('../fixtures/', import.meta.url))
-const leer = (archivo: string) => JSON.parse(readFileSync(`${FIXTURES}${archivo}`, 'utf8'))
+const readFixture = (file: string) => JSON.parse(readFileSync(`${FIXTURES}${file}`, 'utf8'))
 
-const usuario = currentUserSchema.parse(
-  leer('users_current-include-memberships-groups.json').user,
+const user = currentUserSchema.parse(
+  readFixture('users_current-include-memberships-groups.json').user,
 ) as CurrentUser
 
-const proyectos = leer('projects-include-trackers-enabled_modules-limit-100.json')
+const projects = readFixture('projects-include-trackers-enabled_modules-limit-100.json')
   .projects.map((p: unknown) => projectSchema.parse(p)) as Project[]
 
 const roles = new Map<number, RoleDetail>(
   [3, 4, 5, 6]
-    .map(id => roleDetailSchema.parse(leer(`roles_${id}.json`).role))
-    .map(rol => [rol.id, rol]),
+    .map(id => roleDetailSchema.parse(readFixture(`roles_${id}.json`).role))
+    .map(role => [role.id, role]),
 )
 
-const rolPorNombre = (nombre: string) => [...roles.values()].find(r => r.name === nombre)!
-const PORTAL_WEB = proyectos.find(p => p.identifier === 'portal-web')!.id
+const roleByName = (name: string) => [...roles.values()].find(r => r.name === name)!
+const PORTAL_WEB = projects.find(p => p.identifier === 'portal-web')!.id
 
-function mapaCon(nombreRol: string): ReturnType<typeof buildPermissionMap> {
-  const rol = rolPorNombre(nombreRol)
-  const comoUsuario: CurrentUser = {
-    ...usuario,
-    memberships: proyectos.map((p, i) => ({ id: i + 1, project: { id: p.id, name: p.name }, roles: [rol] })),
+function mapWithRole(roleName: string): ReturnType<typeof buildPermissionMap> {
+  const role = roleByName(roleName)
+  const asUser: CurrentUser = {
+    ...user,
+    memberships: projects.map((p, i) => ({ id: i + 1, project: { id: p.id, name: p.name }, roles: [role] })),
   }
-  return buildPermissionMap(comoUsuario, roles, proyectos)
+  return buildPermissionMap(asUser, roles, projects)
 }
 
 describe('permisos', () => {
   it('el desarrollador puede ver tareas y registrar tiempo', () => {
-    const mapa = buildPermissionMap(usuario, roles, proyectos)
-    expect(can(mapa, 'view_issues', PORTAL_WEB)).toBe(true)
-    expect(can(mapa, 'log_time', PORTAL_WEB)).toBe(true)
-    expect(can(mapa, 'add_issues', PORTAL_WEB)).toBe(true)
+    const map = buildPermissionMap(user, roles, projects)
+    expect(can(map, 'view_issues', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'log_time', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'add_issues', PORTAL_WEB)).toBe(true)
   })
 
   it('el cliente ve tareas pero no registra tiempo', () => {
-    const mapa = mapaCon('Cliente')
-    expect(can(mapa, 'view_issues', PORTAL_WEB)).toBe(true)
-    expect(can(mapa, 'log_time', PORTAL_WEB)).toBe(false)
-    expect(can(mapa, 'edit_issues', PORTAL_WEB)).toBe(false)
+    const map = mapWithRole('Cliente')
+    expect(can(map, 'view_issues', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'log_time', PORTAL_WEB)).toBe(false)
+    expect(can(map, 'edit_issues', PORTAL_WEB)).toBe(false)
   })
 
   it('niega el permiso si el módulo está apagado, aunque el rol lo tenga', () => {
-    const sinTiempo = proyectos.map(p => ({
+    const withoutTime = projects.map(p => ({
       ...p,
       enabled_modules: p.enabled_modules?.filter(m => m.name !== 'time_tracking'),
     }))
-    const mapa = buildPermissionMap(usuario, roles, sinTiempo)
+    const map = buildPermissionMap(user, roles, withoutTime)
 
-    expect(can(mapa, 'log_time', PORTAL_WEB)).toBe(false)
-    expect(can(mapa, 'view_issues', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'log_time', PORTAL_WEB)).toBe(false)
+    expect(can(map, 'view_issues', PORTAL_WEB)).toBe(true)
   })
 
   it('el administrador puede todo, sin membresías', () => {
-    const admin: CurrentUser = { ...usuario, admin: true, memberships: [] }
-    const mapa = buildPermissionMap(admin, new Map(), proyectos)
+    const admin: CurrentUser = { ...user, admin: true, memberships: [] }
+    const map = buildPermissionMap(admin, new Map(), projects)
 
-    expect(can(mapa, 'log_time', PORTAL_WEB)).toBe(true)
-    expect(can(mapa, 'delete_issues', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'log_time', PORTAL_WEB)).toBe(true)
+    expect(can(map, 'delete_issues', PORTAL_WEB)).toBe(true)
   })
 
   it('el administrador tampoco puede si el módulo está apagado', () => {
-    const admin: CurrentUser = { ...usuario, admin: true, memberships: [] }
-    const sinWiki = proyectos.map(p => ({
+    const admin: CurrentUser = { ...user, admin: true, memberships: [] }
+    const withoutWiki = projects.map(p => ({
       ...p,
       enabled_modules: p.enabled_modules?.filter(m => m.name !== 'wiki'),
     }))
-    expect(can(buildPermissionMap(admin, new Map(), sinWiki), 'view_wiki_pages', PORTAL_WEB)).toBe(false)
+    expect(can(buildPermissionMap(admin, new Map(), withoutWiki), 'view_wiki_pages', PORTAL_WEB)).toBe(false)
   })
 
   it('en un proyecto sin membresía no puede nada', () => {
-    const mapa = buildPermissionMap({ ...usuario, memberships: [] }, roles, proyectos)
-    expect(can(mapa, 'view_issues', PORTAL_WEB)).toBe(false)
+    const map = buildPermissionMap({ ...user, memberships: [] }, roles, projects)
+    expect(can(map, 'view_issues', PORTAL_WEB)).toBe(false)
   })
 
   it('el modo degradado permite y deja que Redmine decida', () => {
-    const mapa = buildPermissionMap(usuario, new Map(), proyectos, { degraded: true })
-    expect(mapa.degraded).toBe(true)
-    expect(can(mapa, 'log_time', PORTAL_WEB)).toBe(true)
+    const map = buildPermissionMap(user, new Map(), projects, { degraded: true })
+    expect(map.degraded).toBe(true)
+    expect(can(map, 'log_time', PORTAL_WEB)).toBe(true)
     // El módulo sigue mandando incluso en modo degradado.
-    const sinTiempo = proyectos.map(p => ({
+    const withoutTime = projects.map(p => ({
       ...p,
       enabled_modules: p.enabled_modules?.filter(m => m.name !== 'time_tracking'),
     }))
-    expect(can(buildPermissionMap(usuario, new Map(), sinTiempo, { degraded: true }), 'log_time', PORTAL_WEB)).toBe(false)
+    expect(can(buildPermissionMap(user, new Map(), withoutTime, { degraded: true }), 'log_time', PORTAL_WEB)).toBe(false)
   })
 
   it('sin proyecto, responde si puede en alguno', () => {
-    const mapa = mapaCon('Cliente')
-    expect(can(mapa, 'view_issues')).toBe(true)
-    expect(can(mapa, 'log_time')).toBe(false)
+    const map = mapWithRole('Cliente')
+    expect(can(map, 'view_issues')).toBe(true)
+    expect(can(map, 'log_time')).toBe(false)
   })
 
   it('lista los proyectos donde puede crear tareas', () => {
-    expect(projectsWith(buildPermissionMap(usuario, roles, proyectos), 'add_issues', proyectos))
-      .toHaveLength(proyectos.length)
-    expect(projectsWith(mapaCon('Cliente'), 'edit_issues', proyectos)).toHaveLength(0)
+    expect(projectsWith(buildPermissionMap(user, roles, projects), 'add_issues', projects))
+      .toHaveLength(projects.length)
+    expect(projectsWith(mapWithRole('Cliente'), 'edit_issues', projects)).toHaveLength(0)
   })
 })

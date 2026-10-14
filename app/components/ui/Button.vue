@@ -31,18 +31,18 @@ const props = withDefaults(defineProps<{
  */
 defineOptions({ inheritAttrs: false })
 
-const ESTILOS = {
+const VARIANT_STYLES = {
   primary: 'bg-accent text-on-accent hover:brightness-110',
   secondary: 'bg-raised text-content border border-separator hover:border-secondary',
   ghost: 'text-secondary hover:bg-raised hover:text-content',
 } as const
 
-const clases = computed(() => [
+const classes = computed(() => [
   'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-control)]',
   'min-h-[var(--control-min)] text-[length:var(--text-body)] font-medium',
   'transition-colors disabled:cursor-not-allowed disabled:opacity-50',
   props.iconOnly ? 'min-w-[var(--control-min)] px-0' : 'px-3',
-  ESTILOS[props.variant],
+  VARIANT_STYLES[props.variant],
 ])
 </script>
 
@@ -58,7 +58,7 @@ const clases = computed(() => [
       :type="to ? undefined : type"
       :disabled="to ? undefined : disabled"
       :aria-label="label"
-      :class="clases"
+      :class="classes"
       v-bind="$attrs"
     >
       <Icon
@@ -76,7 +76,7 @@ const clases = computed(() => [
     :to="to"
     :type="to ? undefined : type"
     :disabled="to ? undefined : disabled"
-    :class="clases"
+    :class="classes"
     v-bind="$attrs"
   >
     <Icon

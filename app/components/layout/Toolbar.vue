@@ -12,8 +12,8 @@ const ui = useUiStore()
       icon-only
       shortcut="Mod+\"
       class="hidden wide:inline-flex"
-      :aria-expanded="!ui.sidebarColapsada"
-      @click="ui.alternarSidebar()"
+      :aria-expanded="!ui.sidebarCollapsed"
+      @click="ui.toggleSidebar()"
     />
 
     <!-- Búsqueda global: F2-T07. Hasta entonces, el botón anuncia el atajo sin prometer función. -->
@@ -27,12 +27,14 @@ const ui = useUiStore()
 
     <div class="flex-1 wide:flex-none" />
 
-    <!-- Nueva tarea: F3-T07. -->
-    <UiButton
-      label="Nueva tarea"
-      icon="lucide:plus"
-      variant="primary"
-      disabled
-    />
+    <!-- Nueva tarea: F3-T07. Solo donde el usuario puede crearlas. -->
+    <Can permission="add_issues">
+      <UiButton
+        label="Nueva tarea"
+        icon="lucide:plus"
+        variant="primary"
+        disabled
+      />
+    </Can>
   </header>
 </template>

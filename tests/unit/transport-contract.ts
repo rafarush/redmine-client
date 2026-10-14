@@ -6,39 +6,39 @@ import { RedmineError } from '../../shared/redmine/transport'
  * Contrato que cumplen todos los transports (F1-T03).
  * ProxyTransport lo pasa ahora; TauriTransport tendrá que pasarlo en F8-T04.
  */
-export function pruebaDeContrato(
-  nombre: string,
-  crear: () => RedmineTransport,
+export function transportContractSuite(
+  name: string,
+  create: () => RedmineTransport,
   /** Ruta que el backend de prueba responde con 404. */
-  rutaInexistente = '/noexiste.json',
+  missingPath = '/noexiste.json',
 ) {
-  describe(`contrato de transport: ${nombre}`, () => {
+  describe(`contrato de transport: ${name}`, () => {
     it('hace GET y devuelve el JSON', async () => {
-      const respuesta = await crear().request<{ user: { login: string } }>({
+      const response = await create().request<{ user: { login: string } }>({
         path: '/users/current.json',
         query: { include: 'memberships,groups' },
       })
-      expect(respuesta.user.login).toBe('desarrollador')
+      expect(response.user.login).toBe('desarrollador')
     })
 
     it('pasa los parámetros de consulta', async () => {
-      const respuesta = await crear().request<{ total_count: number }>({
+      const response = await create().request<{ total_count: number }>({
         path: '/issues.json',
         query: { status_id: '*', limit: 25 },
       })
-      expect(respuesta.total_count).toBeGreaterThan(0)
+      expect(response.total_count).toBeGreaterThan(0)
     })
 
     it('lanza RedmineError con el status cuando falla', async () => {
-      await expect(crear().request({ path: rutaInexistente }))
+      await expect(create().request({ path: missingPath }))
         .rejects.toBeInstanceOf(RedmineError)
 
-      const error = await crear().request({ path: rutaInexistente }).catch(e => e as RedmineError)
+      const error = await create().request({ path: missingPath }).catch(e => e as RedmineError)
       expect(error.status).toBeGreaterThanOrEqual(400)
     })
 
     it('expone los mensajes de validación de Redmine', async () => {
-      const error = await crear()
+      const error = await create()
         .request({ method: 'POST', path: '/issues.json', body: { issue: {} } })
         .catch(e => e as RedmineError)
 

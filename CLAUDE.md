@@ -49,8 +49,31 @@ Copia `.env.example` a `.env` antes de `pnpm dev`.
 
 - **Nunca** hagas `fetch` a Redmine desde un componente. Todo pasa por el cliente y el transport (`shared/redmine/transport.ts`).
 - **Nunca** guardes la API key en `localStorage` o `sessionStorage`. En web vive en la cookie sellada; en desktop, en el llavero del SO.
-- Cada acción de la UI se protege con el permiso de Redmine correspondiente (`can(projectId, 'log_time')`, `<Can>`). Si el usuario no puede hacerla, se oculta, no se deshabilita. Excepción: si ocultarla confundiría, se deshabilita con una explicación.
+- Cada acción de la UI se protege con el permiso de Redmine correspondiente. Si el usuario no puede hacerla, se oculta, no se deshabilita. Excepción: si ocultarla confundiría, se deshabilita con una explicación.
 - El proxy solo llama a hosts de `NUXT_REDMINE_ALLOWED_HOSTS`.
+
+### Permisos en la UI: `<Can>` y `v-can`
+
+```vue
+<!-- Se oculta si el usuario no puede registrar tiempo en ese proyecto. -->
+<Can permission="log_time" :project="issue.project.id">
+  <TimeLogButton :issue="issue" />
+</Can>
+
+<!-- Visible pero apagado, con el motivo: para cuando esconderlo confundiría. -->
+<Can permission="log_time" :project="issue.project.id" mode="disabled" v-slot="{ allowed, reason }">
+  <UiButton label="Registrar tiempo" :disabled="!allowed" :title="reason" />
+</Can>
+
+<!-- Directiva, para un solo elemento. Sin proyecto, basta con poder en alguno. -->
+<UiButton v-can="'add_issues'" label="Nueva tarea" />
+<UiButton v-can="{ permission: 'log_time', project: issue.project.id }" label="Registrar tiempo" />
+<UiButton v-can.disabled="'log_time'" label="Registrar tiempo" />
+```
+
+Los dos consultan `useSessionStore().can(permission, projectId?)`, que a su vez usa
+`shared/redmine/permissions.ts`. En `mode="disabled"` / `.disabled` el motivo sale de
+`app/utils/can.ts`.
 
 ## Reglas de diseño (detalle en `sdd/02-diseno.md`)
 
@@ -66,6 +89,7 @@ Copia `.env.example` a `.env` antes de `pnpm dev`.
 ## Convenciones
 
 - TypeScript estricto. Tipos de Redmine en `shared/redmine/types.ts`.
+- **Código en inglés**: nombres de variable, función, tipo, archivo y ruta de página (`/connect`, `/projects`, `/time`). Los comentarios, la documentación y los textos de la interfaz siguen en español.
 - Composables `useX` en `app/composables/`; un composable por recurso (`useIssues`, `useTimeEntries`...).
 - Componentes por dominio: `app/components/{issues,time,filters,import,layout,ui}/`. `ui/` son envoltorios de Reka UI con los tokens aplicados.
 - Toda lógica pura (parseo de duraciones, filtros -> query string, validación de filas Excel, permisos) va en `shared/` y lleva test unitario.

@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { hostPermitidoEn, quitarApiKey } from '../../shared/redmine/guards'
+import { isHostAllowedIn, stripApiKey } from '../../shared/redmine/guards'
 
 /**
  * Apoyo del proxy y de los endpoints de sesión (F1-T02).
@@ -12,17 +12,17 @@ export interface RedmineSession {
   apiKey: string
 }
 
-export { normalizarUrl, quitarApiKey, rutaEstaPermitida } from '../../shared/redmine/guards'
+export { isPathAllowed, normalizeUrl, stripApiKey } from '../../shared/redmine/guards'
 
-export function hostEstaPermitido(event: H3Event, url: string): boolean {
-  return hostPermitidoEn(useRuntimeConfig(event).redmineAllowedHosts.split(','), url)
+export function isHostAllowed(event: H3Event, url: string): boolean {
+  return isHostAllowedIn(useRuntimeConfig(event).redmineAllowedHosts.split(','), url)
 }
 
 /** Comprueba la clave contra Redmine y devuelve el usuario, o lanza un error legible. */
-export async function verificarCredenciales(url: string, apiKey: string): Promise<Record<string, unknown>> {
-  let respuesta: Response
+export async function verifyCredentials(url: string, apiKey: string): Promise<Record<string, unknown>> {
+  let response: Response
   try {
-    respuesta = await fetch(`${url}/users/current.json`, {
+    response = await fetch(`${url}/users/current.json`, {
       headers: { 'X-Redmine-API-Key': apiKey, 'Accept': 'application/json' },
       signal: AbortSignal.timeout(15_000),
     })
@@ -34,12 +34,12 @@ export async function verificarCredenciales(url: string, apiKey: string): Promis
     })
   }
 
-  if (respuesta.status === 401 || respuesta.status === 403) {
+  if (response.status === 401 || response.status === 403) {
     throw createError({ statusCode: 401, statusMessage: 'La clave de API no es válida para esa URL.' })
   }
 
-  const tipo = respuesta.headers.get('content-type') ?? ''
-  if (!respuesta.ok || !tipo.includes('json')) {
+  const contentType = response.headers.get('content-type') ?? ''
+  if (!response.ok || !contentType.includes('json')) {
     throw createError({
       statusCode: 502,
       statusMessage: 'Esa dirección respondió, pero no como la API de Redmine. '
@@ -47,9 +47,9 @@ export async function verificarCredenciales(url: string, apiKey: string): Promis
     })
   }
 
-  const { user } = await respuesta.json() as { user?: Record<string, unknown> }
+  const { user } = await response.json() as { user?: Record<string, unknown> }
   if (!user) {
     throw createError({ statusCode: 502, statusMessage: 'La respuesta de Redmine no incluye el usuario.' })
   }
-  return quitarApiKey(user)
+  return stripApiKey(user)
 }

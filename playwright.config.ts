@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { SESSION_STATE } from './tests/e2e/_session'
 
 const PORT = 3124
 const BASE_URL = `http://localhost:${PORT}`
@@ -24,8 +25,18 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'regular', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
-    { name: 'compacto', use: { ...devices['Desktop Chrome'], viewport: { width: 375, height: 700 } } },
+    // Inicia sesión una vez; los demás proyectos reutilizan la cookie.
+    { name: 'setup', testMatch: /auth\.setup\.ts/ },
+    {
+      name: 'regular',
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, storageState: SESSION_STATE },
+    },
+    {
+      name: 'compact',
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 375, height: 700 }, storageState: SESSION_STATE },
+    },
   ],
 
   // Reutiliza un `pnpm dev` ya abierto; si no hay ninguno, levanta uno.

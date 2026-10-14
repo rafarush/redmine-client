@@ -11,10 +11,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const BASE = process.env.REDMINE_URL ?? 'http://localhost:3080'
-const DESTINO = fileURLToPath(new URL('../tests/fixtures/', import.meta.url))
+const TARGET_DIR = fileURLToPath(new URL('../tests/fixtures/', import.meta.url))
 
 /** Rutas que la app pide al arrancar y en la lista de tareas. */
-const RUTAS = [
+const PATHS = [
   '/users/current.json?include=memberships,groups',
   '/roles.json',
   '/projects.json?include=trackers,enabled_modules&limit=100',
@@ -42,8 +42,8 @@ if (!/^[0-9a-f]{40}$/.test(apiKey)) {
 }
 
 /** Nombre de archivo legible a partir de la ruta. */
-function nombreArchivo(ruta: string): string {
-  return `${ruta
+function fileNameFor(path: string): string {
+  return `${path
     .replace(/^\//, '')
     .replace(/\.json/, '')
     .replace(/[?&=,*]/g, '-')
@@ -52,18 +52,18 @@ function nombreArchivo(ruta: string): string {
     .replace(/-$/, '')}.json`
 }
 
-mkdirSync(DESTINO, { recursive: true })
+mkdirSync(TARGET_DIR, { recursive: true })
 
-const indice: Record<string, string> = {}
+const index: Record<string, string> = {}
 
-for (const ruta of RUTAS) {
-  const respuesta = await fetch(`${BASE}${ruta}`, { headers: { 'X-Redmine-API-Key': apiKey } })
-  if (!respuesta.ok) throw new Error(`GET ${ruta} → ${respuesta.status}`)
-  const cuerpo = await respuesta.json()
-  const archivo = nombreArchivo(ruta)
-  writeFileSync(`${DESTINO}${archivo}`, `${JSON.stringify(cuerpo, null, 2)}\n`)
-  indice[ruta] = archivo
-  console.log(`  ${ruta} → ${archivo}`)
+for (const path of PATHS) {
+  const response = await fetch(`${BASE}${path}`, { headers: { 'X-Redmine-API-Key': apiKey } })
+  if (!response.ok) throw new Error(`GET ${path} → ${response.status}`)
+  const body = await response.json()
+  const file = fileNameFor(path)
+  writeFileSync(`${TARGET_DIR}${file}`, `${JSON.stringify(body, null, 2)}\n`)
+  index[path] = file
+  console.log(`  ${path} → ${file}`)
 }
 
 /*
@@ -71,22 +71,22 @@ for (const ruta of RUTAS) {
  * de la instancia, así que se resuelven aquí en vez de escribirlos a mano.
  */
 const { roles } = JSON.parse(
-  readFileSync(`${DESTINO}${indice['/roles.json']!}`, 'utf8'),
+  readFileSync(`${TARGET_DIR}${index['/roles.json']!}`, 'utf8'),
 ) as { roles: Array<{ id: number, name: string }> }
 
-for (const rol of roles) {
-  const ruta = `/roles/${rol.id}.json`
-  const respuesta = await fetch(`${BASE}${ruta}`, { headers: { 'X-Redmine-API-Key': apiKey } })
-  if (!respuesta.ok) throw new Error(`GET ${ruta} → ${respuesta.status}`)
-  const archivo = nombreArchivo(ruta)
-  writeFileSync(`${DESTINO}${archivo}`, `${JSON.stringify(await respuesta.json(), null, 2)}\n`)
-  indice[ruta] = archivo
-  console.log(`  ${ruta} (${rol.name}) → ${archivo}`)
+for (const role of roles) {
+  const path = `/roles/${role.id}.json`
+  const response = await fetch(`${BASE}${path}`, { headers: { 'X-Redmine-API-Key': apiKey } })
+  if (!response.ok) throw new Error(`GET ${path} → ${response.status}`)
+  const file = fileNameFor(path)
+  writeFileSync(`${TARGET_DIR}${file}`, `${JSON.stringify(await response.json(), null, 2)}\n`)
+  index[path] = file
+  console.log(`  ${path} (${role.name}) → ${file}`)
 }
 
 /** También el 401, para probar el camino de clave inválida. */
-const noAutorizado = await fetch(`${BASE}/users/current.json`, { headers: { 'X-Redmine-API-Key': '0'.repeat(40) } })
-writeFileSync(`${DESTINO}error-401.json`, `${JSON.stringify({ status: noAutorizado.status }, null, 2)}\n`)
+const unauthorized = await fetch(`${BASE}/users/current.json`, { headers: { 'X-Redmine-API-Key': '0'.repeat(40) } })
+writeFileSync(`${TARGET_DIR}error-401.json`, `${JSON.stringify({ status: unauthorized.status }, null, 2)}\n`)
 
-writeFileSync(`${DESTINO}index.json`, `${JSON.stringify(indice, null, 2)}\n`)
-console.log(`\n${RUTAS.length} fixtures en tests/fixtures/`)
+writeFileSync(`${TARGET_DIR}index.json`, `${JSON.stringify(index, null, 2)}\n`)
+console.log(`\n${PATHS.length} fixtures en tests/fixtures/`)

@@ -14,8 +14,8 @@ export interface NavItem {
 export function useNavItems(): NavItem[] {
   return [
     { label: 'Mis tareas', short: 'Tareas', to: '/', icon: 'lucide:ticket' },
-    { label: 'Tiempo', short: 'Tiempo', to: '/tiempo', icon: 'lucide:timer' },
-    { label: 'Proyectos', short: 'Proyectos', to: '/proyectos', icon: 'lucide:folder-kanban' },
+    { label: 'Tiempo', short: 'Tiempo', to: '/time', icon: 'lucide:timer' },
+    { label: 'Proyectos', short: 'Proyectos', to: '/projects', icon: 'lucide:folder-kanban' },
     { label: 'Wiki', short: 'Más', to: '/wiki', icon: 'lucide:book-open' },
   ]
 }
