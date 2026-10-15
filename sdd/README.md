@@ -19,6 +19,9 @@ Plan de desarrollo guiado por especificación. Lo puede ejecutar una persona o u
 | [F0](fases/F0-fundaciones.md) ✔ | Fundaciones: tooling, CI, tokens, layout, Redmine local | — |
 | [F1](fases/F1-setup-sesion-permisos.md) | Conexión, sesión, transport y permisos | F0 |
 | [F2](fases/F2-tareas-filtros.md) | Lista de tareas y filtros como frase | F1 |
+| [F2b](fases/F2b-rediseno-visual.md) | Rediseño visual completo (estilo Apple) | F2-T08 |
+| [F2c](fases/F2c-workspace.md) | Workspace: boards de mis tareas con acciones rápidas | F2b |
+| [F2d](fases/F2d-kanban.md) | Kanban por estado, sprint y estado×sprint | F2c |
 | [F3](fases/F3-detalle-edicion-creacion.md) | Detalle, edición y creación de tareas | F2 |
 | [F4](fases/F4-tiempo.md) | Registrar tiempo en popover y timesheet | F2 (F3 para el popover en el detalle) |
 | [F5](fases/F5-importacion-excel.md) | Plantilla Excel e importación en lote | F3 |
@@ -29,6 +32,8 @@ Plan de desarrollo guiado por especificación. Lo puede ejecutar una persona o u
 | [F10](fases/F10-movil.md) | Móvil (iOS/Android) con Tauri | F8, F9 |
 
 F6, F7 y F8 pueden avanzar en paralelo a F2–F5 una vez cerrada F1.
+
+F2b–F2d salen de la crítica de diseño del 2026-10-15 y van antes que el resto de F2: F2-T09 y F2-T10 se retoman al cerrar F2b.
 
 ## Formato de una tarea
 
