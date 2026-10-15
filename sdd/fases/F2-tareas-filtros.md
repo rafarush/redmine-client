@@ -35,9 +35,10 @@
   - _Acepta:_ una consulta pública de Redmine aparece y filtra igual que en Redmine. · ✔ d4490e5
   - _Nota:_ `/queries.json` solo devuelve id y nombre, no los filtros, así que la consulta de Redmine se muestra como banner de solo lectura con "Quitar consulta"; "Duplicar como frase editable" no es posible con la API y queda descartado.
 
-- [~] **F2-T07** Búsqueda global (command palette) — `Ctrl/⌘+K`: busca tareas por `#id` o texto (`subject=~`), proyectos por nombre y comandos ("Nueva tarea", "Registrar tiempo en…", "Ir a Tiempo"). Búsquedas recientes con opción de borrarlas (`searching.md`).
+- [x] **F2-T07** Búsqueda global (command palette) — `Ctrl/⌘+K`: busca tareas por `#id` o texto (`subject=~`), proyectos por nombre y comandos ("Nueva tarea", "Registrar tiempo en…", "Ir a Tiempo"). Búsquedas recientes con opción de borrarlas (`searching.md`).
   - _Depende:_ F2-T02
-  - _Acepta:_ `#4821` + Enter abre la tarea; el alcance de búsqueda está indicado en el placeholder.
+  - _Acepta:_ `#4821` + Enter abre la tarea; el alcance de búsqueda está indicado en el placeholder. · ✔ 2fdba6f
+  - _Nota:_ la ficha de tarea llega con F3, así que `#id` + Enter abre la tarea en Redmine (pestaña nueva); cambiarlo a la ruta de detalle en F3. Los comandos "Nueva tarea" y "Registrar tiempo en…" se añaden en F3-T07 y F4.
 
 - [ ] **F2-T08** Cambio rápido en la fila — menú contextual (clic derecho y botón "…"): cambiar estado, asignar, prioridad, copiar enlace, abrir en Redmine. Solo opciones permitidas (`<Can>`), estados según `allowed_statuses`. Guardado optimista + toast con "Deshacer".
   - _Depende:_ F2-T03, F1-T07
