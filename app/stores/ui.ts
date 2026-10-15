@@ -2,11 +2,13 @@ import type { IssueColumnId } from '../../shared/redmine/issue-columns'
 import { defineStore } from 'pinia'
 import type { SavedFilter } from '../../shared/redmine/saved-filters'
 import { DEFAULT_VISIBLE_COLUMNS, sanitizeColumns, toggleColumn } from '../../shared/redmine/issue-columns'
+import { addRecent, sanitizeRecent } from '../../shared/redmine/palette'
 import { removeFilter, sanitizeSaved, saveFilter } from '../../shared/redmine/saved-filters'
 
 const SIDEBAR_KEY = 'redmine-client:sidebar-collapsed'
 const COLUMNS_KEY = 'redmine-client:issue-columns'
 const SAVED_KEY = 'redmine-client:saved-filters'
+const RECENT_KEY = 'redmine-client:recent-searches'
 
 /** Lee una preferencia local tolerando ventanas privadas o almacenamiento bloqueado. */
 function readBool(key: string, fallback: boolean): boolean {
@@ -34,10 +36,19 @@ export const useUiStore = defineStore('ui', () => {
   const issueColumns = ref<IssueColumnId[]>([...DEFAULT_VISIBLE_COLUMNS])
 
   const savedFilters = ref<SavedFilter[]>([])
+  const recentSearches = ref<string[]>([])
+  const paletteOpen = ref(false)
 
   /** Se llama desde el layout al montar, cuando ya hay `localStorage`. */
   function restore(): void {
     sidebarCollapsed.value = readBool(SIDEBAR_KEY, false)
+    try {
+      const recent = localStorage.getItem(RECENT_KEY)
+      recentSearches.value = sanitizeRecent(recent ? JSON.parse(recent) : null)
+    }
+    catch {
+      recentSearches.value = []
+    }
     try {
       const saved = localStorage.getItem(SAVED_KEY)
       savedFilters.value = sanitizeSaved(saved ? JSON.parse(saved) : null)
@@ -61,6 +72,25 @@ export const useUiStore = defineStore('ui', () => {
     catch {
       // Ver writeBool.
     }
+  }
+
+  function persistRecent(): void {
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(recentSearches.value))
+    }
+    catch {
+      // Ver writeBool.
+    }
+  }
+
+  function rememberSearch(text: string): void {
+    recentSearches.value = addRecent(recentSearches.value, text)
+    persistRecent()
+  }
+
+  function clearRecentSearches(): void {
+    recentSearches.value = []
+    persistRecent()
   }
 
   function saveCurrentFilter(name: string, f: string): void {
@@ -88,5 +118,5 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
-  return { sidebarCollapsed, issueColumns, savedFilters, saveCurrentFilter, deleteSavedFilter, restore, toggleSidebar, toggleIssueColumn }
+  return { sidebarCollapsed, issueColumns, savedFilters, recentSearches, paletteOpen, rememberSearch, clearRecentSearches, saveCurrentFilter, deleteSavedFilter, restore, toggleSidebar, toggleIssueColumn }
 })

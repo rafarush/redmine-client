@@ -35,7 +35,7 @@
   - _Acepta:_ una consulta pública de Redmine aparece y filtra igual que en Redmine. · ✔ d4490e5
   - _Nota:_ `/queries.json` solo devuelve id y nombre, no los filtros, así que la consulta de Redmine se muestra como banner de solo lectura con "Quitar consulta"; "Duplicar como frase editable" no es posible con la API y queda descartado.
 
-- [ ] **F2-T07** Búsqueda global (command palette) — `Ctrl/⌘+K`: busca tareas por `#id` o texto (`subject=~`), proyectos por nombre y comandos ("Nueva tarea", "Registrar tiempo en…", "Ir a Tiempo"). Búsquedas recientes con opción de borrarlas (`searching.md`).
+- [~] **F2-T07** Búsqueda global (command palette) — `Ctrl/⌘+K`: busca tareas por `#id` o texto (`subject=~`), proyectos por nombre y comandos ("Nueva tarea", "Registrar tiempo en…", "Ir a Tiempo"). Búsquedas recientes con opción de borrarlas (`searching.md`).
   - _Depende:_ F2-T02
   - _Acepta:_ `#4821` + Enter abre la tarea; el alcance de búsqueda está indicado en el placeholder.
 

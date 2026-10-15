@@ -1,8 +1,13 @@
 <script setup lang="ts">
 const ui = useUiStore()
 
-/** `Mod+\` muestra u oculta las secciones. Solo tiene sentido con sidebar. */
+/** `Mod+\` muestra u oculta las secciones y `Mod+K` abre la búsqueda global. */
 function onShortcut(event: KeyboardEvent): void {
+  if (event.key.toLowerCase() === 'k' && (event.ctrlKey || event.metaKey) && !event.altKey) {
+    event.preventDefault()
+    ui.paletteOpen = !ui.paletteOpen
+    return
+  }
   if (event.key === '\\' && (event.ctrlKey || event.metaKey)) {
     event.preventDefault()
     ui.toggleSidebar()
@@ -41,5 +46,6 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
     </div>
 
     <LayoutTabBar />
+    <LayoutCommandPalette />
   </div>
 </template>

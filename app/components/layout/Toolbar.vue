@@ -16,14 +16,23 @@ const ui = useUiStore()
       @click="ui.toggleSidebar()"
     />
 
-    <!-- Búsqueda global: F2-T07. Hasta entonces, el botón anuncia el atajo sin prometer función. -->
-    <UiButton
-      label="Buscar"
-      icon="lucide:search"
-      variant="secondary"
-      class="max-w-72 flex-1 justify-start text-secondary"
-      disabled
-    />
+    <button
+      type="button"
+      class="inline-flex min-h-[var(--control-min)] max-w-72 flex-1 items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-3 text-left text-[length:var(--text-body)] text-secondary hover:border-secondary"
+      aria-haspopup="dialog"
+      @click="ui.paletteOpen = true"
+    >
+      <Icon
+        name="lucide:search"
+        class="size-4 shrink-0"
+        aria-hidden="true"
+      />
+      <span class="flex-1 truncate">Buscar</span>
+      <UiKbd
+        keys="Mod+K"
+        class="hidden wide:inline-flex"
+      />
+    </button>
 
     <div class="flex-1 wide:flex-none" />
 
