@@ -38,6 +38,7 @@ export const useUiStore = defineStore('ui', () => {
   const savedFilters = ref<SavedFilter[]>([])
   const recentSearches = ref<string[]>([])
   const paletteOpen = ref(false)
+  const shortcutsOpen = ref(false)
 
   /** Se llama desde el layout al montar, cuando ya hay `localStorage`. */
   function restore(): void {
@@ -118,5 +119,5 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
-  return { sidebarCollapsed, issueColumns, savedFilters, recentSearches, paletteOpen, rememberSearch, clearRecentSearches, saveCurrentFilter, deleteSavedFilter, restore, toggleSidebar, toggleIssueColumn }
+  return { sidebarCollapsed, issueColumns, savedFilters, recentSearches, paletteOpen, shortcutsOpen, rememberSearch, clearRecentSearches, saveCurrentFilter, deleteSavedFilter, restore, toggleSidebar, toggleIssueColumn }
 })

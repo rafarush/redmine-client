@@ -28,13 +28,25 @@ const savedQuery = computed(() => {
   const project = Number(route.query.p)
   return { id, projectId: Number.isInteger(project) && project > 0 ? project : null }
 })
-const savedQueryName = computed(() => queries.value.find(q => q.id === savedQuery.value?.id)?.name ?? 'Consulta de Redmine')
+const savedQueryName = computed(() => queries.value.find(q => q.id === savedQuery.value?.id)?.name ?? 'Consulta guardada')
 function clearSavedQuery(): void {
   router.push({ query: { ...route.query, q: undefined, p: undefined } })
 }
 
 const sort = ref<IssueSort>({ ...DEFAULT_SORT })
-const { issues, totalCount, isStale, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort, savedQuery })
+const { issues, totalCount, isStale, isPending, error, refetch, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort, savedQuery })
+const toasts = useToastStore()
+
+/** Hay algo que quitar: condiciones en la frase o una consulta guardada. */
+const filtered = computed(() => sentence.value.conditions.length > 0 || savedQuery.value !== null)
+function clearFilters(): void {
+  router.push({ query: { ...route.query, f: undefined, q: undefined, p: undefined } })
+}
+
+/** El detalle de tarea llega en F3: hasta entonces Enter y doble clic lo dicen en vez de callar. */
+function openIssue(): void {
+  toasts.show('El detalle de la tarea estará disponible pronto')
+}
 
 /** Personas que aparecen en la lista, para ofrecerlas en "Asignado a" y "Autor". */
 const people = computed<FilterOption[]>(() => {
@@ -60,11 +72,11 @@ const people = computed<FilterOption[]>(() => {
       />
       <p class="min-w-0 flex-1 truncate text-[length:var(--text-body)] text-content">
         {{ savedQueryName }}
-        <span class="text-secondary">· Consulta de Redmine, solo lectura</span>
+        <span class="text-secondary">· Consulta de Redmine, no editable</span>
       </p>
       <UiButton
         variant="ghost"
-        label="Quitar consulta"
+        label="Volver a los filtros"
         icon="lucide:x"
         @click="clearSavedQuery"
       />
@@ -89,7 +101,13 @@ const people = computed<FilterOption[]>(() => {
       :stale="isStale"
       :has-more="hasNextPage"
       :loading-more="isFetchingNextPage"
+      :loading="isPending"
+      :error="error"
+      :filtered="filtered"
       @sort="sort = $event"
+      @open="openIssue"
+      @retry="refetch()"
+      @clear-filters="clearFilters"
       @load-more="fetchNextPage()"
     />
   </div>

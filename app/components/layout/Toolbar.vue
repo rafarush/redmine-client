@@ -27,7 +27,7 @@ const ui = useUiStore()
         class="size-4 shrink-0"
         aria-hidden="true"
       />
-      <span class="flex-1 truncate">Buscar</span>
+      <span class="flex-1 truncate">Buscar tareas y proyectos</span>
       <UiKbd
         keys="Mod+K"
         class="hidden wide:inline-flex"
@@ -43,6 +43,7 @@ const ui = useUiStore()
         icon="lucide:plus"
         variant="primary"
         disabled
+        title="Disponible pronto: crear tareas llega con la ficha de tarea"
       />
     </Can>
   </header>

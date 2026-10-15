@@ -8,6 +8,13 @@ function onShortcut(event: KeyboardEvent): void {
     ui.paletteOpen = !ui.paletteOpen
     return
   }
+  const target = event.target as HTMLElement | null
+  const typing = !!target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+  if (event.key === '?' && !typing && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault()
+    ui.shortcutsOpen = !ui.shortcutsOpen
+    return
+  }
   if (event.key === '\\' && (event.ctrlKey || event.metaKey)) {
     event.preventDefault()
     ui.toggleSidebar()
@@ -47,6 +54,7 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
 
     <LayoutTabBar />
     <LayoutCommandPalette />
+    <LayoutShortcutsSheet />
     <LayoutToasts />
   </div>
 </template>

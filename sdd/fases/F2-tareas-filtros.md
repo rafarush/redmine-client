@@ -48,6 +48,7 @@
 - [ ] **F2-T09** Estados vacío, cargando y error — skeleton de filas; vacío con sugerencia de quitar el filtro más restrictivo (`02-diseno.md › Escritura`); error de red con banner y Reintentar.
   - _Depende:_ F2-T03
   - _Acepta:_ las tres situaciones se ven en la ruta de desarrollo `/_demo/estados` (excluida del build de producción).
+  - _Nota (crítica de diseño, 2026-10-15):_ skeleton, vacío (con "Quitar filtros"), error (con "Reintentar") y "Actualizando…" ya están en `IssueTable.vue`. También: tarjetas en compacto con menú "Ordenar", acciones de fila solo al pasar/enfocar/seleccionar, estado y prioridad con tono + icono + texto, hoja de atajos con `?` y `aria-activedescendant` en la rejilla. Enter y doble clic muestran un toast hasta F3; el botón de tiempo (`timeLogging`) sale con F4. Falta la ruta `/_demo/estados` y la revisión visual.
 
 ## Definición de hecho
 
