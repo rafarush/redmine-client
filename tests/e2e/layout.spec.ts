@@ -23,7 +23,7 @@ test.describe('ancho regular', () => {
 
   test('marca la sección actual para lectores de pantalla', async ({ page }) => {
     await page.goto('/')
-    await expect(sidebar(page).getByRole('link', { name: 'Mis tareas' })).toHaveAttribute('aria-current', 'page')
+    await expect(sidebar(page).getByRole('link', { name: 'Tareas', exact: true })).toHaveAttribute('aria-current', 'page')
   })
 
   test('el primer foco es saltar al contenido', async ({ page }) => {
