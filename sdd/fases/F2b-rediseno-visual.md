@@ -8,7 +8,7 @@
 
 ## Tareas
 
-- [ ] **F2b-T01** Dirección visual — ronda de dirección con impeccable (`concept-seed`, modo Operate, code-led), elección del usuario y contrato de dirección en el surface brief. Se respeta lo fijado: HIG, Ruby solo en la acción primaria y el foco, tipografía del sistema + mono tabular para datos.
+- [x] **F2b-T01** Dirección visual — ronda de dirección con impeccable (`concept-seed`, modo Operate, code-led), elección del usuario y contrato de dirección en el surface brief. Se respeta lo fijado: HIG, Ruby solo en la acción primaria y el foco, tipografía del sistema + mono tabular para datos.
   - _Acepta:_ dirección elegida por el usuario y anotada; `02-diseno.md` actualizado con el resumen.
 
 - [ ] **F2b-T02** Tokens nuevos — superficies con contraste real (ventana, contenido, elevado), `--fill-hover`, `--fill-selected`, `--scrim`, separador sutil, escala de sombras de 2–3 niveles, radios sin píldoras y escala tipográfica que se usa (large-title, title, body, caption). Pares nuevos en `scripts/check-contrast.ts`.

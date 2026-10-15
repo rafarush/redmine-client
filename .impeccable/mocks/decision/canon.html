@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Workspace — Canon</title>
+<style>
+:root{--ink:#1d1d1f;--sec:#86868b;--sep:#e5e5ea;--side:#f2f2f4;--sel:#e8e8ed;--ruby:#b4233a;--bg:#fff;--fill:#f5f5f7}
+*{box-sizing:border-box}
+html,body{width:1440px;height:900px;overflow:hidden;margin:0;background:var(--bg);color:var(--ink);font:13px/1.38 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:240px 1fr;height:900px}
+aside{background:linear-gradient(180deg,rgba(246,246,248,.96),rgba(240,240,243,.96)),var(--side);border-right:1px solid rgba(0,0,0,.08);padding:12px 8px;box-shadow:inset -1px 0 0 rgba(255,255,255,.6)}
+.lights{display:flex;gap:8px;padding:4px 8px 24px}.lights i{width:12px;height:12px;border-radius:50%;background:#ff5f57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}.lights i:nth-child(2){background:#febc2e}.lights i:nth-child(3){background:#28c840}
+.nav a{display:flex;align-items:center;gap:8px;height:28px;padding:0 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:13px}
+.nav a svg{width:16px;height:16px;stroke:var(--sec);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav a.on{background:var(--sel);font-weight:600}.nav a.on svg{stroke:var(--ink)}
+.nav .n{margin-left:auto;color:var(--sec);font-size:12px}
+.grp{font-size:11px;font-weight:600;color:var(--sec);padding:24px 8px 4px;letter-spacing:.02em}
+.dot{width:8px;height:8px;border-radius:50%;margin:0 4px}
+main{display:flex;flex-direction:column;min-width:0}
+.bar{display:flex;align-items:center;gap:8px;height:72px;padding:16px 32px 0}
+h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin:0;flex:1}
+.ib{width:32px;height:32px;border-radius:8px;border:0;background:transparent;display:grid;place-items:center}.ib svg{width:16px;height:16px;stroke:var(--sec);fill:none;stroke-width:1.7}
+.search{width:240px;height:32px;border-radius:8px;background:var(--fill);display:flex;align-items:center;gap:8px;padding:0 8px;color:var(--sec)}
+.search svg{width:14px;height:14px;stroke:var(--sec);fill:none;stroke-width:1.8}.search kbd{margin-left:auto;font:11px/1 inherit;color:var(--sec);border:1px solid var(--sep);border-radius:4px;padding:3px 4px}
+.primary{height:32px;padding:0 16px;border-radius:8px;border:0;background:var(--ruby);color:#fff;font:600 13px/1 inherit;display:flex;align-items:center;gap:8px;box-shadow:0 1px 1px rgba(0,0,0,.12)}
+.sub{padding:4px 32px 16px;color:var(--sec);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px 32px;padding:0 32px;align-items:start}
+section h2{display:flex;align-items:center;gap:8px;margin:0 0 8px;padding:0 16px;font-size:15px;font-weight:600}
+section h2 .dot{margin:0}section h2 small{font-weight:400;color:var(--sec);font-size:13px;margin-left:auto}
+.list{background:var(--bg);border-radius:10px;box-shadow:0 0 0 1px var(--sep),0 1px 2px rgba(0,0,0,.03);overflow:hidden}
+.row{display:grid;grid-template-columns:24px 1fr auto;gap:8px 12px;align-items:center;padding:10px 12px 10px 16px;position:relative}
+.row+.row::before{content:"";position:absolute;left:52px;right:0;top:0;height:1px;background:var(--sep)}
+.row.sel{background:var(--sel)}
+.circ{width:20px;height:20px;border-radius:50%;border:1.5px solid #c7c7cc;align-self:start;margin-top:1px}
+.circ.run{border-color:var(--ink);background:conic-gradient(var(--ink) 0 35%,transparent 0);box-shadow:inset 0 0 0 3px var(--sel)}
+.circ.done{border-color:var(--sec);background:var(--sec);display:grid;place-items:center}.circ.done svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.4}
+.t{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.t .id{color:var(--sec);font-weight:400;margin-right:6px;font-size:12px}
+.done-t{color:var(--sec)}
+.m{font-size:12px;color:var(--sec);margin-top:2px;display:flex;gap:6px;align-items:center}
+.m b{font-weight:600;color:var(--ink)}
+.live{display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-weight:500}.live i{width:6px;height:6px;border-radius:50%;background:var(--ink)}
+.tr{display:flex;align-items:center;gap:8px}
+.chev{display:flex;flex-direction:column;gap:0}.chev span{width:20px;height:14px;display:grid;place-items:center;color:#aeaeb2;font-size:8px;line-height:1;border-radius:4px}
+.rtqa{height:22px;padding:0 8px;border-radius:6px;border:1px solid var(--ruby);color:var(--ruby);background:transparent;font:600 11px/1 inherit;letter-spacing:.02em}
+.sw{width:22px;height:22px;display:grid;place-items:center}.sw svg{width:15px;height:15px;stroke:var(--sec);fill:none;stroke-width:1.7}
+.focus{outline:2px solid var(--ruby);outline-offset:2px;border-radius:4px}
+.foot{padding:8px 16px;font-size:12px;color:var(--sec);display:flex;gap:6px;align-items:center}
+</style></head><body>
+<div class="app">
+<aside>
+  <div class="lights"><i></i><i></i><i></i></div>
+  <nav class="nav">
+    <a class="on"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1.2"/><rect x="9" y="2" width="5" height="5" rx="1.2"/><rect x="2" y="9" width="5" height="5" rx="1.2"/><rect x="9" y="9" width="5" height="5" rx="1.2"/></svg>Workspace<span class="n">11</span></a>
+    <a><svg viewBox="0 0 16 16"><circle cx="3.5" cy="4" r="1"/><circle cx="3.5" cy="8" r="1"/><circle cx="3.5" cy="12" r="1"/><path d="M6.5 4h7M6.5 8h7M6.5 12h7"/></svg>Tareas<span class="n">38</span></a>
+    <a><svg viewBox="0 0 16 16"><circle cx="8" cy="9" r="5.5"/><path d="M8 6v3l2 1.5M6.5 1.5h3"/></svg>Tiempo<span class="n mono">21,5 h</span></a>
+    <a><svg viewBox="0 0 16 16"><path d="M2 4.5h4l1.5 1.5H14v7H2z"/></svg>Proyectos</a>
+  </nav>
+  <div class="grp">Boards</div>
+  <nav class="nav">
+    <a><span class="dot" style="background:#0a84ff"></span>Portal clientes<span class="n">4</span></a>
+    <a><span class="dot" style="background:#30b0c7"></span>App móvil<span class="n">3</span></a>
+    <a><span class="dot" style="background:#af52de"></span>Integraciones<span class="n">2</span></a>
+    <a><span class="dot" style="background:#ff9f0a"></span>Soporte<span class="n">2</span></a>
+  </nav>
+</aside>
+<main>
+  <div class="bar">
+    <h1>Workspace</h1>
+    <button class="ib" aria-label="Bloquear orden de boards"><svg viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg></button>
+    <div class="search"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>Buscar<kbd>⌘K</kbd></div>
+    <button class="primary"><span style="font-size:16px;line-height:0">+</span>Añadir board</button>
+  </div>
+  <div class="sub">Jueves, 15 de octubre · 11 tareas asignadas a ti · <span class="mono">4 h 12 min</span> registradas hoy</div>
+  <div class="grid">
+    <div style="display:grid;gap:24px">
+      <section><h2><span class="dot" style="background:#0a84ff"></span>Portal clientes<small>4 tareas</small></h2>
+        <div class="list">
+          <div class="row sel"><span class="circ run"></span><div><div class="t"><span class="id mono">#4821</span>Error al exportar facturas a PDF</div><div class="m"><b>!!! Urgente</b>· vence hoy · <span class="live"><i></i>En curso <span class="mono">00:32:10</span></span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4790</span>Paginación en listado de pedidos</div><div class="m">!! Alta · vence <span class="mono">18 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4802</span>Traducir correos de bienvenida</div><div class="m">! Normal · vence <span class="mono">24 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4811</span>Filtro por fecha en historial de pagos</div><div class="m">· Baja · sin fecha</div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+        </div></section>
+      <section><h2><span class="dot" style="background:#af52de"></span>Integraciones<small>2 tareas</small></h2>
+        <div class="list">
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4826</span>Reintentos del webhook de Stripe</div><div class="m">!! Alta · vence <span class="mono">17 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4798</span>Mapear centros de coste del ERP</div><div class="m">! Normal · vence <span class="mono">30 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+        </div></section>
+    </div>
+    <div style="display:grid;gap:24px">
+      <section><h2><span class="dot" style="background:#30b0c7"></span>App móvil<small>3 tareas</small></h2>
+        <div class="list">
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4840</span>Crash al rotar en tablet</div><div class="m"><b>!!! Urgente</b>· vence <span class="mono">16 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4833</span>Notificaciones push en Android</div><div class="m">!! Alta · vence <span class="mono">22 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4817</span>Modo oscuro en ajustes de cuenta</div><div class="m">· Baja · sin fecha</div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+        </div></section>
+      <section><h2><span class="dot" style="background:#ff9f0a"></span>Soporte<small>2 tareas</small></h2>
+        <div class="list">
+          <div class="row"><span class="circ done"><svg viewBox="0 0 12 12"><path d="M2.5 6.2 5 8.5l4.5-5"/></svg></span><div><div class="t done-t"><span class="id mono">#4755</span>Revisar permisos de rol Soporte</div><div class="m">Completada · <span class="mono">1 h 45 min</span></div></div><div class="tr"><button class="rtqa focus">RTQA</button><span class="sw" aria-label="Registrar tiempo"><svg viewBox="0 0 16 16"><circle cx="8" cy="9" r="5.5"/><path d="M8 6v3l2 1.5M6.5 1.5h3"/></svg></span></div></div>
+          <div class="row"><span class="circ"></span><div><div class="t"><span class="id mono">#4829</span>Plantilla de respuesta para reembolsos</div><div class="m">! Normal · vence <span class="mono">21 oct</span></div></div><div class="tr"><div class="chev"><span>▲</span><span>▼</span></div></div></div>
+        </div>
+        <div class="foot">Doble clic en una tarea para empezar · otra vez para completarla</div></section>
+    </div>
+  </div>
+</main>
+</div>
+</body></html>

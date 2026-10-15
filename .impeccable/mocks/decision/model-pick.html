@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Workspace · Calculadora de Rams</title>
+<style>
+html,body{width:1440px;height:900px;overflow:hidden;margin:0}
+body{background:#e9e7e2;color:#2b2a28;font:13px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:220px 1fr;-webkit-font-smoothing:antialiased}
+.data{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+aside{background:#e2e0da;padding:24px 12px;box-shadow:inset -1px 0 0 rgba(43,42,40,.06)}
+.brand{display:flex;align-items:center;gap:8px;padding:0 8px 24px;font-weight:600;font-size:14px}
+.brand i{width:20px;height:20px;border-radius:6px;background:#2b2a28;display:block;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+nav a{display:flex;align-items:center;gap:10px;height:32px;padding:0 8px;border-radius:8px;color:#2b2a28;text-decoration:none}
+nav a.on{background:#fbfaf8;box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(43,42,40,.1);font-weight:600}
+nav a .n{margin-left:auto;color:#6b6862;font-size:12px}
+.grp{margin:24px 8px 8px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6b6862}
+nav a .sq{width:8px;height:8px;border-radius:2px;background:#6b6862;opacity:.5}
+main{padding:24px 32px 0;min-width:0}
+header{display:flex;align-items:center;gap:12px;height:48px;margin-bottom:24px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0 auto 0 0}
+.search{display:flex;align-items:center;gap:8px;width:240px;height:32px;padding:0 10px;border-radius:8px;background:#f4f2ee;box-shadow:inset 0 1px 2px rgba(43,42,40,.12);color:#6b6862}
+.search kbd{margin-left:auto;font:11px ui-monospace,Menlo,Consolas,monospace}
+.key{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:28px;height:28px;padding:0 6px;box-sizing:border-box;border-radius:7px;background:linear-gradient(#f6f4f0,#e5e2dc);color:#2b2a28;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(43,42,40,.2),0 2px 4px rgba(43,42,40,.08);font-size:12px;font-weight:600}
+.key.lg{height:32px;padding:0 14px;font-size:13px}
+.key.ruby{background:linear-gradient(#c22d45,#a61f34);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 1px 0 rgba(90,10,22,.5),0 2px 5px rgba(166,31,52,.25)}
+.key.sm{min-width:22px;height:16px;padding:0;border-radius:5px}
+.key.sm svg{width:10px;height:10px;stroke-width:2}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.board{background:#fbfaf8;border-radius:14px;padding:16px;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 0 0 1px rgba(43,42,40,.04),0 2px 6px rgba(43,42,40,.06),0 12px 24px -12px rgba(43,42,40,.12)}
+.bh{display:flex;align-items:center;gap:8px;height:32px;margin-bottom:12px;padding-left:4px}
+.bh h2{font-size:17px;font-weight:600;margin:0}
+.bh .c{color:#6b6862;margin-right:auto;margin-left:4px}
+.cards{display:flex;flex-direction:column;gap:8px}
+.card{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:center;min-height:56px;padding:8px 12px 8px 10px;border-radius:10px;background:#f3f1ed;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.card.live{background:#efede8;box-shadow:inset 0 1px 2px rgba(43,42,40,.08)}
+.chev{display:flex;flex-direction:column;gap:3px}
+.t{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t .data{color:#6b6862;font-size:12px;margin-right:6px;font-weight:400}
+.m{display:flex;gap:12px;margin-top:2px;font-size:12px;color:#6b6862}
+.m b{font-weight:600;color:#2b2a28}
+.r{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b6862}
+.st{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.amber{color:#8a5a00}.green{color:#2f6b3a}
+.timer{font-size:15px;color:#2b2a28;font-weight:500}
+.done .t{color:#6b6862}
+</style></head><body>
+<svg style="display:none"><symbol id="up" viewBox="0 0 16 16"><path d="M4 10l4-4 4 4"/></symbol><symbol id="dn" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></symbol><symbol id="sw" viewBox="0 0 16 16"><circle cx="8" cy="9" r="5"/><path d="M8 9V6.5M6.5 2h3M12 4.5l1-1"/></symbol><symbol id="kb" viewBox="0 0 16 16"><rect x="2" y="3" width="3.2" height="10" rx="1"/><rect x="6.4" y="3" width="3.2" height="7" rx="1"/><rect x="10.8" y="3" width="3.2" height="5" rx="1"/></symbol><symbol id="more" viewBox="0 0 16 16"><circle cx="3.5" cy="8" r=".6"/><circle cx="8" cy="8" r=".6"/><circle cx="12.5" cy="8" r=".6"/></symbol></svg>
+<aside>
+  <div class="brand"><i></i>Redmine</div>
+  <nav>
+    <a class="on" href="#"><svg viewBox="0 0 16 16"><use href="#kb"/></svg>Workspace</a>
+    <a href="#"><svg viewBox="0 0 16 16"><path d="M3 4h10M3 8h10M3 12h6"/></svg>Tareas<span class="n data">23</span></a>
+    <a href="#"><svg viewBox="0 0 16 16"><use href="#sw"/></svg>Tiempo</a>
+    <a href="#"><svg viewBox="0 0 16 16"><path d="M2 5h5l1 1.5h6V13H2z"/></svg>Proyectos</a>
+    <div class="grp">Boards</div>
+    <a href="#"><span class="sq"></span>Portal clientes<span class="n data">5</span></a>
+    <a href="#"><span class="sq"></span>App móvil<span class="n data">4</span></a>
+    <a href="#"><span class="sq"></span>Integraciones<span class="n data">3</span></a>
+    <a href="#"><span class="sq"></span>Soporte<span class="n data">6</span></a>
+  </nav>
+</aside>
+<main>
+  <header>
+    <h1>Workspace</h1>
+    <span class="key" aria-label="Bloquear orden de boards"><svg viewBox="0 0 16 16"><rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></span>
+    <div class="search"><svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>Buscar<kbd>⌘K</kbd></div>
+    <span class="key lg ruby"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Añadir board</span>
+  </header>
+  <div class="grid">
+    <section class="board">
+      <div class="bh"><h2>Portal clientes</h2><span class="c">5 tareas</span><span class="key" aria-label="Ver como kanban"><svg viewBox="0 0 16 16"><use href="#kb"/></svg></span><span class="key" aria-label="Más opciones"><svg viewBox="0 0 16 16"><use href="#more"/></svg></span></div>
+      <div class="cards">
+        <div class="card live"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4821</span>Error al exportar facturas a PDF</div><div class="m"><span><b>◆ Urgente</b></span><span>Vence hoy</span></div></div>
+          <div class="r"><span class="st amber">◐ En curso</span><span class="data timer">00:32:10</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4790</span>Paginación en listado de pedidos</div><div class="m"><span><b>▲ Alta</b></span><span>Vence <span class="data">18 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4802</span>Traducir correos de bienvenida</div><div class="m"><span>● Normal</span><span>Vence <span class="data">24 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card done"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4755</span>Revisar permisos de rol Soporte</div><div class="m"><span>● Normal</span><span>Registrado <span class="data">1 h 45 min</span></span></div></div>
+          <div class="r"><span class="st green">✓ Completada</span><span class="key ruby" style="height:24px">RTQA</span><span class="key" style="height:24px" aria-label="Ajustar tiempo"><svg viewBox="0 0 16 16"><use href="#sw"/></svg></span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4836</span>Ajustar textos legales del pie</div><div class="m"><span>▽ Baja</span><span>Sin fecha</span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+      </div>
+    </section>
+    <section class="board">
+      <div class="bh"><h2>App móvil</h2><span class="c">4 tareas</span><span class="key" aria-label="Ver como kanban"><svg viewBox="0 0 16 16"><use href="#kb"/></svg></span><span class="key" aria-label="Más opciones"><svg viewBox="0 0 16 16"><use href="#more"/></svg></span></div>
+      <div class="cards">
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4833</span>Notificaciones push en Android</div><div class="m"><span><b>▲ Alta</b></span><span>Vence <span class="data">17 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4811</span>Inicio de sesión con Face ID</div><div class="m"><span><b>▲ Alta</b></span><span>Vence <span class="data">21 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4797</span>Modo sin conexión para pedidos</div><div class="m"><span>● Normal</span><span>Vence <span class="data">30 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4760</span>Actualizar iconos de la barra inferior</div><div class="m"><span>▽ Baja</span><span>Sin fecha</span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+      </div>
+    </section>
+    <section class="board">
+      <div class="bh"><h2>Integraciones</h2><span class="c">3 tareas</span><span class="key" aria-label="Ver como kanban"><svg viewBox="0 0 16 16"><use href="#kb"/></svg></span><span class="key" aria-label="Más opciones"><svg viewBox="0 0 16 16"><use href="#more"/></svg></span></div>
+      <div class="cards">
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4818</span>Webhook de pagos devuelve 502</div><div class="m"><span><b>◆ Urgente</b></span><span>Vence <span class="data">16 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4774</span>Sincronizar stock con el ERP cada hora</div><div class="m"><span>● Normal</span><span>Vence <span class="data">28 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+      </div>
+    </section>
+    <section class="board">
+      <div class="bh"><h2>Soporte</h2><span class="c">6 tareas</span><span class="key" aria-label="Ver como kanban"><svg viewBox="0 0 16 16"><use href="#kb"/></svg></span><span class="key" aria-label="Más opciones"><svg viewBox="0 0 16 16"><use href="#more"/></svg></span></div>
+      <div class="cards">
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4829</span>Cliente no recibe el correo de recuperación</div><div class="m"><span><b>▲ Alta</b></span><span>Vence hoy</span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+        <div class="card"><div class="chev"><span class="key sm" aria-label="Subir prioridad"><svg viewBox="0 0 16 16"><use href="#up"/></svg></span><span class="key sm" aria-label="Bajar prioridad"><svg viewBox="0 0 16 16"><use href="#dn"/></svg></span></div>
+          <div><div class="t"><span class="data">#4806</span>Documentar alta de usuarios externos</div><div class="m"><span>● Normal</span><span>Vence <span class="data">22 oct</span></span></div></div>
+          <div class="r"><span class="st">○ Pendiente</span></div></div>
+      </div>
+    </section>
+  </div>
+</main>
+</body></html>

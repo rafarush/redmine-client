@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Workspace · Barra de comandas</title>
+<style>
+:root{--ground:#f4f3f0;--side:#ecebe7;--sel:#dcdad5;--paper:#fff;--ink:#1d1d1f;--sec:#6e6e73;--ter:#8a8a8f;--sep:#e4e2dd;--rail:#c9c6bf;--ruby:#b4233a;
+--portal:#3a6ea5;--movil:#5f8f5a;--integ:#a07a3c;--sop:#7a5fa0;
+--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html,body{width:1440px;height:900px;overflow:hidden;margin:0}
+body{background:var(--ground);color:var(--ink);font:13px/1.4 var(--ui);display:grid;grid-template-columns:220px 1fr;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+svg{display:block}
+/* Barra lateral */
+aside{background:var(--side);border-right:1px solid var(--sep);padding:48px 12px 16px}
+.nav a{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:13px}
+.nav a.on{background:var(--sel);font-weight:600}
+.nav a svg{color:var(--sec)}
+.grp{margin:24px 10px 6px;font-size:12px;font-weight:600;color:var(--sec);letter-spacing:.02em}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.nav .n{margin-left:auto;font:12px var(--mono);color:var(--sec)}
+/* Principal */
+main{padding:0 32px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:12px;height:96px;padding-top:24px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:0 auto 0 0}
+.icon-btn{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--sec)}
+.icon-btn:hover{background:var(--sel)}
+.search{height:32px;width:220px;border-radius:8px;background:var(--paper);border:1px solid var(--sep);display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--sec)}
+.search kbd{margin-left:auto;font:12px var(--mono);color:var(--sec)}
+.primary{height:32px;padding:0 14px;border-radius:8px;background:var(--ruby);color:#fff;font-weight:600;display:flex;align-items:center;gap:6px}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:24px 32px;margin-top:8px}
+/* Board */
+.bh{display:flex;align-items:center;gap:10px;height:40px;border-top:2px solid var(--c)}
+.bh h2{font-size:17px;font-weight:600;margin:0}
+.bh .cnt{color:var(--sec);font-size:12px;margin-right:auto}
+.rail{height:1px;background:var(--rail);box-shadow:0 1px 0 #fff,0 3px 6px rgba(0,0,0,.07);margin:4px 0 0}
+.tickets{display:flex;flex-direction:column;gap:8px;padding-top:8px}
+/* Comanda */
+.t{background:var(--paper);border-radius:4px 4px 6px 6px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);display:grid;grid-template-columns:1fr 28px}
+.t.focus{outline:2px solid var(--ruby);outline-offset:2px}
+.body{padding:10px 0 0 14px}
+.top{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sec)}
+.id{font:12px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.ink{width:16px;height:2px;background:var(--c)}
+.pri{margin-left:auto;padding-right:2px}
+.pri.urg{color:var(--ink);font-weight:600}
+.subj{font-size:13.5px;font-weight:500;margin:4px 0 10px}
+.stub{border-top:1px dashed var(--rail);padding:7px 0 8px;display:flex;align-items:center;gap:8px;font:12px var(--mono);font-variant-numeric:tabular-nums;color:var(--sec)}
+.live .stub{border-top:1px solid var(--ink);color:var(--ink);font-weight:600}
+.live .stub i{width:6px;height:6px;border-radius:50%;background:var(--ink)}
+.done .subj{text-decoration:line-through;text-decoration-color:var(--sec);color:var(--sec)}
+.done .stub{border-top:1px solid var(--sep)}
+.stub .act{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--ui)}
+.rtqa{height:22px;padding:0 8px;border-radius:5px;border:1px solid var(--ruby);color:var(--ruby);font:600 12px var(--ui);letter-spacing:.03em}
+.chev{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-left:1px solid var(--sep);color:var(--ter)}
+.chev button{width:24px;height:20px;display:grid;place-items:center}
+.chev button::before{content:"";width:6px;height:6px;border-left:1.5px solid currentColor;border-top:1.5px solid currentColor;transform:translateY(2px) rotate(45deg)}
+.chev button.dn::before{transform:translateY(-2px) rotate(225deg)}
+</style></head><body>
+<aside>
+  <nav class="nav" aria-label="Secciones">
+    <a class="on" href="#"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2.5" width="5" height="11" rx="1.2"/><rect x="9" y="2.5" width="5" height="7" rx="1.2"/></svg>Workspace</a>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 4h10M3 8h10M3 12h7"/></svg>Tareas</a>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="9" r="5"/><path d="M8 6.5V9l1.6 1.2M6.5 2h3"/></svg>Tiempo</a>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 4.5h4.5l1.2 1.5H14v6.5H2z"/></svg>Proyectos</a>
+    <div class="grp">Boards</div>
+    <a href="#"><span class="dot" style="background:var(--portal)"></span>Portal clientes<span class="n">5</span></a>
+    <a href="#"><span class="dot" style="background:var(--movil)"></span>App móvil<span class="n">4</span></a>
+    <a href="#"><span class="dot" style="background:var(--integ)"></span>Integraciones<span class="n">3</span></a>
+    <a href="#"><span class="dot" style="background:var(--sop)"></span>Soporte<span class="n">6</span></a>
+  </nav>
+</aside>
+<main>
+  <header class="bar">
+    <h1>Workspace</h1>
+    <button class="icon-btn" aria-label="Desbloquear disposición de boards" title="Disposición bloqueada"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg></button>
+    <div class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>Buscar<kbd>⌘K</kbd></div>
+    <button class="primary"><svg width="12" height="12" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.6"><path d="M6 1.5v9M1.5 6h9"/></svg>Añadir board</button>
+  </header>
+  <div class="boards">
+    <section style="--c:var(--portal)">
+      <div class="bh"><h2>Portal clientes</h2><span class="cnt">5 tareas</span>
+        <button class="icon-btn" aria-label="Ver como kanban"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2.5" width="3.2" height="11" rx="1"/><rect x="6.4" y="2.5" width="3.2" height="7" rx="1"/><rect x="10.8" y="2.5" width="3.2" height="9" rx="1"/></svg></button>
+        <button class="icon-btn" aria-label="Más opciones del board">•••</button></div>
+      <div class="rail"></div>
+      <div class="tickets">
+        <article class="t live"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4821</span><span class="pri urg">‼ Urgente</span></div><div class="subj">Error al exportar facturas a PDF</div><div class="stub"><i></i>En curso · 00:32:10<span class="act" style="font-weight:400;color:var(--sec)">vence hoy</span></div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4790</span><span class="pri">↑ Alta</span></div><div class="subj">Paginación en listado de pedidos</div><div class="stub">Pendiente · vence 18 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4802</span><span class="pri">– Normal</span></div><div class="subj">Traducir correos de bienvenida</div><div class="stub">Pendiente · vence 24 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4768</span><span class="pri">↓ Baja</span></div><div class="subj">Filtro por fecha en el histórico de facturas</div><div class="stub">Pendiente · sin fecha</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t done"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4755</span><span class="pri">– Normal</span></div><div class="subj">Revisar permisos de rol Soporte</div><div class="stub">Completada · 1 h 45 min registrada<span class="act"><button class="rtqa" aria-label="Enviar a RTQA">RTQA</button><button class="icon-btn" style="width:24px;height:24px" aria-label="Ajustar tiempo registrado"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="9" r="5"/><path d="M8 6.5V9l1.6 1.2M6.5 2h3"/></svg></button></span></div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+      </div>
+    </section>
+    <section style="--c:var(--movil)">
+      <div class="bh"><h2>App móvil</h2><span class="cnt">4 tareas</span>
+        <button class="icon-btn" aria-label="Ver como kanban"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2.5" width="3.2" height="11" rx="1"/><rect x="6.4" y="2.5" width="3.2" height="7" rx="1"/><rect x="10.8" y="2.5" width="3.2" height="9" rx="1"/></svg></button>
+        <button class="icon-btn" aria-label="Más opciones del board">•••</button></div>
+      <div class="rail"></div>
+      <div class="tickets">
+        <article class="t focus"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4833</span><span class="pri">↑ Alta</span></div><div class="subj">Notificaciones push en Android</div><div class="stub">Pendiente · vence 17 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4841</span><span class="pri">↑ Alta</span></div><div class="subj">Cierre de sesión al rotar la pantalla</div><div class="stub">Pendiente · vence 21 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4812</span><span class="pri">– Normal</span></div><div class="subj">Icono adaptativo en Android 13</div><div class="stub">Pendiente · vence 30 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+        <article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4799</span><span class="pri">↓ Baja</span></div><div class="subj">Modo oscuro en la pantalla de ajustes</div><div class="stub">Pendiente · sin fecha</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article>
+      </div>
+    </section>
+    <section style="--c:var(--integ)">
+      <div class="bh"><h2>Integraciones</h2><span class="cnt">3 tareas</span><button class="icon-btn" aria-label="Más opciones del board">•••</button></div>
+      <div class="rail"></div>
+      <div class="tickets"><article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4806</span><span class="pri">↑ Alta</span></div><div class="subj">Sincronizar stock con el ERP cada hora</div><div class="stub">Pendiente · vence 20 oct</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article></div>
+    </section>
+    <section style="--c:var(--sop)">
+      <div class="bh"><h2>Soporte</h2><span class="cnt">6 tareas</span><button class="icon-btn" aria-label="Más opciones del board">•••</button></div>
+      <div class="rail"></div>
+      <div class="tickets"><article class="t"><div class="body"><div class="top"><span class="ink"></span><span class="id">#4850</span><span class="pri urg">‼ Urgente</span></div><div class="subj">Cliente sin acceso tras cambio de contraseña</div><div class="stub">Pendiente · vence hoy</div></div><div class="chev"><button aria-label="Subir prioridad"></button><button class="dn" aria-label="Bajar prioridad"></button></div></article></div>
+    </section>
+  </div>
+</main>
+</body></html>

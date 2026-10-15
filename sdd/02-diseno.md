@@ -8,6 +8,22 @@ Base: Human Interface Guidelines de Apple (skill `apple-design`, archivos en `re
 
 La lista de tareas es la pantalla principal. Filtrar, cambiar estado, registrar tiempo y crear una tarea pasan ahí, en popovers y diálogos cortos.
 
+> **Rediseño F2b (2026-10-15).** La pantalla de inicio pasa a ser el Workspace (F2c) y el mundo visual se rehace. Lo que sigue en este documento se actualiza tarea a tarea en F2b; donde choque, manda esta sección.
+
+## Mundo visual: Panel de embarque
+
+Elegido por el equipo en la ronda de dirección de impeccable (contrato completo en `.impeccable/surfaces/app-pages-index-vue.md`).
+
+- **Idea:** mis tareas son un panel de salidas. La fecha fin ordena todo y un cambio se recoloca en su sitio y queda marcado hasta que lo veo.
+- **Superficies:** paneles neutros de alto contraste sobre un fondo apenas cálido; sin líneas por fila, con rellenos alternos muy suaves.
+- **Columnas fijas** con cabeceras en versalitas de 11 px: `#` · Tarea · Vence ↓ · Prioridad · Estado · acciones.
+- **Códigos de proyecto** en placa oscura mono (PCL, APP): identifican el proyecto sin color.
+- **Franja de salidas:** barra oscura bajo el toolbar con la fecha, la tarea en curso con su cronómetro, pendientes, vencen hoy y registrado hoy.
+- **Color de aviso** (amarillo de panel): solo para "cambiado", como relleno suave de la fila y etiqueta "Subida · ahora"; nunca borde de color.
+- **Ruby:** acción primaria, RTQA y foco. Nada más.
+- **Movimiento propio:** la fila que cambia se recoloca en vivo conservando su identidad (animación de layout) y queda marcada. Respeta `prefers-reduced-motion`.
+- **Iconos:** Lucide para todo, incluida la prioridad (nada de glifos Unicode como iconos).
+
 ## Elemento distintivo: la frase de filtros
 
 La barra de filtros se lee como una oración en español:

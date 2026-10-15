@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Workspace · Panel de embarque</title>
+<style>
+html,body{width:1440px;height:900px;overflow:hidden;margin:0}
+body{background:#f5f5f2;color:#111214;font:13px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;display:flex;-webkit-font-smoothing:antialiased}
+.m,.i,.d,kbd{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+/* Barra lateral */
+aside{width:220px;flex:none;background:#ececea;padding:16px 12px;box-sizing:border-box;display:flex;flex-direction:column;gap:2px}
+.brand{font-weight:600;font-size:13px;padding:0 8px 16px;display:flex;align-items:center;gap:8px}
+.brand b{width:20px;height:20px;border-radius:5px;background:#111214;color:#fff;font:600 10px/20px ui-monospace,Menlo,monospace;text-align:center}
+.nav{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:6px;color:#3a3a3e}
+.nav.sel{background:#fff;color:#111214;font-weight:600;box-shadow:0 0 0 1px #e0e0dc}
+.nav .n{margin-left:auto;color:#8e8e93;font-size:11px}
+.grp{font-size:11px;color:#8e8e93;letter-spacing:.06em;text-transform:uppercase;padding:24px 8px 8px}
+.code{font:600 10px/16px ui-monospace,Menlo,monospace;background:#111214;color:#fff;border-radius:3px;padding:0 4px;letter-spacing:.04em}
+.me{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px;color:#3a3a3e}
+.me i{width:24px;height:24px;border-radius:50%;background:#d6d6d2;font:600 10px/24px system-ui;text-align:center;font-style:normal;color:#111214}
+/* Principal */
+main{flex:1;padding:24px 24px 0;box-sizing:border-box;min-width:0}
+.tb{display:flex;align-items:center;gap:8px;height:40px;margin-bottom:24px}
+h1{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0;flex:1}
+.ib{width:32px;height:32px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px #e0e0dc;display:grid;place-items:center;color:#3a3a3e}
+.search{width:240px;height:32px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px #e0e0dc;display:flex;align-items:center;gap:8px;padding:0 8px 0 10px;box-sizing:border-box;color:#8e8e93}
+kbd{margin-left:auto;font-size:11px;color:#8e8e93;border:1px solid #e0e0dc;border-radius:4px;padding:0 4px}
+.pri{height:32px;border-radius:8px;background:#b4233a;color:#fff;font-weight:600;padding:0 14px 0 10px;display:flex;align-items:center;gap:6px}
+/* Tablero de salidas: resumen */
+.strip{height:48px;background:#111214;color:#fff;border-radius:10px;display:flex;align-items:center;margin-bottom:32px;padding:0 8px}
+.strip div{padding:0 16px;display:flex;align-items:baseline;gap:8px;border-left:1px solid #2c2d31;height:24px;align-items:center}
+.strip div:first-child{border:0}
+.strip small{font-size:11px;color:#a1a1a6;letter-spacing:.06em;text-transform:uppercase}
+.strip .big{font-size:18px;font-weight:600}
+/* Paneles */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px 16px;align-items:start}
+.pn{background:#fff;border-radius:12px;box-shadow:0 0 0 1px #e3e3df;padding-bottom:8px;overflow:hidden}
+.ph{height:48px;display:flex;align-items:center;gap:8px;padding:0 16px}
+.ph h2{font-size:15px;font-weight:600;margin:0}
+.ph span{margin-left:auto;color:#8e8e93;font-size:12px}
+.r,.hd{display:grid;grid-template-columns:40px 1fr 52px 80px 140px 72px;align-items:center;padding:0 16px}
+.hd{height:32px;font-size:11px;color:#8e8e93;letter-spacing:.06em;text-transform:uppercase;border-top:1px solid #eeeeea}
+.hd .ord{color:#111214;font-weight:600}
+.r{height:40px}
+.rows .r:nth-child(even){background:#fafaf8}
+.i{font-size:12px;color:#8e8e93}
+.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:12px}
+.d{font-size:12px}
+.p{font-size:12px;display:flex;flex-direction:column;justify-content:center}
+.p em{font-style:normal;font-size:10px;font-weight:600;color:#5a4600;background:#fff3bf;border-radius:3px;padding:0 4px;align-self:start;margin-top:2px}
+.s{font-size:12px;color:#8e8e93;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.s svg{width:12px;height:12px}
+.a{display:flex;align-items:center;justify-content:flex-end;gap:6px;color:#8e8e93}
+.ud{display:flex;flex-direction:column;width:20px}
+.ud button{height:16px;font-size:9px;line-height:16px;border-radius:3px;color:#8e8e93}
+.ud .f{outline:2px solid #b4233a;outline-offset:0;color:#111214}
+.ch{box-shadow:inset 3px 0 0 #ffcc00}
+.on .t{font-weight:600}.on .s{color:#111214;font-weight:600}.on .s .m{font-weight:500}
+.dn .t,.dn .d,.dn .p{color:#8e8e93}
+.rtqa{height:20px;padding:0 6px;border-radius:5px;background:#b4233a;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em}
+.sw{color:#111214}
+</style></head><body>
+<svg style="display:none"><symbol id="sw" viewBox="0 0 16 16"><circle cx="8" cy="9" r="5.5"/><path d="M8 6v3l2 1M6.5 1.5h3M8 1.5v2"/></symbol><symbol id="lk" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></symbol><symbol id="sr" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></symbol><symbol id="ws" viewBox="0 0 16 16"><rect x="2" y="2.5" width="5" height="11" rx="1"/><rect x="9" y="2.5" width="5" height="11" rx="1"/></symbol><symbol id="ls" viewBox="0 0 16 16"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h0M2.5 8h0M2.5 12h0"/></symbol><symbol id="fd" viewBox="0 0 16 16"><path d="M2 4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></symbol><symbol id="ok" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7"/></symbol><symbol id="pd" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/></symbol></svg>
+<aside>
+  <div class="brand"><b>R</b>Redmine</div>
+  <a class="nav sel"><svg><use href="#ws"/></svg>Workspace</a>
+  <a class="nav"><svg><use href="#ls"/></svg>Tareas<span class="n m">27</span></a>
+  <a class="nav"><svg><use href="#sw"/></svg>Tiempo</a>
+  <a class="nav"><svg><use href="#fd"/></svg>Proyectos</a>
+  <div class="grp">Boards</div>
+  <a class="nav"><span class="code">PCL</span>Portal clientes<span class="n m">6</span></a>
+  <a class="nav"><span class="code">APP</span>App móvil<span class="n m">6</span></a>
+  <a class="nav"><span class="code">INT</span>Integraciones<span class="n m">8</span></a>
+  <a class="nav"><span class="code">RRH</span>Intranet RRHH<span class="n m">7</span></a>
+  <div class="me"><i>RG</i>Rafa García</div>
+</aside>
+<main>
+  <div class="tb">
+    <h1>Workspace</h1>
+    <button class="ib" aria-label="Bloquear el orden de los boards"><svg><use href="#lk"/></svg></button>
+    <div class="search"><svg><use href="#sr"/></svg>Buscar<kbd>⌘K</kbd></div>
+    <button class="pri"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>Añadir board</button>
+  </div>
+  <div class="strip">
+    <div><small>Mié</small><span class="m big">15 OCT</span></div>
+    <div><small>En curso</small><span class="m">#4821</span><span class="m big">00:32:10</span></div>
+    <div><small>Pendientes</small><span class="m big">25</span></div>
+    <div><small>Vencen hoy</small><span class="m big">2</span></div>
+    <div><small>Registrado hoy</small><span class="m big">3 h 05 min</span></div>
+  </div>
+  <div class="grid">
+    <section class="pn"><div class="ph"><span class="code">PCL</span><h2>Portal clientes</h2><span>6 tareas · 1 en curso</span></div>
+      <div class="hd"><span>#</span><span>Tarea</span><span class="ord">Vence ↓</span><span>Prioridad</span><span>Estado</span><span></span></div>
+      <div class="rows">
+        <div class="r on"><span class="i">4821</span><span class="t">Error al exportar facturas a PDF</span><span class="d">Hoy</span><span class="p">▲▲ Urgente</span><span class="s"><svg><use href="#sw"/></svg>En curso <span class="m">00:32:10</span></span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r ch"><span class="i">4790</span><span class="t">Paginación en listado de pedidos</span><span class="d">18 oct</span><span class="p">▲ Alta<em>Subida · ahora</em></span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button class="f" aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4815</span><span class="t">Filtro por fecha en informes</span><span class="d">24 oct</span><span class="p">▲ Alta</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4802</span><span class="t">Traducir correos de bienvenida</span><span class="d">22 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4811</span><span class="t">Márgenes del PDF de albarán</span><span class="d">29 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r dn"><span class="i">4755</span><span class="t">Revisar permisos de rol Soporte</span><span class="d">14 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#ok"/></svg>Completada · <span class="m">1 h 45 min</span></span><span class="a"><button class="rtqa">RTQA</button><button class="sw" aria-label="Ver tiempo registrado"><svg><use href="#sw"/></svg></button></span></div>
+      </div></section>
+    <section class="pn"><div class="ph"><span class="code">APP</span><h2>App móvil</h2><span>6 tareas</span></div>
+      <div class="hd"><span>#</span><span>Tarea</span><span class="ord">Vence ↓</span><span>Prioridad</span><span>Estado</span><span></span></div>
+      <div class="rows">
+        <div class="r"><span class="i">4840</span><span class="t">Crash al rotar en tablet</span><span class="d">16 oct</span><span class="p">▲▲ Urgente</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4833</span><span class="t">Notificaciones push en Android</span><span class="d">20 oct</span><span class="p">▲ Alta</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4846</span><span class="t">Modo oscuro en ajustes</span><span class="d">27 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4829</span><span class="t">Deep links desde correos</span><span class="d">30 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4851</span><span class="t">Actualizar SDK de mapas</span><span class="d">3 nov</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4798</span><span class="t">Icono adaptativo Android 13</span><span class="d">12 nov</span><span class="p">▼ Baja</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+      </div></section>
+    <section class="pn"><div class="ph"><span class="code">INT</span><h2>Integraciones</h2><span>8 tareas</span></div>
+      <div class="hd"><span>#</span><span>Tarea</span><span class="ord">Vence ↓</span><span>Prioridad</span><span>Estado</span><span></span></div>
+      <div class="rows">
+        <div class="r"><span class="i">4862</span><span class="t">Webhook de pagos devuelve 500</span><span class="d">17 oct</span><span class="p">▲▲ Urgente</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4858</span><span class="t">Sincronizar stock con ERP</span><span class="d">21 oct</span><span class="p">▲ Alta</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4870</span><span class="t">Reintentos en cola de correo</span><span class="d">28 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4874</span><span class="t">Token OAuth de Holded caduca</span><span class="d">2 nov</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+      </div></section>
+    <section class="pn"><div class="ph"><span class="code">RRH</span><h2>Intranet RRHH</h2><span>7 tareas</span></div>
+      <div class="hd"><span>#</span><span>Tarea</span><span class="ord">Vence ↓</span><span>Prioridad</span><span>Estado</span><span></span></div>
+      <div class="rows">
+        <div class="r"><span class="i">4877</span><span class="t">Validar fechas de vacaciones</span><span class="d">19 oct</span><span class="p">▲ Alta</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4880</span><span class="t">Exportar nóminas a CSV</span><span class="d">31 oct</span><span class="p">— Normal</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4884</span><span class="t">Organigrama por departamento</span><span class="d">7 nov</span><span class="p">▼ Baja</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+        <div class="r"><span class="i">4889</span><span class="t">Firma digital de contratos</span><span class="d">14 nov</span><span class="p">▼ Baja</span><span class="s"><svg><use href="#pd"/></svg>Pendiente</span><span class="a"><div class="ud"><button aria-label="Subir prioridad">▲</button><button aria-label="Bajar prioridad">▼</button></div></span></div>
+      </div></section>
+  </div>
+</main>
+</body></html>
