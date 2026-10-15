@@ -40,7 +40,8 @@
   - _Acepta:_ `#4821` + Enter abre la tarea; el alcance de búsqueda está indicado en el placeholder. · ✔ 2fdba6f
   - _Nota:_ la ficha de tarea llega con F3, así que `#id` + Enter abre la tarea en Redmine (pestaña nueva); cambiarlo a la ruta de detalle en F3. Los comandos "Nueva tarea" y "Registrar tiempo en…" se añaden en F3-T07 y F4.
 
-- [~] **F2-T08** Cambio rápido en la fila — menú contextual (clic derecho y botón "…"): cambiar estado, asignar, prioridad, copiar enlace, abrir en Redmine. Solo opciones permitidas (`<Can>`), estados según `allowed_statuses`. Guardado optimista + toast con "Deshacer".
+- [x] **F2-T08** Cambio rápido en la fila — menú contextual (clic derecho y botón "…"): cambiar estado, asignar, prioridad, copiar enlace, abrir en Redmine. Solo opciones permitidas (`<Can>`), estados según `allowed_statuses`. Guardado optimista + toast con "Deshacer". · ✔ 2dd04f1
+  - _Nota:_ "Asignar a" usa `edit_issues` (el mapa de permisos no tiene un permiso de asignación). Se añade `listProjectMembers` (`/projects/:id/memberships.json`). El toast es mínimo (`stores/toasts.ts`), sin cola ni diseño final: lo pulirá F9. El e2e de F2 queda pendiente de levantar Docker.
   - _Depende:_ F2-T03, F1-T07
   - _Acepta:_ si Redmine rechaza el cambio (workflow), la fila vuelve a su estado y el toast explica el motivo.
 
