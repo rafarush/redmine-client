@@ -33,3 +33,18 @@ describe('paginación', () => {
     expect(clampPage(-2, 150)).toBe(0)
   })
 })
+
+describe('consulta guardada de Redmine', () => {
+  it('pide query_id y deja la frase fuera', () => {
+    const q = toIssuesQuery({
+      sentence: { conditions: [{ field: 'status_id', operator: '=', values: ['open'] }] },
+      savedQuery: { id: 7 },
+    })
+    expect(q.query_id).toBe(7)
+    expect(q.status_id).toBeUndefined()
+  })
+
+  it('una consulta de proyecto pide también ese proyecto', () => {
+    expect(toIssuesQuery({ sentence: { conditions: [] }, savedQuery: { id: 7, projectId: 3 } }).project_id).toBe(3)
+  })
+})

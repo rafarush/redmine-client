@@ -20,8 +20,16 @@ export interface IssueSort {
 /** Lo que ordena Redmine por defecto si nadie dice otra cosa. */
 export const DEFAULT_SORT: IssueSort = { field: 'updated_on', direction: 'desc' }
 
+/** Consulta guardada de Redmine: sustituye a la frase, que no puede expresarla. */
+export interface RedmineQueryRef {
+  id: number
+  /** Las consultas de un proyecto solo se aplican pidiendo ese proyecto. */
+  projectId?: number | null
+}
+
 export interface IssueQueryParams {
   sentence: FilterSentence
+  savedQuery?: RedmineQueryRef | null
   sort?: IssueSort | null
   /** Página empezando en 0. */
   page?: number
@@ -42,10 +50,14 @@ export function sortToParam(sort: IssueSort): string {
  * la petición: dos páginas distintas son dos entradas distintas de la caché.
  */
 export function toIssuesQuery(params: IssueQueryParams): Record<string, string | number> {
-  const { sentence, sort = DEFAULT_SORT, page = 0, pageSize = ISSUES_PAGE_SIZE, now } = params
+  const { sentence, savedQuery, sort = DEFAULT_SORT, page = 0, pageSize = ISSUES_PAGE_SIZE, now } = params
+
+  const filters: Record<string, string | number> = savedQuery
+    ? { query_id: savedQuery.id, ...(savedQuery.projectId ? { project_id: savedQuery.projectId } : {}) }
+    : toRedmineQuery(sentence, now ? { now } : {})
 
   const query: Record<string, string | number> = {
-    ...toRedmineQuery(sentence, now ? { now } : {}),
+    ...filters,
     limit: pageSize,
     offset: Math.max(0, page) * pageSize,
   }

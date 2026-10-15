@@ -9,6 +9,7 @@ import type {
   Project,
   Ref,
   RoleDetail,
+  SavedQuery,
   TimeEntry,
   Version,
 } from './types'
@@ -21,6 +22,7 @@ import {
   projectSchema,
   refSchema,
   roleDetailSchema,
+  savedQuerySchema,
   timeEntrySchema,
   versionSchema,
 } from './types'
@@ -115,6 +117,11 @@ export class RedmineClient {
 
   async listIssues(query: Query = {}): Promise<Paginated<Issue>> {
     return this.get('/issues.json', paginatedSchema('issues', issueSchema), { limit: 25, ...query })
+  }
+
+  /** Consultas guardadas que el usuario puede ver (propias y públicas). */
+  async listQueries(): Promise<SavedQuery[]> {
+    return this.getAll<SavedQuery>('/queries.json', 'queries', savedQuerySchema)
   }
 
   async getIssue(id: number, include = 'journals,attachments,relations,children,watchers,allowed_statuses'): Promise<Issue> {

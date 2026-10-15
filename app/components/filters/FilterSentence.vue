@@ -156,6 +156,10 @@ const showRow = computed(() => !compact.value || expanded.value)
         @update:open="setOpen('add', $event)"
         @pick="pick"
       />
+
+      <div class="ml-auto shrink-0">
+        <slot name="trailing" />
+      </div>
     </div>
   </div>
 </template>

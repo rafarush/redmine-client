@@ -19,8 +19,22 @@ function setSentence(next: FilterSentence): void {
   router.push({ query: { ...route.query, f: f || undefined } })
 }
 
+/** Consulta guardada de Redmine (`?q=<id>&p=<proyecto>`): no se puede editar como frase. */
+const { queries } = useSavedQueries()
+const ui = useUiStore()
+const savedQuery = computed(() => {
+  const id = Number(route.query.q)
+  if (!Number.isInteger(id) || id <= 0) return null
+  const project = Number(route.query.p)
+  return { id, projectId: Number.isInteger(project) && project > 0 ? project : null }
+})
+const savedQueryName = computed(() => queries.value.find(q => q.id === savedQuery.value?.id)?.name ?? 'Consulta de Redmine')
+function clearSavedQuery(): void {
+  router.push({ query: { ...route.query, q: undefined, p: undefined } })
+}
+
 const sort = ref<IssueSort>({ ...DEFAULT_SORT })
-const { issues, totalCount, isStale, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort })
+const { issues, totalCount, isStale, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort, savedQuery })
 
 /** Personas que aparecen en la lista, para ofrecerlas en "Asignado a" y "Autor". */
 const people = computed<FilterOption[]>(() => {
@@ -35,11 +49,39 @@ const people = computed<FilterOption[]>(() => {
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
+    <div
+      v-if="savedQuery"
+      class="flex items-center gap-2 border-b border-separator bg-surface px-2 py-1.5"
+    >
+      <Icon
+        name="lucide:bookmark"
+        class="size-4 shrink-0 text-secondary"
+        aria-hidden="true"
+      />
+      <p class="min-w-0 flex-1 truncate text-[length:var(--text-body)] text-content">
+        {{ savedQueryName }}
+        <span class="text-secondary">· Consulta de Redmine, solo lectura</span>
+      </p>
+      <UiButton
+        variant="ghost"
+        label="Quitar consulta"
+        icon="lucide:x"
+        @click="clearSavedQuery"
+      />
+    </div>
     <FiltersFilterSentence
+      v-else
       :model-value="sentence"
       :people="people"
       @update:model-value="setSentence"
-    />
+    >
+      <template #trailing>
+        <FiltersSaveFilter
+          :disabled="sentence.conditions.length === 0"
+          @save="ui.saveCurrentFilter($event, toUrl(sentence))"
+        />
+      </template>
+    </FiltersFilterSentence>
     <IssuesIssueTable
       :issues="issues"
       :total-count="totalCount"

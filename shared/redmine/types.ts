@@ -20,6 +20,17 @@ export const customFieldValueSchema = z.object({
 }).loose()
 export type CustomFieldValue = z.infer<typeof customFieldValueSchema>
 
+// ------------------------------------------------------- consultas guardadas
+
+/** Consulta guardada de Redmine. La API solo da el nombre: los filtros no se exponen. */
+export const savedQuerySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  is_public: z.boolean().optional(),
+  project_id: z.number().nullish(),
+}).loose()
+export type SavedQuery = z.infer<typeof savedQuerySchema>
+
 // ------------------------------------------------------------------ usuario
 
 export const membershipSchema = z.object({
