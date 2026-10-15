@@ -13,16 +13,39 @@
 @theme inline {
   --color-surface: var(--surface);
   --color-raised: var(--raised);
+  --color-sidebar: var(--sidebar);
+  --color-fill-alt: var(--fill-alt);
+  --color-fill-hover: var(--fill-hover);
+  --color-fill-selected: var(--fill-selected);
   --color-content: var(--content);
   --color-secondary: var(--content-secondary);
+  --color-tertiary: var(--content-tertiary);
   --color-separator: var(--separator);
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
+  --color-board: var(--board);
+  --color-on-board: var(--on-board);
+  --color-on-board-secondary: var(--on-board-secondary);
+  --color-board-separator: var(--board-separator);
+  --color-change: var(--change-fill);
+  --color-on-change: var(--on-change);
   --color-success: var(--signal-success);
   --color-warning: var(--signal-warning);
   --color-info: var(--signal-info);
+  --color-scrim: var(--scrim);
   --font-sans: var(--font-ui);
   --font-mono: var(--font-data);
+
+  --radius-plate: var(--radius-plate);
+  --radius-control: var(--radius-control);
+  --radius-surface: var(--radius-surface);
+  --shadow-panel: var(--shadow-panel);
+  --shadow-popover: var(--shadow-popover);
+  --shadow-dialog: var(--shadow-dialog);
+  --text-large-title: var(--text-large-title);
+  --text-title: var(--text-title);
+  --text-body: var(--text-body);
+  --text-caption: var(--text-caption);
 
   /* Corte entre el layout compacto (tab bar) y el regular (sidebar). */
   --breakpoint-wide: 900px;

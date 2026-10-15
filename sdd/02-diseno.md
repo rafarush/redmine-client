@@ -43,25 +43,34 @@ Tareas  [asignadas a mí ▾]  en  [Abierta, En curso ▾]  de  [Portal Web ▾]
 
 Todos los colores salen de `app/assets/css/tokens.css`. Contrastes medidos (WCAG 2.x) al crear el repo:
 
-| Token | Claro | Oscuro | Uso | Contraste claro / oscuro |
+Paleta F2b (Panel de embarque). Contraste claro, medido por `pnpm check:contrast`, que comprueba 21 pares en los 4 modos:
+
+| Token | Claro | Oscuro | Uso | Contraste (claro) |
 |---|---|---|---|---|
-| `surface` | `#F6F7F9` | `#111316` | Fondo de la ventana | — |
-| `raised` | `#FFFFFF` | `#1B1E22` | Popovers, diálogos, filas seleccionadas | — |
-| `content` | `#16181D` | `#ECEEF1` | Texto principal | 16.57:1 / 16.01:1 sobre surface |
-| `content-secondary` | `#5B6270` | `#9AA1AD` | Texto secundario, conjunciones de la frase | 5.72:1 / 7.16:1 sobre surface; 6.13:1 / 6.43:1 sobre raised |
-| `accent` (Ruby) | `#B4233A` | `#FF7088` | Acción primaria, foco, token activo | 6.04:1 / 7.02:1 sobre surface |
-| `on-accent` | `#FFFFFF` | `#1A0A0E` | Texto sobre botón primario | 6.48:1 / 7.25:1 |
-| `signal-success` | `#1F7A4D` | `#4CC38A` | Guardado, cerrada | 5.32:1 / 7.55:1 |
-| `signal-warning` | `#8A5A00` | `#E0A63A` | Vence pronto, borrador sin guardar | 5.93:1 / 7.71:1 |
-| `signal-info` | `#2557C4` | `#7AA2FF` | Enlaces, novedades | 6.48:1 / 6.72:1 |
+| `surface` | `#F5F5F2` | `#0F1012` | Fondo de la ventana | — |
+| `raised` | `#FFFFFF` | `#1A1B1E` | Paneles, popovers, diálogos | — |
+| `sidebar` | `#ECECEA` | `#151619` | Barra lateral | — |
+| `fill-alt` / `fill-hover` / `fill-selected` | `#FAFAF8` / `#F1F1ED` / `#E5E5E0` | `#1E1F22` / `#232428` / `#2D2E33` | Fila alterna, hover, selección (neutra) | — |
+| `content` | `#111214` | `#F2F2EF` | Texto principal | 17.16:1 sobre surface |
+| `content-secondary` | `#5F6064` | `#A1A1A6` | Metadatos, cabeceras, conjunciones | 5.31:1 sobre sidebar (el peor) |
+| `content-tertiary` | `#8A8A8F` | `#7C7C82` | Solo iconos de control (▲▼) | 3.29:1 sobre fill-alt (mínimo 3:1) |
+| `accent` (Ruby) | `#B4233A` | `#FF7088` | Acción primaria, RTQA, foco | 5.93:1 sobre surface |
+| `on-accent` | `#FFFFFF` | `#1A0A0E` | Texto sobre Ruby | 6.48:1 |
+| `board` / `on-board` / `on-board-secondary` | `#111214` / `#FFFFFF` / `#A8A8AD` | `#26272B` / `#F2F2EF` / `#A8A8AD` | Franja de salidas y placas de proyecto | 18.74:1 / 7.92:1 |
+| `change-fill` / `on-change` | `#FFF3BF` / `#5A4600` | `#3A3000` / `#FFD84D` | Fila cambiada y etiqueta "Subida · ahora" | 8.15:1 |
+| `signal-success` | `#1F7A4D` | `#4CC38A` | Completada | 5.32:1 |
+| `signal-warning` | `#8A5A00` | `#E0A63A` | Vence pronto, en curso | 5.93:1 |
+| `signal-info` | `#2557C4` | `#7AA2FF` | Enlaces, novedades | 6.48:1 |
+
+Además: `scrim` (velo único de todos los overlays) y tres sombras, `shadow-panel`, `shadow-popover` y `shadow-dialog`, siempre con desplazamiento y desenfoque. Radios: `plate` 4 px, `control` 8 px, `surface` 12 px; sin píldoras.
 
 Reglas:
 - **Un color, un significado.** Ruby solo marca la acción primaria y el foco. Nunca se usa para estados ni para decorar.
 - **Por qué Ruby:** Redmine está escrito en Ruby on Rails y su identidad histórica es roja. El acento es un guiño al origen sin copiar el logo, y en la paleta neutra destaca sin estridencia.
 - Los estados de Redmine (Nueva, En curso, Resuelta...) se muestran con **icono + texto**; el color es apoyo, nunca el único portador (`accessibility.md`).
 - Se sigue la apariencia del sistema (`prefers-color-scheme`). No hay selector de tema en la app.
-- **Alto contraste, por tema.** `prefers-contrast: more` se declara combinado con `prefers-color-scheme`, porque un bloque suelto vendría después del de oscuro y le ganaría, dejando texto gris oscuro sobre fondo casi negro. En claro el texto secundario baja a `#3D434E` (9.28:1) y en oscuro sube a `#C3C9D4` (11.19:1); los separadores se refuerzan a `#767D8A` y `#6B7280`.
-- `pnpm check:contrast` comprueba los 10 pares en los 4 modos (claro, claro+alto contraste, oscuro, oscuro+alto contraste) y corre en CI. Cambiar un color sin actualizar esta tabla hace fallar el build.
+- **Alto contraste, por tema.** `prefers-contrast: more` se declara combinado con `prefers-color-scheme`, porque un bloque suelto vendría después del de oscuro y le ganaría, dejando texto gris oscuro sobre fondo casi negro. En claro el texto secundario baja a `#3D3E42` y en oscuro sube a `#C8C8CC`; los separadores se refuerzan a `#76777C` y `#6B6C72`, y la selección se oscurece un paso.
+- `pnpm check:contrast` comprueba los 21 pares (texto a 4.5:1, iconos de control a 3:1) en los 4 modos (claro, claro+alto contraste, oscuro, oscuro+alto contraste) y corre en CI. Cambiar un color sin actualizar esta tabla hace fallar el build.
 
 ## Tipografía
 
@@ -74,7 +83,7 @@ Escala (desktop / móvil):
 
 | Estilo | Desktop | Móvil | Uso |
 |---|---|---|---|
-| large-title | 22 / semibold | 28 / bold | Título de vista |
+| large-title | 26 / semibold | 30 / bold | Título de vista |
 | title | 17 / semibold | 20 / semibold | Título de diálogo, asunto de tarea en detalle |
 | body | 13 / regular | 17 / regular | Texto general, filas |
 | caption | 11 / regular | 13 / regular | Metadatos (mínimo: 10 desktop, 11 móvil) |

@@ -15,15 +15,29 @@ const TOKENS = fileURLToPath(new URL('../app/assets/css/tokens.css', import.meta
 /** Mínimo para texto normal (hasta 17 pt). Ver sdd/02-diseno.md › Accesibilidad. */
 const MIN_RATIO = 4.5
 
-/** Pares `texto sobre fondo` que la interfaz usa de verdad. */
-const PAIRS: ReadonlyArray<{ fg: string, bg: string, usage: string }> = [
+/** Mínimo para iconos y glifos de control (WCAG 1.4.11, contraste no textual). */
+const MIN_RATIO_ICON = 3
+
+/** Pares `texto sobre fondo` que la interfaz usa de verdad. `min` por defecto: MIN_RATIO. */
+const PAIRS: ReadonlyArray<{ fg: string, bg: string, usage: string, min?: number }> = [
   { fg: 'content', bg: 'surface', usage: 'Texto principal' },
-  { fg: 'content', bg: 'raised', usage: 'Texto en popover o diálogo' },
+  { fg: 'content', bg: 'raised', usage: 'Texto en panel, popover o diálogo' },
+  { fg: 'content', bg: 'fill-selected', usage: 'Fila seleccionada' },
+  { fg: 'content', bg: 'sidebar', usage: 'Barra lateral' },
   { fg: 'content-secondary', bg: 'surface', usage: 'Metadatos y conjunciones de la frase' },
-  { fg: 'content-secondary', bg: 'raised', usage: 'Metadatos sobre superficie elevada' },
+  { fg: 'content-secondary', bg: 'raised', usage: 'Metadatos sobre panel' },
+  { fg: 'content-secondary', bg: 'fill-alt', usage: 'Metadatos en fila alterna' },
+  { fg: 'content-secondary', bg: 'fill-hover', usage: 'Metadatos en fila con hover' },
+  { fg: 'content-secondary', bg: 'sidebar', usage: 'Contadores de la barra lateral' },
+  { fg: 'content-tertiary', bg: 'raised', usage: 'Iconos de control (▲▼)', min: MIN_RATIO_ICON },
+  { fg: 'content-tertiary', bg: 'fill-alt', usage: 'Iconos de control en fila alterna', min: MIN_RATIO_ICON },
   { fg: 'accent', bg: 'surface', usage: 'Enlace o acción primaria en texto' },
   { fg: 'accent', bg: 'raised', usage: 'Acción primaria en popover' },
-  { fg: 'on-accent', bg: 'accent', usage: 'Texto del botón primario' },
+  { fg: 'on-accent', bg: 'accent', usage: 'Texto del botón primario y RTQA' },
+  { fg: 'on-board', bg: 'board', usage: 'Cifras de la franja de salidas y placas' },
+  { fg: 'on-board-secondary', bg: 'board', usage: 'Etiquetas de la franja de salidas' },
+  { fg: 'on-change', bg: 'change-fill', usage: 'Etiqueta "Subida · ahora"' },
+  { fg: 'content', bg: 'change-fill', usage: 'Fila cambiada' },
   { fg: 'signal-success', bg: 'raised', usage: 'Estado correcto' },
   { fg: 'signal-warning', bg: 'raised', usage: 'Aviso' },
   { fg: 'signal-info', bg: 'raised', usage: 'Enlace o novedad' },
@@ -116,7 +130,7 @@ let failures = 0
 
 for (const { name, palette } of MODES) {
   console.log(`\n${name}`)
-  for (const { fg, bg, usage } of PAIRS) {
+  for (const { fg, bg, usage, min = MIN_RATIO } of PAIRS) {
     const fgHex = palette.get(fg)
     const bgHex = palette.get(bg)
     if (!fgHex || !bgHex) {
@@ -125,20 +139,20 @@ for (const { name, palette } of MODES) {
       continue
     }
     const ratio = contrast(fgHex, bgHex)
-    const ok = ratio >= MIN_RATIO
+    const ok = ratio >= min
     if (!ok) failures++
     const mark = ok ? '✔' : '✖'
     const detail = `${fg} (${fgHex}) sobre ${bg} (${bgHex})`
     console.log(`  ${mark} ${ratio.toFixed(2)}:1  ${detail} — ${usage}`)
     if (!ok) {
-      console.error(`      falla: necesita ${MIN_RATIO}:1 para texto. Ajusta el token en tokens.css y actualiza la tabla de sdd/02-diseno.md › Color.`)
+      console.error(`      falla: necesita ${min}:1. Ajusta el token en tokens.css y actualiza la tabla de sdd/02-diseno.md › Color.`)
     }
   }
 }
 
 if (failures > 0) {
-  console.error(`\n${failures} par(es) por debajo de ${MIN_RATIO}:1.`)
+  console.error(`\n${failures} par(es) por debajo de su mínimo.`)
   process.exit(1)
 }
 
-console.log(`\nTodos los pares superan ${MIN_RATIO}:1 en los ${MODES.length} modos.`)
+console.log(`\nTodos los pares superan su mínimo (${MIN_RATIO}:1 texto, ${MIN_RATIO_ICON}:1 iconos) en los ${MODES.length} modos.`)

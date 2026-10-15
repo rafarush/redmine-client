@@ -1,31 +1,58 @@
 /*
  * Tokens del sistema de diseño. Fuente de verdad: sdd/02-diseno.md
- * Los contrastes se verifican en F0-T04; no cambiar valores sin actualizar ese documento.
+ * Mundo visual: Panel de embarque (F2b). Los contrastes los verifica
+ * `pnpm check:contrast`; no cambiar valores sin actualizar ese documento.
  */
 :root {
-  --surface: #f6f7f9;
-  --raised: #ffffff;
-  --content: #16181d;
-  --content-secondary: #5b6270;
-  --separator: #e3e6eb;
-  --accent: #b4233a;          /* Ruby: solo acciones primarias y foco */
+  /* Superficies: fondo apenas cálido, paneles blancos de alto contraste */
+  --surface: #f5f5f2;         /* fondo de la ventana */
+  --raised: #ffffff;          /* paneles, popovers, diálogos */
+  --sidebar: #ececea;
+  --fill-alt: #fafaf8;        /* fila alterna del panel */
+  --fill-hover: #f1f1ed;
+  --fill-selected: #e5e5e0;   /* selección neutra; el foco lo marca Ruby */
+
+  --content: #111214;
+  --content-secondary: #5f6064;
+  --content-tertiary: #8a8a8f; /* solo iconos y glifos de control (3:1) */
+  --separator: #e3e3df;
+
+  --accent: #b4233a;          /* Ruby: acción primaria, RTQA y foco */
   --on-accent: #ffffff;
+
+  /* Franja de salidas y placas de código de proyecto */
+  --board: #111214;
+  --on-board: #ffffff;
+  --on-board-secondary: #a8a8ad;
+  --board-separator: #2c2d31;
+
+  /* "Cambiado": el único color de aviso, como relleno, nunca como borde */
+  --change-fill: #fff3bf;
+  --on-change: #5a4600;
+
   --signal-success: #1f7a4d;
   --signal-warning: #8a5a00;
   --signal-info: #2557c4;
 
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
-  --font-data: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
+  --scrim: rgb(17 18 20 / 0.32);
+  --shadow-panel: 0 1px 2px rgb(17 18 20 / 0.05);
+  --shadow-popover: 0 2px 6px rgb(17 18 20 / 0.08), 0 12px 28px rgb(17 18 20 / 0.12);
+  --shadow-dialog: 0 4px 12px rgb(17 18 20 / 0.1), 0 28px 56px rgb(17 18 20 / 0.18);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-data: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
 
   /* Desktop: 13 px por defecto, mínimo 10 px (HIG typography.md) */
   --text-body: 13px;
   --text-caption: 11px;
   --text-title: 17px;
-  --text-large-title: 22px;
+  --text-large-title: 26px;
 
-  --radius-control: 6px;
-  --radius-surface: 10px;
+  --radius-plate: 4px;        /* placas de código, kbd, etiquetas */
+  --radius-control: 8px;
+  --radius-surface: 12px;
   --control-min: 28px;        /* objetivo mínimo en desktop */
+  --row-height: 40px;
 }
 
 @media (pointer: coarse) {
@@ -34,23 +61,45 @@
     --text-body: 17px;
     --text-caption: 13px;
     --text-title: 20px;
-    --text-large-title: 28px;
+    --text-large-title: 30px;
     --control-min: 44px;
+    --row-height: 52px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface: #111316;
-    --raised: #1b1e22;
-    --content: #eceef1;
-    --content-secondary: #9aa1ad;
-    --separator: #2a2e34;
+    --surface: #0f1012;
+    --raised: #1a1b1e;
+    --sidebar: #151619;
+    --fill-alt: #1e1f22;
+    --fill-hover: #232428;
+    --fill-selected: #2d2e33;
+
+    --content: #f2f2ef;
+    --content-secondary: #a1a1a6;
+    --content-tertiary: #7c7c82;
+    --separator: #2c2d31;
+
     --accent: #ff7088;
     --on-accent: #1a0a0e;
+
+    --board: #26272b;
+    --on-board: #f2f2ef;
+    --on-board-secondary: #a8a8ad;
+    --board-separator: #3a3b40;
+
+    --change-fill: #3a3000;
+    --on-change: #ffd84d;
+
     --signal-success: #4cc38a;
     --signal-warning: #e0a63a;
     --signal-info: #7aa2ff;
+
+    --scrim: rgb(0 0 0 / 0.5);
+    --shadow-panel: 0 0 0 1px rgb(255 255 255 / 0.04);
+    --shadow-popover: 0 2px 6px rgb(0 0 0 / 0.3), 0 12px 28px rgb(0 0 0 / 0.4);
+    --shadow-dialog: 0 4px 12px rgb(0 0 0 / 0.35), 0 28px 56px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -61,14 +110,18 @@
  */
 @media (prefers-contrast: more) and (prefers-color-scheme: light) {
   :root {
-    --content-secondary: #3d434e;
-    --separator: #767d8a;
+    --content-secondary: #3d3e42;
+    --content-tertiary: #5f6064;
+    --separator: #76777c;
+    --fill-selected: #d6d6d0;
   }
 }
 
 @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
   :root {
-    --content-secondary: #c3c9d4;
-    --separator: #6b7280;
+    --content-secondary: #c8c8cc;
+    --content-tertiary: #a8a8ad;
+    --separator: #6b6c72;
+    --fill-selected: #3a3b41;
   }
 }

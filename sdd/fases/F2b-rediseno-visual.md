@@ -12,7 +12,7 @@
   - _Acepta:_ dirección elegida por el usuario y anotada; `02-diseno.md` actualizado con el resumen. · ✔ f53458e
   - _Nota:_ elegida "Panel de embarque" (challenger del catálogo) sobre la asignada "Barra de comandas". Bocetos en `.impeccable/mocks/decision/`. Las imágenes de referencia del catálogo no se pudieron descargar (sin conexión a impeccable.style); la guía es el boceto elegido.
 
-- [ ] **F2b-T02** Tokens nuevos — superficies con contraste real (ventana, contenido, elevado), `--fill-hover`, `--fill-selected`, `--scrim`, separador sutil, escala de sombras de 2–3 niveles, radios sin píldoras y escala tipográfica que se usa (large-title, title, body, caption). Pares nuevos en `scripts/check-contrast.ts`.
+- [x] **F2b-T02** Tokens nuevos — superficies con contraste real (ventana, contenido, elevado), `--fill-hover`, `--fill-selected`, `--scrim`, separador sutil, escala de sombras de 2–3 niveles, radios sin píldoras y escala tipográfica que se usa (large-title, title, body, caption). Pares nuevos en `scripts/check-contrast.ts`.
   - _Depende:_ F2b-T01
   - _Acepta:_ `pnpm check:contrast` pasa en los 4 modos; ningún hex fuera de `tokens.css`.
 

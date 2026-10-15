@@ -75,10 +75,10 @@ test.describe('ancho regular', () => {
   test('usa los tokens de cada apariencia', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' })
     await page.goto('/')
-    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(246, 247, 249)')
+    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(245, 245, 242)')
 
     await page.emulateMedia({ colorScheme: 'dark' })
-    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(17, 19, 22)')
+    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(15, 16, 18)')
   })
 })
 
