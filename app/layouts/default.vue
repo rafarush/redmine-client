@@ -47,5 +47,6 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
 
     <LayoutTabBar />
     <LayoutCommandPalette />
+    <LayoutToasts />
   </div>
 </template>

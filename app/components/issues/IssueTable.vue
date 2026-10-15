@@ -34,6 +34,7 @@ const emit = defineEmits<{
 
 const ui = useUiStore()
 const ROW_HEIGHT = 40
+const HEADER_HEIGHT = 37
 const features = tableFeatures({})
 
 const dateFormat = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -65,7 +66,7 @@ const WIDTHS: Record<IssueColumnId, string> = {
   assigned_to: '10rem',
   updated_on: '8rem',
   spent_hours: '5rem',
-  actions: '2.75rem',
+  actions: '5.5rem',
 }
 const gridTemplate = computed(() => visibleIds.value.map(id => WIDTHS[id]).join(' '))
 
@@ -94,7 +95,37 @@ function select(index: number): void {
   virtualizer.value.scrollToIndex(row.index)
 }
 
+/** Menú de acciones de una fila: el "…" o el clic derecho lo abren en su punto. */
+const menu = ref<{ issue: Issue, x: number, y: number } | null>(null)
+const menuOpen = computed({
+  get: () => menu.value !== null,
+  set: (open: boolean) => {
+    if (!open) menu.value = null
+  },
+})
+
+function openMenu(issue: Issue, x: number, y: number): void {
+  menu.value = { issue, x, y }
+}
+
+function openMenuFromButton(issue: Issue, event: MouseEvent): void {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  openMenu(issue, rect.left, rect.bottom)
+}
+
 function onKeydown(event: KeyboardEvent): void {
+  // Tecla Menú o Mayús+F10: el mismo menú, anclado a la fila seleccionada.
+  if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) {
+    const row = rows.value[selectedIndex.value]
+    const box = scroller.value
+    if (row && box) {
+      event.preventDefault()
+      const item = virtualRows.value.find(v => v.index === selectedIndex.value)
+      const top = box.getBoundingClientRect().top + HEADER_HEIGHT + (item?.start ?? 0) - box.scrollTop + ROW_HEIGHT
+      openMenu(row.original, box.getBoundingClientRect().left + 120, top)
+    }
+    return
+  }
   if (event.metaKey || event.ctrlKey || event.altKey) return
   if (event.key === 'j' || event.key === 'ArrowDown') {
     event.preventDefault()
@@ -233,6 +264,7 @@ const announcement = computed(() =>
           :style="{ height: `${ROW_HEIGHT}px`, transform: `translateY(${item.start}px)`, gridTemplateColumns: gridTemplate }"
           @click="selectedId = rows[item.index]!.original.id"
           @dblclick="emit('open', rows[item.index]!.original)"
+          @contextmenu.prevent="openMenu(rows[item.index]!.original, $event.clientX, $event.clientY)"
         >
           <template
             v-for="id in visibleIds"
@@ -295,7 +327,7 @@ const announcement = computed(() =>
             <div
               v-else
               role="gridcell"
-              class="px-1"
+              class="flex items-center gap-0.5 px-1"
             >
               <Can
                 permission="log_time"
@@ -309,10 +341,26 @@ const announcement = computed(() =>
                   @click.stop="emit('log-time', rows[item.index]!.original)"
                 />
               </Can>
+              <UiButton
+                :label="`Acciones de la tarea #${rows[item.index]!.original.id}`"
+                icon="lucide:ellipsis"
+                icon-only
+                variant="ghost"
+                aria-haspopup="menu"
+                @click.stop="openMenuFromButton(rows[item.index]!.original, $event)"
+              />
             </div>
           </template>
         </div>
       </div>
     </div>
+
+    <IssuesIssueActionsMenu
+      :issue="menu?.issue ?? null"
+      :x="menu?.x ?? 0"
+      :y="menu?.y ?? 0"
+      :open="menuOpen"
+      @update:open="menuOpen = $event"
+    />
   </div>
 </template>

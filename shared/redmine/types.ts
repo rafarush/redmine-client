@@ -20,6 +20,13 @@ export const customFieldValueSchema = z.object({
 }).loose()
 export type CustomFieldValue = z.infer<typeof customFieldValueSchema>
 
+/** Persona asignable de un proyecto. Las membresías de grupo no tienen `user`. */
+export const projectMemberSchema = z.object({
+  id: z.number(),
+  user: refSchema.optional(),
+}).loose()
+export type ProjectMember = z.infer<typeof projectMemberSchema>
+
 // ------------------------------------------------------- consultas guardadas
 
 /** Consulta guardada de Redmine. La API solo da el nombre: los filtros no se exponen. */

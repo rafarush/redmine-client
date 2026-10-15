@@ -7,6 +7,7 @@ import type {
   IssueStatus,
   Paginated,
   Project,
+  ProjectMember,
   Ref,
   RoleDetail,
   SavedQuery,
@@ -19,6 +20,7 @@ import {
   issueSchema,
   issueStatusSchema,
   paginatedSchema,
+  projectMemberSchema,
   projectSchema,
   refSchema,
   roleDetailSchema,
@@ -107,6 +109,12 @@ export class RedmineClient {
     return this.getAll<Enumeration>(
       '/enumerations/time_entry_activities.json', 'time_entry_activities', enumerationSchema,
     )
+  }
+
+  /** Personas de un proyecto, para asignar. Solo las que tienen usuario, no grupos. */
+  async listProjectMembers(projectId: string | number): Promise<Ref[]> {
+    const members = await this.getAll<ProjectMember>(`/projects/${projectId}/memberships.json`, 'memberships', projectMemberSchema)
+    return members.flatMap(m => m.user ? [m.user] : [])
   }
 
   async listVersions(projectId: string | number): Promise<Version[]> {
