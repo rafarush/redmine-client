@@ -26,9 +26,9 @@
   - _Depende:_ F2-T04
   - _Acepta:_ un campo personalizado filtrable aparece en "+ Filtro"; "Asignado a" ofrece miembros aunque no estén en la lista actual.
 
-- [ ] **F2-T05** Vistas predefinidas en la sidebar — "Mis tareas" (asignadas a mí, abiertas), "Creadas por mí", "Todas las abiertas", "Vencen esta semana". Son frases predefinidas, editables en la lista.
+- [x] **F2-T05** Vistas predefinidas en la sidebar — "Mis tareas" (asignadas a mí, abiertas), "Creadas por mí", "Todas las abiertas", "Vencen esta semana". Son frases predefinidas, editables en la lista.
   - _Depende:_ F2-T04
-  - _Acepta:_ cada vista es un enlace con `?f=` (abrir en otra pestaña funciona).
+  - _Acepta:_ cada vista es un enlace con `?f=` (abrir en otra pestaña funciona). · ✔ b3090d1
 
 - [ ] **F2-T06** Filtros guardados — guardar la frase actual con nombre (local, Pinia persistido) y mostrar las consultas guardadas de Redmine (`/queries.json`) en la sidebar, en "Filtros guardados". Las de Redmine se aplican con `query_id` y se muestran como frase de solo lectura con "Duplicar como frase editable".
   - _Depende:_ F2-T05
