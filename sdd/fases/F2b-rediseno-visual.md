@@ -14,7 +14,7 @@
 
 - [x] **F2b-T02** Tokens nuevos — superficies con contraste real (ventana, contenido, elevado), `--fill-hover`, `--fill-selected`, `--scrim`, separador sutil, escala de sombras de 2–3 niveles, radios sin píldoras y escala tipográfica que se usa (large-title, title, body, caption). Pares nuevos en `scripts/check-contrast.ts`.
   - _Depende:_ F2b-T01
-  - _Acepta:_ `pnpm check:contrast` pasa en los 4 modos; ningún hex fuera de `tokens.css`.
+  - _Acepta:_ `pnpm check:contrast` pasa en los 4 modos; ningún hex fuera de `tokens.css`.  · ✔ 304cca6
 
 - [ ] **F2b-T03** Componentes `ui/` — Button, IconButton, Popover, Dialog pequeño, Menu, SegmentedControl, Card, Kbd, Tooltip y Toast (abajo, centrado) con los tokens nuevos.
   - _Depende:_ F2b-T02
