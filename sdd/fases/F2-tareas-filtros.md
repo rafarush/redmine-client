@@ -30,9 +30,10 @@
   - _Depende:_ F2-T04
   - _Acepta:_ cada vista es un enlace con `?f=` (abrir en otra pestaña funciona). · ✔ b3090d1
 
-- [ ] **F2-T06** Filtros guardados — guardar la frase actual con nombre (local, Pinia persistido) y mostrar las consultas guardadas de Redmine (`/queries.json`) en la sidebar, en "Filtros guardados". Las de Redmine se aplican con `query_id` y se muestran como frase de solo lectura con "Duplicar como frase editable".
+- [x] **F2-T06** Filtros guardados — guardar la frase actual con nombre (local, Pinia persistido) y mostrar las consultas guardadas de Redmine (`/queries.json`) en la sidebar, en "Filtros guardados". Las de Redmine se aplican con `query_id` y se muestran como frase de solo lectura con "Duplicar como frase editable".
   - _Depende:_ F2-T05
-  - _Acepta:_ una consulta pública de Redmine aparece y filtra igual que en Redmine.
+  - _Acepta:_ una consulta pública de Redmine aparece y filtra igual que en Redmine. · ✔ d4490e5
+  - _Nota:_ `/queries.json` solo devuelve id y nombre, no los filtros, así que la consulta de Redmine se muestra como banner de solo lectura con "Quitar consulta"; "Duplicar como frase editable" no es posible con la API y queda descartado.
 
 - [ ] **F2-T07** Búsqueda global (command palette) — `Ctrl/⌘+K`: busca tareas por `#id` o texto (`subject=~`), proyectos por nombre y comandos ("Nueva tarea", "Registrar tiempo en…", "Ir a Tiempo"). Búsquedas recientes con opción de borrarlas (`searching.md`).
   - _Depende:_ F2-T02
