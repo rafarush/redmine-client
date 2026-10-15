@@ -3,7 +3,11 @@
  * Muestra un atajo de teclado. Acepta la notación `Mod+K`, donde `Mod` se
  * resuelve a ⌘ en macOS y a Ctrl en el resto.
  */
-const props = defineProps<{ keys: string }>()
+const props = defineProps<{
+  keys: string
+  /** Sobre superficie oscura de panel (tooltip, franja de salidas). */
+  onBoard?: boolean
+}>()
 
 const isMac = useIsMac()
 
@@ -25,7 +29,10 @@ const description = computed(() =>
 
 <template>
   <kbd
-    class="data inline-flex items-center gap-0.5 rounded border border-separator px-1 text-[length:var(--text-caption)] text-secondary"
+    :class="[
+      'data inline-flex h-[18px] items-center gap-0.5 rounded-[var(--radius-plate)] border px-1 text-[length:var(--text-caption)] leading-none',
+      onBoard ? 'border-board-separator text-on-board-secondary' : 'border-separator bg-raised text-secondary',
+    ]"
     :aria-label="description"
   >
     <span

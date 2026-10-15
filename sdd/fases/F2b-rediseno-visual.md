@@ -16,9 +16,10 @@
   - _Depende:_ F2b-T01
   - _Acepta:_ `pnpm check:contrast` pasa en los 4 modos; ningún hex fuera de `tokens.css`.  · ✔ 304cca6
 
-- [ ] **F2b-T03** Componentes `ui/` — Button, IconButton, Popover, Dialog pequeño, Menu, SegmentedControl, Card, Kbd, Tooltip y Toast (abajo, centrado) con los tokens nuevos.
+- [x] **F2b-T03** Componentes `ui/` — Button, IconButton, Popover, Dialog pequeño, Menu, SegmentedControl, Card, Kbd, Tooltip y Toast (abajo, centrado) con los tokens nuevos.
   - _Depende:_ F2b-T02
-  - _Acepta:_ foco visible, `aria-label` en los de solo icono, `prefers-reduced-motion` respetado.
+  - _Acepta:_ foco visible, `aria-label` en los de solo icono, `prefers-reduced-motion` respetado. · ✔ HASH
+  - _Nota:_ en vez de envolver cada primitiva de Reka, `app/utils/ui-classes.ts` da la misma piel a popovers, menús y diálogos; animación de entrada/salida en `main.css` (`.ui-pop`, `.ui-dialog`, `.ui-scrim`). Nuevos: `UiDialog`, `UiSegmentedControl`, `UiPlate` (código de proyecto), `UiPanel`. El botón de solo icono sigue siendo `UiButton icon-only`. Los toasts se quedan arriba (decisión de `ebe56a4`) con la piel oscura de la franja de salidas.
 
 - [ ] **F2b-T04** Shell — un solo toolbar con título grande, sidebar al estilo macOS con un nivel de selección, avatar neutro, velo único `--scrim` en todos los overlays.
   - _Depende:_ F2b-T03

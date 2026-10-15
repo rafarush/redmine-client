@@ -225,14 +225,14 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
           </DropdownMenuTrigger>
           <DropdownMenuPortal>
             <DropdownMenuContent
-              class="z-50 min-w-44 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-lg"
+              class="ui-pop z-50 min-w-44 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-popover"
               align="end"
               :side-offset="6"
             >
               <DropdownMenuItem
                 v-for="id in sortableIds"
                 :key="id"
-                class="flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] outline-none data-[highlighted]:bg-surface"
+                class="flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] outline-none data-[highlighted]:bg-fill-selected"
                 @select="sortBy(id)"
               >
                 <Icon
@@ -257,7 +257,7 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
           </DropdownMenuTrigger>
           <DropdownMenuPortal>
             <DropdownMenuContent
-              class="z-50 min-w-44 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-lg"
+              class="ui-pop z-50 min-w-44 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-popover"
               align="end"
               :side-offset="6"
             >
@@ -266,7 +266,7 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
                 :key="id"
                 :model-value="ui.issueColumns.includes(id)"
                 :disabled="REQUIRED_COLUMNS.includes(id)"
-                class="flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] outline-none data-[disabled]:opacity-60 data-[highlighted]:bg-surface"
+                class="flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] outline-none data-[disabled]:opacity-60 data-[highlighted]:bg-fill-selected"
                 @select.prevent="ui.toggleIssueColumn(id)"
               >
                 <Icon

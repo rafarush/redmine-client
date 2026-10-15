@@ -29,7 +29,7 @@ const emit = defineEmits<{ 'update:open': [open: boolean], 'pick': [field: Filte
       <PopoverContent
         align="start"
         :side-offset="6"
-        class="z-50 w-56 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-lg"
+        class="ui-pop z-50 w-56 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-popover"
       >
         <button
           v-for="field in fields"

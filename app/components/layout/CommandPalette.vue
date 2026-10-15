@@ -194,9 +194,9 @@ const status = computed(() => {
 <template>
   <DialogRoot v-model:open="ui.paletteOpen">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-40 bg-black/40" />
+      <DialogOverlay class="ui-scrim fixed inset-0 z-40 bg-scrim" />
       <DialogContent
-        class="fixed left-1/2 top-[12vh] z-50 flex max-h-[70vh] w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 flex-col overflow-hidden rounded-[var(--radius-surface)] border border-separator bg-raised shadow-lg"
+        class="fixed left-1/2 top-[12vh] ui-dialog z-50 flex max-h-[70vh] w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 flex-col overflow-hidden rounded-[var(--radius-surface)] border border-separator bg-raised shadow-dialog"
         @open-auto-focus.prevent="inputEl?.focus()"
       >
         <DialogTitle class="sr-only">

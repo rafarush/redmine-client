@@ -111,7 +111,7 @@ function onKeydown(event: KeyboardEvent): void {
       <PopoverContent
         align="start"
         :side-offset="6"
-        class="z-50 w-72 rounded-[var(--radius-surface)] border border-separator bg-raised p-2 shadow-lg"
+        class="ui-pop z-50 w-72 rounded-[var(--radius-surface)] border border-separator bg-raised p-2 shadow-popover"
       >
         <!-- Lista con búsqueda y selección múltiple. El estado vive en la frase, no en el Listbox. -->
         <ListboxRoot
@@ -130,7 +130,7 @@ function onKeydown(event: KeyboardEvent): void {
               v-for="option in shown"
               :key="option.value"
               :value="option.value"
-              class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content data-[highlighted]:bg-surface"
+              class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content data-[highlighted]:bg-fill-selected"
               @select.prevent="emit('toggle', option.value)"
             >
               <Icon

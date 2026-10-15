@@ -28,9 +28,9 @@ const GROUPS = [
 <template>
   <DialogRoot v-model:open="ui.shortcutsOpen">
     <DialogPortal>
-      <DialogOverlay class="fixed inset-0 z-40 bg-content/30" />
+      <DialogOverlay class="ui-scrim fixed inset-0 z-40 bg-scrim" />
       <DialogContent
-        class="fixed left-1/2 top-[15vh] z-50 w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 rounded-[var(--radius-surface)] border border-separator bg-raised p-4 shadow-lg"
+        class="fixed left-1/2 top-[15vh] ui-dialog z-50 w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 rounded-[var(--radius-surface)] border border-separator bg-raised p-4 shadow-dialog"
       >
         <DialogTitle class="text-[length:var(--text-title)] font-semibold text-content">
           Atajos de teclado

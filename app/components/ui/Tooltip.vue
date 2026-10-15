@@ -21,12 +21,13 @@ defineProps<{
     <TooltipPortal>
       <TooltipContent
         :side-offset="6"
-        class="z-50 flex items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-2 py-1 text-[length:var(--text-caption)] text-content shadow-lg"
+        class="ui-pop z-50 flex items-center gap-2 rounded-[var(--radius-control)] bg-board px-2 py-1 text-[length:var(--text-caption)] text-on-board shadow-popover"
       >
         {{ text }}
         <UiKbd
           v-if="shortcut"
           :keys="shortcut"
+          on-board
         />
       </TooltipContent>
     </TooltipPortal>

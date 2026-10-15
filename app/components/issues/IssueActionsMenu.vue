@@ -83,8 +83,8 @@ function openInRedmine(): void {
   window.open(`${session.url.replace(/\/$/, '')}/issues/${props.issue.id}`, '_blank', 'noopener')
 }
 
-const itemClass = 'flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content outline-none data-[highlighted]:bg-surface data-[disabled]:opacity-50'
-const contentClass = 'z-50 min-w-48 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-lg'
+const itemClass = 'flex min-h-[var(--control-min)] cursor-default items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content outline-none data-[highlighted]:bg-fill-selected data-[disabled]:opacity-50'
+const contentClass = 'ui-pop z-50 min-w-48 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-popover'
 </script>
 
 <template>

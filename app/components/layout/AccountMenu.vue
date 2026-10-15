@@ -36,7 +36,7 @@ async function disconnect(): Promise<void> {
 
     <DropdownMenuPortal>
       <DropdownMenuContent
-        class="z-50 min-w-56 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-lg"
+        class="ui-pop z-50 min-w-56 rounded-[var(--radius-surface)] border border-separator bg-raised p-1 shadow-popover"
         :side-offset="6"
         align="start"
       >
@@ -45,7 +45,7 @@ async function disconnect(): Promise<void> {
           :href="session.url"
           target="_blank"
           rel="noopener"
-          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-highlighted:bg-surface"
+          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-[highlighted]:bg-fill-selected"
         >
           <Icon
             name="lucide:external-link"
@@ -58,7 +58,7 @@ async function disconnect(): Promise<void> {
         <DropdownMenuSeparator class="my-1 h-px bg-separator" />
 
         <DropdownMenuItem
-          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-highlighted:bg-surface"
+          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-[highlighted]:bg-fill-selected"
           @select="disconnect"
         >
           <Icon

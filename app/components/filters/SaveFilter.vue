@@ -39,7 +39,7 @@ function submit(): void {
       <PopoverContent
         align="end"
         :side-offset="6"
-        class="z-50 w-64 rounded-[var(--radius-surface)] border border-separator bg-raised p-3 shadow-lg"
+        class="ui-pop z-50 w-64 rounded-[var(--radius-surface)] border border-separator bg-raised p-3 shadow-popover"
       >
         <form
           class="flex flex-col gap-2"

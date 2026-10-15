@@ -32,15 +32,15 @@ const props = withDefaults(defineProps<{
 defineOptions({ inheritAttrs: false })
 
 const VARIANT_STYLES = {
-  primary: 'bg-accent text-on-accent hover:brightness-110',
-  secondary: 'bg-raised text-content border border-separator hover:border-secondary',
-  ghost: 'text-secondary hover:bg-raised hover:text-content',
+  primary: 'bg-accent text-on-accent font-semibold hover:brightness-110 active:brightness-95',
+  secondary: 'bg-raised text-content border border-separator shadow-panel hover:bg-fill-hover',
+  ghost: 'text-secondary hover:bg-fill-hover hover:text-content',
 } as const
 
 const classes = computed(() => [
   'inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-control)]',
   'min-h-[var(--control-min)] text-[length:var(--text-body)] font-medium',
-  'transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+  'transition-[background-color,color,filter] duration-150 disabled:cursor-not-allowed disabled:opacity-50',
   props.iconOnly ? 'min-w-[var(--control-min)] px-0' : 'px-3',
   VARIANT_STYLES[props.variant],
 ])
