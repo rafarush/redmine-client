@@ -41,7 +41,7 @@
   - _Nota:_ la ficha de tarea llega con F3, así que `#id` + Enter abre la tarea en Redmine (pestaña nueva); cambiarlo a la ruta de detalle en F3. Los comandos "Nueva tarea" y "Registrar tiempo en…" se añaden en F3-T07 y F4.
 
 - [x] **F2-T08** Cambio rápido en la fila — menú contextual (clic derecho y botón "…"): cambiar estado, asignar, prioridad, copiar enlace, abrir en Redmine. Solo opciones permitidas (`<Can>`), estados según `allowed_statuses`. Guardado optimista + toast con "Deshacer". · ✔ 2dd04f1
-  - _Nota:_ "Asignar a" usa `edit_issues` (el mapa de permisos no tiene un permiso de asignación). Se añade `listProjectMembers` (`/projects/:id/memberships.json`). El toast es mínimo (`stores/toasts.ts`), sin cola ni diseño final: lo pulirá F9. El e2e de F2 queda pendiente de levantar Docker.
+  - _Nota:_ "Asignar a" usa `edit_issues` (el mapa de permisos no tiene un permiso de asignación). Se añade `listProjectMembers` (`/projects/:id/memberships.json`). El toast es mínimo (`stores/toasts.ts`), sin cola ni diseño final: lo pulirá F9. e2e en `tests/e2e/issues.spec.ts`, verificado con el Redmine local.
   - _Depende:_ F2-T03, F1-T07
   - _Acepta:_ si Redmine rechaza el cambio (workflow), la fila vuelve a su estado y el toast explica el motivo.
 
@@ -52,3 +52,5 @@
 ## Definición de hecho
 
 Desde la lista se puede encontrar cualquier tarea en ≤ 3 interacciones, filtrar sin recarga, cambiar estado sin abrir la tarea y compartir la vista por URL. Pasa la checklist de diseño y un e2e de Playwright (filtrar → abrir → cambiar estado).
+
+_Estado:_ e2e de filtrar → menú → cambiar estado → deshacer, más permisos del cliente, vistas, filtros guardados y búsqueda, en `tests/e2e/issues.spec.ts`. "Abrir" la ficha completa llega con F3. Pendiente de la checklist de diseño (revisión visual con `apple-design`).

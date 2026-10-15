@@ -14,6 +14,8 @@ const BASE_URL = `http://${HOST}:${PORT}`
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  // Con más workers el dev server compila varias rutas a la vez y los tests se agotan por timeout.
+  workers: process.env.CI ? 2 : 3,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',

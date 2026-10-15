@@ -18,7 +18,8 @@ test.describe('ancho regular', () => {
     await page.goto('/')
     await expect(sidebar(page)).toBeVisible()
     await expect(tabBar(page)).toBeHidden()
-    await expect(sidebar(page).getByRole('link')).toHaveCount(4)
+    // Solo las secciones de primer nivel; las vistas y los filtros guardados van en sus propios grupos.
+    await expect(sidebar(page).getByRole('navigation').first().getByRole('link')).toHaveCount(4)
   })
 
   test('marca la sección actual para lectores de pantalla', async ({ page }) => {
