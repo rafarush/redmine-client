@@ -263,7 +263,7 @@ function describeValue(field: FilterField, value: string, lookup?: LabelLookup):
   return lookup?.(field, value) ?? value
 }
 
-function describeCondition(condition: FilterCondition, lookup?: LabelLookup): string {
+export function describeCondition(condition: FilterCondition, lookup?: LabelLookup): string {
   const phrase = FIELD_PHRASES[condition.field] ?? describeCustomField(condition.field, lookup)
 
   if (condition.operator === '*') return `con ${phrase} cualquiera`

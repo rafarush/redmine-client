@@ -18,9 +18,13 @@
   - _Depende:_ F2-T02, F0-T05
   - _Acepta:_ 2 000 tareas con scroll fluido; teclado completo; anuncio `aria-live` "N tareas". · ✔ 67af5b0
 
-- [ ] **F2-T04** Frase de filtros — `components/filters/FilterSentence.vue` + `FilterToken.vue` (Popover de Reka con Listbox multi-selección con búsqueda, rango de fechas con atajos) + `AddCondition.vue`. Valores ofrecidos según catálogos y proyectos visibles; campos personalizados con `is_filter`. Un popover abierto a la vez. Atajo `/` enfoca la frase. En compacto, la frase se desplaza horizontalmente y se colapsa en "N filtros ▾".
+- [~] **F2-T04** Frase de filtros — `components/filters/FilterSentence.vue` + `FilterToken.vue` (Popover de Reka con Listbox multi-selección con búsqueda, rango de fechas con atajos) + `AddCondition.vue`. Valores ofrecidos según catálogos y proyectos visibles; campos personalizados con `is_filter`. Un popover abierto a la vez. Atajo `/` enfoca la frase. En compacto, la frase se desplaza horizontalmente y se colapsa en "N filtros ▾".
   - _Depende:_ F2-T01, F1-T06
   - _Acepta:_ checklist de diseño; lector de pantalla anuncia la frase como grupo; `Retroceso` sobre un token lo quita; atrás/adelante del navegador recorre los cambios.
+
+- [ ] **F2-T10** Campos personalizados y personas en la frase — ofrecer `cf_<id>` con `is_filter` (T04 los dejó fuera: `/custom_fields.json` exige admin, hay que sacarlos de otro sitio) y listar personas desde las membresías de los proyectos en vez de las vistas en la lista.
+  - _Depende:_ F2-T04
+  - _Acepta:_ un campo personalizado filtrable aparece en "+ Filtro"; "Asignado a" ofrece miembros aunque no estén en la lista actual.
 
 - [ ] **F2-T05** Vistas predefinidas en la sidebar — "Mis tareas" (asignadas a mí, abiertas), "Creadas por mí", "Todas las abiertas", "Vencen esta semana". Son frases predefinidas, editables en la lista.
   - _Depende:_ F2-T04
