@@ -164,6 +164,11 @@ export class RedmineClient {
     return timeEntrySchema.parse(response.time_entry)
   }
 
+  /** Ajusta un registro de tiempo (horas, comentario, actividad). Redmine responde 204 sin cuerpo. */
+  async updateTimeEntry(id: number, timeEntry: Record<string, unknown>): Promise<void> {
+    await this.transport.request({ method: 'PUT', path: `/time_entries/${id}.json`, body: { time_entry: timeEntry } })
+  }
+
   async deleteTimeEntry(id: number): Promise<void> {
     await this.transport.request({ method: 'DELETE', path: `/time_entries/${id}.json` })
   }
