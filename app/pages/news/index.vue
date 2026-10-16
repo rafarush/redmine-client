@@ -92,22 +92,12 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
       <template #header>
         <label class="flex items-center gap-2">
           <span class="panel-label">Proyecto</span>
-          <select
-            :value="projectKey"
-            :class="[FIELD, 'min-w-0']"
-            @change="selectProject(($event.target as HTMLSelectElement).value)"
-          >
-            <option value="">
-              Todos
-            </option>
-            <option
-              v-for="p in readable"
-              :key="p.id"
-              :value="p.identifier"
-            >
-              {{ p.name }}
-            </option>
-          </select>
+          <UiSelect
+            :model-value="projectKey"
+            class="min-w-48"
+            :options="[{ value: '', label: 'Todos' }, ...readable.map(p => ({ value: p.identifier, label: p.name }))]"
+            @update:model-value="selectProject(String($event))"
+          />
         </label>
       </template>
 
@@ -186,18 +176,10 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
       >
         <label class="flex flex-col gap-1">
           <span class="panel-label">Proyecto</span>
-          <select
+          <UiSelect
             v-model="form.project"
-            :class="FIELD"
-          >
-            <option
-              v-for="p in publishable"
-              :key="p.id"
-              :value="p.identifier"
-            >
-              {{ p.name }}
-            </option>
-          </select>
+            :options="publishable.map(p => ({ value: p.identifier, label: p.name }))"
+          />
         </label>
         <label class="flex flex-col gap-1">
           <span class="panel-label">Título</span>

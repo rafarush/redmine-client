@@ -58,22 +58,11 @@ function save(): void {
         class="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5"
       >
         <span class="font-semibold">{{ step.label }}</span>
-        <select
-          :value="draft[step.key] ?? ''"
-          class="min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2"
-          @change="setStep(step.key, ($event.target as HTMLSelectElement).value)"
-        >
-          <option value="">
-            Sin elegir
-          </option>
-          <option
-            v-for="status in session.catalogs.statuses"
-            :key="status.id"
-            :value="status.id"
-          >
-            {{ status.name }}{{ status.is_closed ? ' (cerrada)' : '' }}
-          </option>
-        </select>
+        <UiSelect
+          :model-value="draft[step.key] ?? ''"
+          :options="[{ value: '', label: 'Sin elegir' }, ...session.catalogs.statuses.map(status => ({ value: status.id, label: `${status.name}${status.is_closed ? ' (cerrada)' : ''}` }))]"
+          @update:model-value="setStep(step.key, String($event))"
+        />
         <span class="col-start-2 text-[length:var(--text-caption)] text-secondary">{{ step.hint }}</span>
       </label>
     </div>

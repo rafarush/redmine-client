@@ -166,18 +166,10 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
           </label>
           <label class="flex flex-col gap-1">
             <span class="panel-label">Actividad</span>
-            <select
-              v-model.number="form.activity_id"
-              :class="FIELD"
-            >
-              <option
-                v-for="activity in activities"
-                :key="activity.id"
-                :value="activity.id"
-              >
-                {{ activity.name }}
-              </option>
-            </select>
+            <UiSelect
+              v-model="form.activity_id"
+              :options="activities.map(a => ({ value: a.id, label: a.name }))"
+            />
           </label>
         </div>
         <label class="flex flex-col gap-1">

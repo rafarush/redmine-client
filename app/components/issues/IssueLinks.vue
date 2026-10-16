@@ -101,7 +101,6 @@ function removeWatcher(id: number, name: string): void {
 
 const exclude = computed(() => [props.issue.id, ...relatedIds.value, ...children.value.map(c => c.id)])
 const ROW = 'flex min-h-9 items-center gap-2 px-4'
-const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2'
 </script>
 
 <template>
@@ -157,19 +156,12 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
         v-if="canRelate"
         class="flex flex-wrap gap-2 px-4 pt-1"
       >
-        <select
+        <UiSelect
           v-model="relationType"
-          aria-label="Tipo de relación"
-          :class="FIELD"
-        >
-          <option
-            v-for="option in CREATABLE_RELATIONS"
-            :key="option.type"
-            :value="option.type"
-          >
-            {{ option.label }}
-          </option>
-        </select>
+          label="Tipo de relación"
+          class="w-auto min-w-40"
+          :options="CREATABLE_RELATIONS.map(o => ({ value: o.type, label: o.label }))"
+        />
         <IssuesIssuePicker
           label="Tarea con la que relacionar"
           :exclude="exclude"
@@ -273,22 +265,13 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
         class="flex gap-2 px-4 pt-1"
         @submit.prevent="addWatcher"
       >
-        <select
+        <UiSelect
           v-model="watcherToAdd"
-          aria-label="Persona que añadir como observador"
-          :class="[FIELD, 'min-w-0 flex-1']"
-        >
-          <option value="">
-            Elegir persona…
-          </option>
-          <option
-            v-for="person in watcherCandidates"
-            :key="person.id"
-            :value="person.id"
-          >
-            {{ person.name }}
-          </option>
-        </select>
+          label="Persona que añadir como observador"
+          placeholder="Elegir persona…"
+          class="min-w-0 flex-1"
+          :options="watcherCandidates.map(p => ({ value: p.id, label: p.name }))"
+        />
         <UiButton
           type="submit"
           label="Añadir"

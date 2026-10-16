@@ -57,8 +57,6 @@ async function move(): Promise<void> {
     saving.value = false
   }
 }
-
-const FIELD = 'min-h-[var(--control-min)] w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2.5'
 </script>
 
 <template>
@@ -80,18 +78,10 @@ const FIELD = 'min-h-[var(--control-min)] w-full rounded-[var(--radius-control)]
     >
       <label class="flex flex-col gap-1">
         <span class="panel-label">Proyecto de destino</span>
-        <select
+        <UiSelect
           v-model="targetId"
-          :class="FIELD"
-        >
-          <option
-            v-for="p in targets"
-            :key="p.id"
-            :value="String(p.id)"
-          >
-            {{ p.name }}
-          </option>
-        </select>
+          :options="targets.map(p => ({ value: String(p.id), label: p.name }))"
+        />
       </label>
       <label
         v-if="needsTracker"
@@ -99,25 +89,11 @@ const FIELD = 'min-h-[var(--control-min)] w-full rounded-[var(--radius-control)]
       >
         <span class="panel-label">Tipo en el destino</span>
         <span class="text-[length:var(--text-caption)] text-warning">{{ target?.name }} no tiene el tipo "{{ issue.tracker.name }}": elige otro.</span>
-        <select
+        <UiSelect
           v-model="trackerId"
-          :class="FIELD"
-          aria-required="true"
-        >
-          <option
-            value=""
-            disabled
-          >
-            Elegir tipo…
-          </option>
-          <option
-            v-for="t in target?.trackers ?? []"
-            :key="t.id"
-            :value="String(t.id)"
-          >
-            {{ t.name }}
-          </option>
-        </select>
+          placeholder="Elegir tipo…"
+          :options="(target?.trackers ?? []).map(t => ({ value: String(t.id), label: t.name }))"
+        />
       </label>
       <button
         type="submit"

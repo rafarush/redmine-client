@@ -112,6 +112,16 @@ const openVersions = computed(() => (versions.data.value ?? []).filter(v => v.st
 const categories = computed(() => detail.data.value?.issue_categories ?? [])
 const customFields = computed(() => detail.data.value?.issue_custom_fields ?? [])
 
+/** Asunto de la tarea padre elegida; si viene de un borrador solo se conoce el número. */
+const parentSubject = ref('')
+function pickParent(issue: { id: number, subject: string }): void {
+  draft.value.parent_issue_id = String(issue.id)
+  parentSubject.value = issue.subject
+}
+watch(() => draft.value.parent_issue_id, (id) => {
+  if (!id.trim()) parentSubject.value = ''
+})
+
 const title = computed(() => project.value ? `Nueva tarea en ${project.value.name}` : 'Nueva tarea')
 
 // ---------------------------------------------------------------- cerrar
@@ -236,35 +246,19 @@ const LABEL = 'flex flex-col gap-1'
       <div class="grid gap-3 wide:grid-cols-2">
         <label :class="LABEL">
           <span class="panel-label">Proyecto</span>
-          <select
+          <UiSelect
             v-model="draft.project_id"
-            :aria-invalid="!!errors.project_id"
-            :class="FIELD"
-          >
-            <option
-              v-for="p in projects"
-              :key="p.id"
-              :value="String(p.id)"
-            >
-              {{ p.name }}
-            </option>
-          </select>
+            :options="projects.map(p => ({ value: String(p.id), label: p.name }))"
+            :invalid="!!errors.project_id"
+          />
         </label>
         <label :class="LABEL">
           <span class="panel-label">Tipo</span>
-          <select
+          <UiSelect
             v-model="draft.tracker_id"
-            :aria-invalid="!!errors.tracker_id"
-            :class="FIELD"
-          >
-            <option
-              v-for="t in trackers"
-              :key="t.id"
-              :value="String(t.id)"
-            >
-              {{ t.name }}
-            </option>
-          </select>
+            :options="trackers.map(t => ({ value: String(t.id), label: t.name }))"
+            :invalid="!!errors.tracker_id"
+          />
         </label>
       </div>
 
@@ -295,39 +289,31 @@ const LABEL = 'flex flex-col gap-1'
         />
       </label>
 
+      <label
+        v-if="categories.length > 0"
+        :class="LABEL"
+      >
+        <span class="panel-label">Categoría</span>
+        <UiSelect
+          v-model="draft.category_id"
+          :options="[{ value: '', label: 'Sin categoría' }, ...categories.map(c => ({ value: String(c.id), label: c.name }))]"
+        />
+      </label>
+
       <div class="grid gap-3 wide:grid-cols-2">
         <label :class="LABEL">
           <span class="panel-label">Asignada a</span>
-          <select
+          <UiSelect
             v-model="draft.assigned_to_id"
-            :class="FIELD"
-          >
-            <option value="">
-              Sin asignar
-            </option>
-            <option
-              v-for="m in members.data.value ?? []"
-              :key="m.id"
-              :value="String(m.id)"
-            >
-              {{ m.id === session.user?.id ? `${m.name} (yo)` : m.name }}
-            </option>
-          </select>
+            :options="[{ value: '', label: 'Sin asignar' }, ...(members.data.value ?? []).map(m => ({ value: String(m.id), label: m.id === session.user?.id ? `${m.name} (yo)` : m.name }))]"
+          />
         </label>
         <label :class="LABEL">
           <span class="panel-label">Prioridad</span>
-          <select
+          <UiSelect
             v-model="draft.priority_id"
-            :class="FIELD"
-          >
-            <option
-              v-for="p in session.catalogs.priorities"
-              :key="p.id"
-              :value="String(p.id)"
-            >
-              {{ p.name }}
-            </option>
-          </select>
+            :options="session.catalogs.priorities.map(p => ({ value: String(p.id), label: p.name }))"
+          />
         </label>
       </div>
 
@@ -353,42 +339,10 @@ const LABEL = 'flex flex-col gap-1'
       >
         <label :class="LABEL">
           <span class="panel-label">Sprint</span>
-          <select
+          <UiSelect
             v-model="draft.fixed_version_id"
-            :class="FIELD"
-          >
-            <option value="">
-              Sin sprint
-            </option>
-            <option
-              v-for="v in openVersions"
-              :key="v.id"
-              :value="String(v.id)"
-            >
-              {{ v.name }}
-            </option>
-          </select>
-        </label>
-        <label
-          v-if="categories.length > 0"
-          :class="LABEL"
-        >
-          <span class="panel-label">Categoría</span>
-          <select
-            v-model="draft.category_id"
-            :class="FIELD"
-          >
-            <option value="">
-              Sin categoría
-            </option>
-            <option
-              v-for="c in categories"
-              :key="c.id"
-              :value="String(c.id)"
-            >
-              {{ c.name }}
-            </option>
-          </select>
+            :options="[{ value: '', label: 'Sin sprint' }, ...openVersions.map(v => ({ value: String(v.id), label: v.name }))]"
+          />
         </label>
         <label :class="LABEL">
           <span class="panel-label">Empieza</span>
@@ -427,21 +381,32 @@ const LABEL = 'flex flex-col gap-1'
             class="text-[length:var(--text-caption)] text-warning"
           >{{ errors.estimated_hours }}</span>
         </label>
-        <label :class="LABEL">
+        <div :class="LABEL">
           <span class="panel-label">Tarea padre</span>
-          <input
-            v-model="draft.parent_issue_id"
-            type="text"
-            inputmode="numeric"
-            placeholder="Nº de tarea"
-            :aria-invalid="!!errors.parent_issue_id"
-            :class="[FIELD, 'data']"
+          <div
+            v-if="draft.parent_issue_id.trim()"
+            :class="[FIELD, 'flex items-center gap-2 py-1']"
           >
+            <span class="data shrink-0 text-secondary">#{{ draft.parent_issue_id.replace('#', '').trim() }}</span>
+            <span class="min-w-0 flex-1 truncate">{{ parentSubject }}</span>
+            <UiButton
+              label="Quitar la tarea padre"
+              icon="lucide:x"
+              icon-only
+              variant="ghost"
+              @click="draft.parent_issue_id = ''"
+            />
+          </div>
+          <IssuesIssuePicker
+            v-else
+            label="Tarea padre"
+            @pick="pickParent"
+          />
           <span
             v-if="errors.parent_issue_id"
             class="text-[length:var(--text-caption)] text-warning"
           >{{ errors.parent_issue_id }}</span>
-        </label>
+        </div>
         <label
           v-for="field in customFields"
           :key="field.id"

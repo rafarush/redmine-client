@@ -221,20 +221,10 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
               </label>
               <label class="flex flex-col gap-1">
                 <span class="panel-label">Estado</span>
-                <select
+                <UiSelect
                   v-model="form.status"
-                  :class="FIELD"
-                >
-                  <option value="open">
-                    Abierta
-                  </option>
-                  <option value="locked">
-                    Bloqueada
-                  </option>
-                  <option value="closed">
-                    Cerrada
-                  </option>
-                </select>
+                  :options="[{ value: 'open', label: 'Abierta' }, { value: 'locked', label: 'Bloqueada' }, { value: 'closed', label: 'Cerrada' }]"
+                />
               </label>
             </div>
             <label class="flex flex-col gap-1">

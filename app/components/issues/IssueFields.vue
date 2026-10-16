@@ -191,24 +191,15 @@ const FIELD = 'min-h-8 w-full rounded-[var(--radius-control)] border border-sepa
         <dd class="min-w-0">
           <!-- Editor del campo. -->
           <template v-if="row.field && editing === row.field">
-            <select
+            <UiSelect
               v-if="row.input === 'select'"
-              v-model="draft"
-              :data-field-editor="row.field"
-              :aria-label="row.label"
-              :class="FIELD"
-              @change="commit"
-              @keydown.esc.prevent="cancel"
-              @blur="cancel"
-            >
-              <option
-                v-for="option in optionsFor(row.field)"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </option>
-            </select>
+              :model-value="draft"
+              :label="row.label"
+              default-open
+              :options="optionsFor(row.field) ?? []"
+              @update:model-value="(value: string | number) => { draft = String(value); void commit() }"
+              @update:open="(open: boolean) => { if (!open && editing === row.field) cancel() }"
+            />
             <input
               v-else
               v-model="draft"

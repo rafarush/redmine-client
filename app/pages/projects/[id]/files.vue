@@ -122,7 +122,7 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
             Suelta aquí los archivos o
             <button
               type="button"
-              class="font-medium text-content underline underline-offset-4"
+              class="font-medium text-content underline underline-offset-4 transition-colors hover:text-accent"
               @click="picker?.click()"
             >
               elígelos
@@ -141,21 +141,11 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
         <div class="flex flex-wrap gap-3">
           <label class="flex items-center gap-2">
             <span class="panel-label">Versión</span>
-            <select
+            <UiSelect
               v-model="versionId"
-              :class="FIELD"
-            >
-              <option value="">
-                Sin versión
-              </option>
-              <option
-                v-for="v in openVersions"
-                :key="v.id"
-                :value="v.id"
-              >
-                {{ v.name }}
-              </option>
-            </select>
+              class="min-w-48"
+              :options="[{ value: '', label: 'Sin versión' }, ...openVersions.map(v => ({ value: v.id, label: v.name }))]"
+            />
           </label>
           <label class="flex min-w-48 flex-1 items-center gap-2">
             <span class="panel-label">Descripción</span>
