@@ -38,7 +38,8 @@ test.describe('lista de tareas', () => {
     // Teclado: se abre el submenú de estados, se enfoca la primera opción y Enter la elige.
     await page.getByRole('menuitem', { name: 'Cambiar estado' }).focus()
     await page.keyboard.press('ArrowRight')
-    const firstOption = page.getByRole('menu').last().getByRole('menuitem').first()
+    // El estado actual sale deshabilitado: se elige el primero distinto.
+    const firstOption = page.getByRole('menu').last().locator('[role="menuitem"]:not([data-disabled])').first()
     await expect(firstOption).toBeVisible()
     await firstOption.focus()
     await page.keyboard.press('Enter')

@@ -29,7 +29,7 @@ function localToday(): string {
 }
 
 test.describe('tiempo', () => {
-  test('registra y ajusta horas desde el parte', async ({ page }, testInfo) => {
+  test('registra horas desde el parte y, sin permiso de edición, la celda queda de solo lectura', async ({ page }, testInfo) => {
     // Una tarea distinta por resolución: los dos proyectos corren a la vez y no deben pisarse la celda.
     const { issues } = await api<{ issues: { id: number }[] }>('GET', '/issues.json?assigned_to_id=me&status_id=open&limit=2')
     const issueId = issues[testInfo.project.name === 'compact' ? 1 : 0]!.id
@@ -48,12 +48,11 @@ test.describe('tiempo', () => {
       await cell.fill('45')
       await expect(page.getByText('= 45 min')).toBeVisible()
       await cell.press('Enter')
-      await expect(cell).toHaveValue('0:45')
 
-      await cell.fill('1h30')
-      await cell.press('Enter')
-      await expect(cell).toHaveValue('1:30')
-      await expect(page.getByRole('region', { name: 'Registros de la semana' }).getByText('1:30').first()).toBeVisible()
+      // `desarrollador` no tiene `edit_own_time_entries`: con un registro, la celda pasa a
+      // ser de solo lectura con el total (no se ofrece ajustar lo que Redmine rechazaría).
+      await expect(page.getByLabel(new RegExp(`^Tarea #${issueId}, .*: 0:45$`))).toBeVisible()
+      await expect(page.getByRole('region', { name: 'Registros de la semana' }).getByText('0:45').filter({ visible: true }).first()).toBeVisible()
     }
     finally {
       const after = await api<{ time_entries: { id: number }[] }>('GET', `/time_entries.json?issue_id=${issueId}&from=${day}&to=${day}&limit=100`)

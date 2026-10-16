@@ -19,7 +19,8 @@ test.describe('ancho regular', () => {
     await expect(sidebar(page)).toBeVisible()
     await expect(tabBar(page)).toBeHidden()
     // Solo las secciones de primer nivel; las vistas y los filtros guardados van en sus propios grupos.
-    await expect(sidebar(page).getByRole('navigation').first().getByRole('link')).toHaveCount(5)
+    // Secciones de `useNavItems` (6) más Noticias, que solo está en la sidebar.
+    await expect(sidebar(page).getByRole('navigation').first().getByRole('link')).toHaveCount(7)
   })
 
   test('marca la sección actual para lectores de pantalla', async ({ page }) => {
@@ -89,7 +90,7 @@ test.describe('ancho compacto', () => {
     await page.goto('/')
     await expect(sidebar(page)).toBeHidden()
     await expect(tabBar(page)).toBeVisible()
-    await expect(tabBar(page).getByRole('link')).toHaveCount(5)
+    await expect(tabBar(page).getByRole('link')).toHaveCount(6)
   })
 
   test('no provoca scroll horizontal', async ({ page }) => {
