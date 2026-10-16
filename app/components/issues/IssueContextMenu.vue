@@ -29,6 +29,7 @@ const session = useSessionStore()
 const workspace = useWorkspaceStore()
 const toasts = useToastStore()
 const { change } = useIssueChange()
+const agentQueue = useAgentQueue()
 
 const issue = computed(() => menu.state.value?.issue ?? null)
 const open = computed({
@@ -162,6 +163,20 @@ const HINT = 'ml-auto pl-6 text-[length:var(--text-caption)] text-tertiary data'
             />
             Ver detalles
             <span :class="HINT">↵</span>
+          </DropdownMenuItem>
+
+          <!-- Cola de Agente (F11-T06): solo si hay agente configurado. -->
+          <DropdownMenuItem
+            v-if="agentQueue.runner.configured.value"
+            :class="MENU_ITEM"
+            @select="agentQueue.add(issue)"
+          >
+            <Icon
+              name="lucide:bot"
+              :class="ICON"
+              aria-hidden="true"
+            />
+            Añadir a la cola del agente
           </DropdownMenuItem>
 
           <!-- Solo dentro de una lista personalizada del workspace; es estado local, sin permiso. -->

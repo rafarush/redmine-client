@@ -70,6 +70,8 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
     <!-- Una sola instancia para toda la app: menú de tarea y diálogos de tiempo y ajustes. -->
     <IssuesIssueContextMenu />
     <IssuesNewIssueDialog />
+    <AgentIntegrationsDialog />
+    <AgentQueueEngine />
     <WorkspaceTimeAdjustDialog />
     <WorkspaceSettingsDialog v-model:open="settingsOpen" />
   </div>

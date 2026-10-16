@@ -18,5 +18,6 @@ export function useNavItems(): NavItem[] {
     { label: 'Tiempo', short: 'Tiempo', to: '/time', icon: 'lucide:timer' },
     { label: 'Proyectos', short: 'Proyectos', to: '/projects', icon: 'lucide:folder-kanban' },
     { label: 'Wiki', short: 'Wiki', to: '/wiki', icon: 'lucide:book-open' },
+    { label: 'Cola de Agente', short: 'Agente', to: '/agent', icon: 'lucide:bot' },
   ]
 }

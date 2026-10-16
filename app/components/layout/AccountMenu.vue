@@ -15,6 +15,8 @@ import {
 
 /** Quién eres, contra qué Redmine, y cómo salir (F1-T08). */
 const session = useSessionStore()
+/** Integraciones IA (F11-T05): el diálogo vive en el layout. */
+const integrationsOpen = useState('agent-integrations-open', () => false)
 const preferences = usePreferencesStore()
 
 /** Formato del texto de Redmine (F3-T03): la API no lo dice, así que se adivina o se fija aquí. */
@@ -103,6 +105,20 @@ async function disconnect(): Promise<void> {
             {{ format.label }}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
+
+        <DropdownMenuSeparator class="my-1 h-px bg-separator" />
+
+        <DropdownMenuItem
+          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-[highlighted]:bg-fill-selected"
+          @select="integrationsOpen = true"
+        >
+          <Icon
+            name="lucide:bot"
+            class="size-4"
+            aria-hidden="true"
+          />
+          Integraciones IA
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator class="my-1 h-px bg-separator" />
 
