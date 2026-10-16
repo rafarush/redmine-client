@@ -17,15 +17,18 @@
 - [x] **F2d-T02** Cambio de versión — ampliar `IssueChange`, `applyChange` y `toRedminePayload` (`shared/redmine/issue-actions.ts`) con `fixed_version_id`.
   - _Acepta:_ tests unitarios; deshacer devuelve la versión anterior. · ✔ 087be34
 
-- [ ] **F2d-T03** Vista kanban — `/board/:id/kanban`, `SegmentedControl` Estado · Sprint · Estado/Sprint con el modo en la URL (`?by=`); columnas con versiones abiertas (`listVersions`).
-  - _Depende:_ F2d-T01
+- [x] **F2d-T03** Vista kanban — `/board/:id/kanban`, `SegmentedControl` Estado · Sprint · Estado/Sprint con el modo en la URL (`?by=`); columnas con versiones abiertas (`listVersions`).
+  - _Depende:_ F2d-T01 · ✔ b5a8a10
+  - _Nota:_ el título del toolbar acepta uno dinámico (`useState('page-title')`); la card del workspace se reutiliza como tarjeta (`variant="tile"`).
 
-- [ ] **F2d-T04** Mover tareas — arrastrar entre columnas (`vue-draggable-plus`) cambia estado o versión vía `useIssueChange`; destino no permitido (`allowed_statuses`) se rechaza y explica; alternativa con menú "Mover a…" y teclado.
+- [~] **F2d-T04** Mover tareas — arrastrar entre columnas (`vue-draggable-plus`) cambia estado o versión vía `useIssueChange`; destino no permitido (`allowed_statuses`) se rechaza y explica; alternativa con menú "Mover a…" y teclado.
   - _Depende:_ F2d-T02, F2d-T03
   - _Acepta:_ verificado contra el Redmine local.
+  - _Hecho:_ b5a8a10. Arrastrar con `vue-draggable-plus` (grupo compartido entre columnas) y `[` / `]` con teclado; en la matriz se cambia estado y sprint a la vez. El destino no permitido lo rechaza Redmine y `useIssueChange` revierte y explica (no se precarga `allowed_statuses` por tarjeta). Falta el menú "Mover a…" y la verificación (F2d-T05).
 
-- [ ] **F2d-T05** e2e `kanban.spec.ts`.
+- [~] **F2d-T05** e2e `kanban.spec.ts`.
   - _Depende:_ F2d-T04
+  - _Hecho:_ 6be6eda, pendiente de ejecutar.
 
 ## Definición de hecho
 
