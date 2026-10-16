@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { formatBytes, groupFilesByVersion } from '../../../../shared/redmine/files'
-import { explainRejection } from '../../../../shared/redmine/issue-actions'
 import { attachmentDownloadPath } from '../../../../shared/redmine/paths'
 
 /**
@@ -43,98 +42,37 @@ const dateFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short
 
 // ------------------------------------------------------------------ subir
 
-type UploadState = 'uploading' | 'attaching' | 'done' | 'error' | 'cancelled'
-interface Upload {
-  id: number
-  name: string
-  size: number
-  loaded: number
-  state: UploadState
-  error?: string
-  controller: AbortController
-}
-
-const uploads = ref<Upload[]>([])
+const { uploads, busy, sendAll, clearFinished } = useUploads()
 const versionId = ref<number | ''>('')
 const description = ref('')
 const dragging = ref(false)
 const picker = useTemplateRef<HTMLInputElement>('picker')
-let nextId = 1
 
 const openVersions = computed(() => (versions.data.value ?? []).filter(v => v.status !== 'closed'))
-const busy = computed(() => uploads.value.some(u => u.state === 'uploading' || u.state === 'attaching'))
 
-function patch(id: number, changes: Partial<Upload>): void {
-  uploads.value = uploads.value.map(u => u.id === id ? { ...u, ...changes } : u)
-}
-
-async function send(file: File): Promise<boolean> {
-  if (!project.value) return false
-  const upload: Upload = { id: nextId++, name: file.name, size: file.size, loaded: 0, state: 'uploading', controller: new AbortController() }
-  uploads.value = [...uploads.value, upload]
-  const { signal } = upload.controller
-  try {
-    const token = await redmine.upload(file, file.name, {
-      signal,
-      onProgress: loaded => patch(upload.id, { loaded }),
-    })
-    // Cancelado justo al terminar la subida: no se añade al proyecto.
-    if (signal.aborted) throw new DOMException('Subida cancelada', 'AbortError')
-    patch(upload.id, { state: 'attaching', loaded: file.size })
-    await redmine.addProjectFile(project.value.identifier, {
-      token,
-      filename: file.name,
-      version_id: versionId.value === '' ? undefined : versionId.value,
-      description: description.value.trim() || undefined,
-    })
-    patch(upload.id, { state: 'done' })
-    return true
-  }
-  catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') patch(upload.id, { state: 'cancelled' })
-    else patch(upload.id, { state: 'error', error: explainRejection(error) })
-    return false
-  }
-}
-
-async function sendAll(list: FileList | File[]): Promise<void> {
-  const chosen = [...list]
-  if (chosen.length === 0) return
-  const results = await Promise.all(chosen.map(send))
+async function upload(list: FileList | File[]): Promise<void> {
+  if (!project.value || [...list].length === 0) return
+  const identifier = project.value.identifier
+  const done = await sendAll(list, (token, file) => redmine.addProjectFile(identifier, {
+    token,
+    filename: file.name,
+    version_id: versionId.value === '' ? undefined : versionId.value,
+    description: description.value.trim() || undefined,
+  }))
   await queryClient.invalidateQueries({ queryKey: ['project-files'] })
-  const done = results.filter(Boolean).length
   if (done > 0) toasts.show(done === 1 ? 'Archivo subido' : `${done} archivos subidos`)
 }
 
 function onDrop(event: DragEvent): void {
   dragging.value = false
   if (!canUpload.value || !event.dataTransfer?.files.length) return
-  void sendAll(event.dataTransfer.files)
+  void upload(event.dataTransfer.files)
 }
 
 function onPick(event: Event): void {
   const input = event.target as HTMLInputElement
-  if (input.files) void sendAll(input.files)
+  if (input.files) void upload([...input.files])
   input.value = ''
-}
-
-function clearFinished(): void {
-  uploads.value = uploads.value.filter(u => u.state === 'uploading' || u.state === 'attaching')
-}
-
-const STATE_LABEL: Record<UploadState, string> = {
-  uploading: 'Subiendo',
-  attaching: 'Añadiendo al proyecto',
-  done: 'Subido',
-  error: 'Error',
-  cancelled: 'Cancelado',
-}
-const STATE_ICON: Record<UploadState, string> = {
-  uploading: 'lucide:upload',
-  attaching: 'lucide:loader',
-  done: 'lucide:circle-check',
-  error: 'lucide:circle-alert',
-  cancelled: 'lucide:circle-x',
 }
 
 const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2.5'
@@ -230,55 +168,7 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
           </label>
         </div>
 
-        <ul
-          v-if="uploads.length > 0"
-          class="flex flex-col gap-2"
-          aria-live="polite"
-        >
-          <li
-            v-for="upload in uploads"
-            :key="upload.id"
-            class="flex flex-col gap-1"
-          >
-            <div class="flex items-center gap-2">
-              <Icon
-                :name="STATE_ICON[upload.state]"
-                class="size-4 shrink-0"
-                :class="upload.state === 'error' ? 'text-warning' : upload.state === 'done' ? 'text-success' : 'text-secondary'"
-                aria-hidden="true"
-              />
-              <span class="min-w-0 flex-1 truncate">{{ upload.name }}</span>
-              <span
-                class="shrink-0 text-[length:var(--text-caption)]"
-                :class="upload.state === 'error' ? 'text-warning' : 'text-secondary'"
-              >
-                {{ STATE_LABEL[upload.state] }}<template v-if="upload.state === 'uploading'"> · <span class="data">{{ formatBytes(upload.loaded) }} de {{ formatBytes(upload.size) }}</span></template><template v-if="upload.error">: {{ upload.error }}</template>
-              </span>
-              <UiButton
-                v-if="upload.state === 'uploading'"
-                :label="`Cancelar la subida de ${upload.name}`"
-                icon="lucide:x"
-                icon-only
-                variant="ghost"
-                @click="upload.controller.abort()"
-              />
-            </div>
-            <div
-              v-if="upload.state === 'uploading' || upload.state === 'attaching'"
-              class="h-1.5 overflow-hidden rounded-full bg-fill-selected"
-              role="progressbar"
-              :aria-label="`Subida de ${upload.name}`"
-              aria-valuemin="0"
-              :aria-valuemax="upload.size"
-              :aria-valuenow="upload.loaded"
-            >
-              <div
-                class="h-full rounded-full bg-content transition-[width] duration-200"
-                :style="{ width: `${upload.size ? (upload.loaded / upload.size) * 100 : 100}%` }"
-              />
-            </div>
-          </li>
-        </ul>
+        <FilesUploadList :uploads="uploads" />
         <UiButton
           v-if="uploads.length > 0 && !busy"
           label="Limpiar lista"

@@ -29,7 +29,7 @@ const id = computed(() => Number(route.params.id))
 const query = useQuery({
   queryKey: computed(() => ['issues', 'detail', id.value]),
   queryFn: async (): Promise<{ pages: Paginated<Issue>[] }> => {
-    const issue = await redmine.getIssue(id.value, 'journals,allowed_statuses')
+    const issue = await redmine.getIssue(id.value, 'journals,allowed_statuses,attachments')
     return { pages: [{ items: [issue], totalCount: 1, offset: 0, limit: 1 }] }
   },
   enabled: computed(() => Number.isInteger(id.value) && id.value > 0),
@@ -252,6 +252,8 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
       <div class="grid items-start gap-4 wide:grid-cols-[minmax(0,1fr)_20rem]">
         <div class="flex min-w-0 flex-col gap-4">
           <IssuesIssueDescription :issue="issue" />
+
+          <IssuesIssueAttachments :issue="issue" />
 
           <IssuesIssueHistory :issue="issue" />
         </div>
