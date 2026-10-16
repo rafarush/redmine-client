@@ -11,11 +11,11 @@
 
 ## Tareas
 
-- [ ] **F2d-T01** Agrupación — `shared/kanban/group.ts`: por estado (orden del catálogo), por versión, y matriz estado×versión.
-  - _Acepta:_ tests unitarios.
+- [x] **F2d-T01** Agrupación — `shared/kanban/group.ts`: por estado (orden del catálogo), por versión, y matriz estado×versión.
+  - _Acepta:_ tests unitarios. · ✔ 05e7f0f
 
-- [ ] **F2d-T02** Cambio de versión — ampliar `IssueChange`, `applyChange` y `toRedminePayload` (`shared/redmine/issue-actions.ts`) con `fixed_version_id`.
-  - _Acepta:_ tests unitarios; deshacer devuelve la versión anterior.
+- [x] **F2d-T02** Cambio de versión — ampliar `IssueChange`, `applyChange` y `toRedminePayload` (`shared/redmine/issue-actions.ts`) con `fixed_version_id`.
+  - _Acepta:_ tests unitarios; deshacer devuelve la versión anterior. · ✔ 087be34
 
 - [ ] **F2d-T03** Vista kanban — `/board/:id/kanban`, `SegmentedControl` Estado · Sprint · Estado/Sprint con el modo en la URL (`?by=`); columnas con versiones abiertas (`listVersions`).
   - _Depende:_ F2d-T01
