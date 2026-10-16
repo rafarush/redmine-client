@@ -3,6 +3,8 @@ import type { IssueDraft } from '../../../shared/redmine/new-issue'
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import { explainRejection } from '../../../shared/redmine/issue-actions'
 import { emptyDraft, isDraftDirty, nextDraft, sanitizeDraft, toCreatePayload, validateDraft } from '../../../shared/redmine/new-issue'
+import type { ResolvedSuggestion } from '../../../shared/ai/editing'
+import { resolveSuggestion } from '../../../shared/ai/editing'
 import { RedmineError } from '../../../shared/redmine/transport'
 
 /**
@@ -195,6 +197,78 @@ function onKeydown(event: KeyboardEvent): void {
   }
 }
 
+// --------------------------------------------- sugerir con IA (F12-T06)
+
+const ai = useAi()
+const canSuggest = computed(() => ai.store.suggestEnabled && ai.store.provider !== '')
+const suggesting = ref(false)
+const suggestError = ref('')
+const proposal = ref<ResolvedSuggestion | null>(null)
+let suggestController: AbortController | undefined
+
+async function suggest(): Promise<void> {
+  if (!draft.value.subject.trim() || suggesting.value) return
+  suggestController?.abort()
+  suggestController = new AbortController()
+  suggesting.value = true
+  suggestError.value = ''
+  proposal.value = null
+  try {
+    const suggestion = await ai.suggestFields({
+      subject: draft.value.subject,
+      description: draft.value.description || undefined,
+      trackers: trackers.value.map(t => t.name),
+      priorities: session.catalogs.priorities.map(p => p.name),
+    }, suggestController.signal)
+    proposal.value = resolveSuggestion(suggestion, { trackers: trackers.value, priorities: session.catalogs.priorities })
+    if (Object.keys(proposal.value).length === 0) suggestError.value = 'La IA no tiene nada que proponer para este asunto.'
+  }
+  catch (error) {
+    if ((error as { name?: string })?.name !== 'AbortError') suggestError.value = (error as Error).message
+  }
+  finally {
+    suggesting.value = false
+  }
+}
+
+type ProposalKey = keyof ResolvedSuggestion
+const PROPOSAL_LABELS: Record<ProposalKey, string> = { tracker_id: 'Tipo', priority_id: 'Prioridad', description: 'Descripción', estimated_hours: 'Estimado' }
+
+function proposalText(key: ProposalKey, value: string): string {
+  if (key === 'tracker_id') return trackers.value.find(t => String(t.id) === value)?.name ?? value
+  if (key === 'priority_id') return session.catalogs.priorities.find(p => String(p.id) === value)?.name ?? value
+  if (key === 'estimated_hours') return `${value} h`
+  return value
+}
+
+/** Lo que ya se escribió no se pisa al aplicar todo; uno a uno, sí (lo pide la persona). */
+function isWritten(key: ProposalKey): boolean {
+  return (key === 'description' || key === 'estimated_hours') && draft.value[key].trim() !== ''
+}
+
+function applyProposal(key: ProposalKey): void {
+  const value = proposal.value?.[key]
+  if (value === undefined) return
+  draft.value[key] = value
+  if (key === 'estimated_hours') more.value = true
+  const { [key]: _, ...rest } = proposal.value!
+  proposal.value = Object.keys(rest).length ? rest : null
+}
+
+function applyAll(): void {
+  for (const key of Object.keys(proposal.value ?? {}) as ProposalKey[]) {
+    if (!isWritten(key)) applyProposal(key)
+  }
+}
+
+watch(isOpen, (value) => {
+  if (!value) {
+    suggestController?.abort()
+    proposal.value = null
+    suggestError.value = ''
+  }
+})
+
 /** Descripción (con texto fantasma), para el botón ✦ (F12). */
 const descriptionArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('descriptionArea')
 
@@ -282,6 +356,62 @@ const LABEL = 'flex flex-col gap-1'
           class="text-[length:var(--text-caption)] text-warning"
         >{{ errors.subject }}</span>
       </label>
+
+      <!-- Sugerir con IA (F12-T06): una propuesta que se aplica campo a campo. -->
+      <div
+        v-if="canSuggest"
+        class="-mt-2 flex flex-col gap-2"
+      >
+        <div class="flex flex-wrap items-center gap-2">
+          <UiButton
+            :label="suggesting ? 'Pensando…' : 'Sugerir con IA'"
+            icon="lucide:sparkle"
+            variant="ghost"
+            :disabled="suggesting || !draft.subject.trim()"
+            @click="suggest"
+          />
+          <span
+            v-if="suggestError"
+            role="alert"
+            class="text-[length:var(--text-caption)] text-warning"
+          >{{ suggestError }}</span>
+        </div>
+        <section
+          v-if="proposal"
+          aria-label="Propuesta de la IA"
+          class="flex flex-col gap-1.5 rounded-[var(--radius-control)] border border-separator bg-fill-alt p-3"
+        >
+          <ul class="flex flex-col gap-1">
+            <li
+              v-for="(value, key) in proposal"
+              :key="key"
+              class="flex items-start gap-2"
+            >
+              <span class="w-20 shrink-0 text-[length:var(--text-caption)] text-secondary">{{ PROPOSAL_LABELS[key] }}</span>
+              <span class="min-w-0 flex-1 whitespace-pre-wrap text-[length:var(--text-caption)]">{{ proposalText(key, value!) }}</span>
+              <UiButton
+                :label="isWritten(key) ? 'Reemplazar' : 'Aplicar'"
+                variant="ghost"
+                @click="applyProposal(key)"
+              />
+            </li>
+          </ul>
+          <div class="flex justify-end gap-2">
+            <UiButton
+              label="Descartar"
+              variant="ghost"
+              @click="proposal = null"
+            />
+            <UiButton
+              label="Aplicar todo"
+              @click="applyAll"
+            />
+          </div>
+          <p class="text-[length:var(--text-caption)] text-tertiary">
+            "Aplicar todo" no cambia lo que ya has escrito.
+          </p>
+        </section>
+      </div>
 
       <label :class="LABEL">
         <span class="flex items-center justify-between gap-2">
