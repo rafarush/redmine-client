@@ -19,9 +19,10 @@
   - _Depende:_ F3-T01
   - _Acepta:_ un `<script>` en la descripción no se ejecuta; los enlaces `#123` llevan a la tarea dentro de la app.
 
-- [ ] **F3-T04** Historial y comentarios — journals en línea de tiempo (comentarios y cambios de campo resumidos: "Estado: Nueva → En curso"). Caja de comentario fija abajo; `Ctrl/⌘+Enter` publica. Comentarios privados si el permiso existe.
+- [~] **F3-T04** Historial y comentarios — journals en línea de tiempo (comentarios y cambios de campo resumidos: "Estado: Nueva → En curso"). Caja de comentario fija abajo; `Ctrl/⌘+Enter` publica. Comentarios privados si el permiso existe.
   - _Depende:_ F3-T01
   - _Acepta:_ el comentario aparece al instante (optimista) y se reconcilia con la respuesta.
+  - _Hecho:_ 2170315. `shared/redmine/journals.ts` (frases de cambio con nombres de catálogo, campos personalizados, adjuntos y relaciones) con tests; `issues/IssueHistory.vue` sustituye al panel de comentarios de `/issues/:id`. Notas privadas con `set_notes_private` (añadido al mapa de permisos). Si falla, el texto vuelve a la caja. Pendiente de verificar contra el Redmine local.
 
 - [ ] **F3-T05** Relaciones, subtareas y observadores — listas compactas con añadir/quitar (búsqueda de tareas por `#id` o texto).
   - _Depende:_ F3-T01
