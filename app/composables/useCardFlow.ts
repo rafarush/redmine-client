@@ -36,7 +36,7 @@ export function useCardFlow() {
   const logging = useState<Issue | null>('time-logging', () => null)
   const settingsOpen = useState('workspace-settings-open', () => false)
   /** Categoría de los ajustes que se abre; la misma clave que usa `SettingsDialog`. */
-  const settingsTab = useState<'redmine' | 'shortcuts'>('workspace-settings-tab', () => 'redmine')
+  const settingsTab = useState<'redmine' | 'boards' | 'shortcuts'>('workspace-settings-tab', () => 'redmine')
 
   const map = computed(() => workspace.workspace.statusMap)
 

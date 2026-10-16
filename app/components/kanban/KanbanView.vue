@@ -7,6 +7,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { matrix, sprintLanes, statusLanes } from '../../../shared/kanban/group'
 import { applyChange } from '../../../shared/redmine/issue-actions'
 import { boardProjectIds } from '../../../shared/workspace/model'
+import { resolveStatusRank } from '../../../shared/workspace/sort'
 
 /**
  * Kanban de un board (F2d-T03/T04). Mismas tareas que el board (mías y abiertas),
@@ -31,7 +32,11 @@ const projectIds = computed(() => {
 })
 const { versions } = useBoardVersions(projectIds)
 
-const statuses = computed(() => session.catalogs.statuses)
+// Mismo orden de estados que en las listas de los boards (Ajustes → Boards).
+const statuses = computed(() => {
+  const rank = resolveStatusRank(session.catalogs.statuses, workspace.workspace.statusOrder)
+  return [...session.catalogs.statuses].sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0))
+})
 
 /** Una fila por sprint en la matriz; una sola fila sin título en los otros modos. */
 const rows = computed<{ id: number | null, label: string | null, lanes: Lane<Issue>[] }[]>(() => {

@@ -3,6 +3,7 @@ import type { Board } from '../../../shared/workspace/model'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuSeparator, DropdownMenuTrigger } from 'reka-ui'
 import { projectCode } from '../../../shared/redmine/issue-display'
 import { boardProjectIds } from '../../../shared/workspace/model'
+import { groupByStatus } from '../../../shared/workspace/sort'
 
 /**
  * Un board del workspace (F2c-T05): panel de salidas con las tareas asignadas a mí
@@ -23,6 +24,8 @@ const toasts = useToastStore()
 const flow = useCardFlow()
 
 const { issues, isPending, error, refetch, empty } = useBoardIssues(() => props.board)
+
+const groups = computed(() => groupByStatus(issues.value))
 
 const inProgress = computed(() => issues.value.filter(issue => flow.stage(issue) === 'in_progress').length)
 const summary = computed(() => {
@@ -276,13 +279,25 @@ function remove(): void {
         class="relative max-h-[30rem] overflow-y-auto pb-1"
         :aria-label="`Tareas de ${board.title}`"
       >
-        <IssuesIssueCard
-          v-for="(issue, index) in issues"
-          :key="issue.id"
-          :issue="issue"
-          :alternate="index % 2 === 1"
-          :board-id="board.kind === 'custom' ? board.id : undefined"
-        />
+        <template
+          v-for="group in groups"
+          :key="`status-${group.statusId}`"
+        >
+          <li
+            class="flex items-center gap-2 border-y border-separator bg-surface px-4 py-1 first:border-t-0"
+            :data-status-group="group.statusId"
+          >
+            <span class="panel-label">{{ group.name }}</span>
+            <span class="data text-[length:var(--text-caption)] text-secondary">{{ group.issues.length }}</span>
+          </li>
+          <IssuesIssueCard
+            v-for="(issue, index) in group.issues"
+            :key="issue.id"
+            :issue="issue"
+            :alternate="index % 2 === 1"
+            :board-id="board.kind === 'custom' ? board.id : undefined"
+          />
+        </template>
       </TransitionGroup>
     </div>
   </section>

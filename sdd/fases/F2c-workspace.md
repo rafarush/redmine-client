@@ -1,6 +1,6 @@
 # F2c · Workspace
 
-**Objetivo:** la pantalla de inicio pasa a ser un espacio de trabajo personal: listas (boards) de tareas **asignadas a mí**, ordenadas por prioridad y fecha fin, con acciones rápidas sobre cada card. La lista actual se mueve a `/issues`.
+**Objetivo:** la pantalla de inicio pasa a ser un espacio de trabajo personal: listas (boards) de tareas **asignadas a mí**, agrupadas por estado y ordenadas por prioridad y fecha fin, con acciones rápidas sobre cada card. La lista actual se mueve a `/issues`.
 
 **Depende de:** F2b-T06 (F2b-T07, el cierre visual, se hace al terminar esta fase)
 
@@ -60,6 +60,10 @@
   - _Depende:_ F2c-T06
   - _Acepta:_ tests unitarios; los atajos nuevos salen en la hoja de atajos (`?`) y en los tooltips; cambiar un atajo sobrevive a una recarga. · ✔ fd324ad
   - _Nota:_ los atajos se despachan desde el layout (`runShortcut`) y cada pantalla registra los suyos (`useShortcut`); se ignoran al escribir y con un diálogo abierto. Falta el e2e (lo cubre F2c-T08) y probarlo a mano.
+
+- [x] **F2c-T13** Boards agrupados por estado con orden configurable (pedido del usuario, 2026-10-15) — las tareas de un board se agrupan por estado y, dentro de cada uno, siguen por prioridad y fecha fin. Por defecto En curso/En proceso va primero, luego Nueva/ToDo y después el resto; Ajustes → Boards permite reordenarlos (`Workspace.statusOrder`). El kanban por estado usa el mismo orden.
+  - _Depende:_ F2c-T06
+  - _Acepta:_ tests unitarios de `defaultStatusOrder`, `effectiveStatusOrder`, `sortIssues` con estado y `sanitizeWorkspace`.
 
 ## Definición de hecho
 

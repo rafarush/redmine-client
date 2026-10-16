@@ -4,11 +4,11 @@ import type { Board } from '../../shared/workspace/model'
 import { useQuery } from '@tanstack/vue-query'
 import { computed, toValue } from 'vue'
 import { boardQueries, mergeIssues } from '../../shared/workspace/board-query'
-import { rankPriorities, sortIssues } from '../../shared/workspace/sort'
+import { rankPriorities, resolveStatusRank, sortIssues } from '../../shared/workspace/sort'
 
 /**
- * Tareas de un board (F2c): asignadas a mí y abiertas, ordenadas por prioridad
- * y fecha fin.
+ * Tareas de un board (F2c): asignadas a mí y abiertas, agrupadas por estado
+ * (orden de Ajustes) y, dentro, por prioridad y fecha fin.
  *
  * La clave empieza por `['issues']` y los datos tienen la forma `{ pages: [...] }`
  * de la lista, así `useIssueChange` pinta los cambios optimistas también aquí.
@@ -31,7 +31,8 @@ export function useBoardIssues(board: MaybeRefOrGetter<Board>) {
   })
 
   const rank = computed(() => rankPriorities(session.catalogs.priorities))
-  const issues = computed<Issue[]>(() => sortIssues(query.data.value?.pages[0]?.items ?? [], rank.value))
+  const statusRank = computed(() => resolveStatusRank(session.catalogs.statuses, workspace.workspace.statusOrder))
+  const issues = computed<Issue[]>(() => sortIssues(query.data.value?.pages[0]?.items ?? [], rank.value, statusRank.value))
 
   return { ...query, issues, empty: computed(() => queries.value.length === 0) }
 }

@@ -57,9 +57,11 @@ export interface Workspace {
   boards: Board[]
   categories: Category[]
   statusMap: StatusMap
+  /** Ids de estado en el orden de las listas de los boards; vacío = el de por defecto. */
+  statusOrder: number[]
 }
 
-export const EMPTY_WORKSPACE: Workspace = { locked: true, boards: [], categories: [], statusMap: {} }
+export const EMPTY_WORKSPACE: Workspace = { locked: true, boards: [], categories: [], statusMap: {}, statusOrder: [] }
 
 export const FREE_BOARD_WIDTH = 560
 const FREE_GAP = 24
@@ -101,6 +103,7 @@ export function sanitizeWorkspace(raw: unknown): Workspace {
       done: statusId.parse(map.done),
       rtqa: statusId.parse(map.rtqa),
     },
+    statusOrder: [...new Set(ids.parse(value.statusOrder))],
   }
 }
 

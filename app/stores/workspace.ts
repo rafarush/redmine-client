@@ -118,6 +118,14 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     commit({ ...workspace.value, statusMap })
   }
 
+  function setStatusOrder(statusOrder: number[]): void {
+    commit({ ...workspace.value, statusOrder })
+  }
+
+  function resetStatusOrder(): void {
+    commit({ ...workspace.value, statusOrder: [] })
+  }
+
   // ------------------------------------------------------------ cronómetro
 
   /** El que suma tiempo ahora; si ninguno, el último en pausa (lo muestra la franja). */
@@ -183,6 +191,8 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     upsertCategory,
     setLocked,
     setStatusMap,
+    setStatusOrder,
+    resetStatusOrder,
     startTimer,
     pauseTimer: pauseTimerFor,
     stopTimer,

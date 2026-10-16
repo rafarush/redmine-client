@@ -12,7 +12,7 @@ import {
   saveCategory,
 } from '../../shared/workspace/model'
 import { boardQueries, mergeIssues } from '../../shared/workspace/board-query'
-import { adjacentPriority, rankPriorities, sortIssues } from '../../shared/workspace/sort'
+import { adjacentPriority, defaultStatusOrder, effectiveStatusOrder, groupByStatus, rankPriorities, resolveStatusRank, sortIssues } from '../../shared/workspace/sort'
 
 let n = 0
 const makeId = () => `b${++n}`
@@ -67,6 +67,38 @@ describe('workspace: modelo', () => {
     expect(boardProjectIds(ws.boards[0]!, ws.categories)).toEqual([3, 4])
     ws = saveCategory(ws, { id: 'c', name: 'Clientes', projectIds: [3] })
     expect(boardProjectIds(ws.boards[0]!, ws.categories)).toEqual([3])
+  })
+})
+
+describe('workspace: estados', () => {
+  const statuses = [
+    { id: 1, name: 'Nueva' }, { id: 2, name: 'En curso' }, { id: 3, name: 'Resuelta' },
+    { id: 4, name: 'Comentarios' }, { id: 5, name: 'Cerrada' },
+  ]
+
+  it('por defecto: En curso, Nueva y el resto', () => {
+    expect(defaultStatusOrder(statuses)).toEqual([2, 1, 3, 4, 5])
+    expect(defaultStatusOrder([{ id: 9, name: 'Closed' }, { id: 8, name: 'To Do' }, { id: 7, name: 'In Progress' }, { id: 6, name: 'New' }])).toEqual([7, 8, 6, 9])
+    expect(defaultStatusOrder([{ id: 1, name: 'En proceso' }, { id: 2, name: 'Nuevo' }])).toEqual([1, 2])
+  })
+
+  it('el orden guardado manda; ignora estados que ya no existen y añade los nuevos', () => {
+    expect(effectiveStatusOrder(statuses, [4, 99, 3, 4])).toEqual([4, 3, 2, 1, 5])
+  })
+
+  it('agrupa por estado y conserva prioridad, fecha e id dentro del grupo', () => {
+    const priority = rankPriorities([{ id: 1 }, { id: 2 }])
+    const issue = (id: number, status: number, prio: number, due?: string) => ({ id, status: { id: status, name: String(status) }, priority: { id: prio }, due_date: due })
+    const list = [issue(1, 1, 2), issue(2, 3, 2), issue(3, 2, 1), issue(4, 2, 2, '2026-01-02'), issue(5, 2, 2, '2026-01-01'), issue(6, 99, 2)]
+    const sorted = sortIssues(list, priority, resolveStatusRank(statuses, []))
+    expect(sorted.map(i => i.id)).toEqual([5, 4, 3, 1, 2, 6])
+    expect(groupByStatus(sorted).map(g => [g.statusId, g.issues.length])).toEqual([[2, 3], [1, 1], [3, 1], [99, 1]])
+  })
+
+  it('sanitizeWorkspace: statusOrder inválido o duplicado', () => {
+    expect(sanitizeWorkspace({}).statusOrder).toEqual([])
+    expect(sanitizeWorkspace({ statusOrder: [2, 2, 1] }).statusOrder).toEqual([2, 1])
+    expect(sanitizeWorkspace({ statusOrder: 'x' }).statusOrder).toEqual([])
   })
 })
 

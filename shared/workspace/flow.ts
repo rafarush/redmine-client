@@ -87,7 +87,7 @@ export function targetStatus(step: FlowStep | 'rtqa', map: StatusMap): number | 
 }
 
 const GUESS: Record<keyof StatusMap, RegExp> = {
-  inProgress: /en curso|en progreso|in progress|doing|trabajando/i,
+  inProgress: /en curso|en proceso|en progreso|in progress|doing|trabajando/i,
   done: /resuelt|resolved|complet|terminad|hecha|done/i,
   rtqa: /rtqa|\bqa\b|ready for qa|para qa|en pruebas|testing|verificar/i,
 }

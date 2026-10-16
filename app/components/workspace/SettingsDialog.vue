@@ -7,10 +7,11 @@ import { TabsContent, TabsList, TabsRoot, TabsTrigger } from 'reka-ui'
  * lo abre en Integración con Redmine.
  */
 const open = defineModel<boolean>('open', { default: false })
-const tab = useState<'redmine' | 'shortcuts'>('workspace-settings-tab', () => 'redmine')
+const tab = useState<'redmine' | 'boards' | 'shortcuts'>('workspace-settings-tab', () => 'redmine')
 
 const CATEGORIES = [
   { value: 'redmine', label: 'Integración con Redmine', icon: 'lucide:plug' },
+  { value: 'boards', label: 'Boards', icon: 'lucide:list-ordered' },
   { value: 'shortcuts', label: 'Atajos de teclado', icon: 'lucide:keyboard' },
 ] as const
 </script>
@@ -49,6 +50,9 @@ const CATEGORIES = [
       <div class="min-w-0 flex-1">
         <TabsContent value="redmine">
           <WorkspaceSettingsRedmineSection />
+        </TabsContent>
+        <TabsContent value="boards">
+          <WorkspaceSettingsBoardsSection />
         </TabsContent>
         <TabsContent value="shortcuts">
           <WorkspaceSettingsShortcutsSection />
