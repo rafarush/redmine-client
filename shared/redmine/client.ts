@@ -193,6 +193,25 @@ export class RedmineClient {
     await this.transport.request({ method: 'PUT', path: `/issues/${id}.json`, body: { issue } })
   }
 
+  // ------------------------------------------- relaciones y observadores (F3-T05)
+
+  /** "Esta tarea <tipo> #otra". Redmine crea el inverso en la otra tarea. */
+  async createRelation(issueId: number, relation: { issue_to_id: number, relation_type: string, delay?: number }): Promise<void> {
+    await this.transport.request({ method: 'POST', path: `/issues/${issueId}/relations.json`, body: { relation } })
+  }
+
+  async deleteRelation(relationId: number): Promise<void> {
+    await this.transport.request({ method: 'DELETE', path: `/relations/${relationId}.json` })
+  }
+
+  async addWatcher(issueId: number, userId: number): Promise<void> {
+    await this.transport.request({ method: 'POST', path: `/issues/${issueId}/watchers.json`, body: { user_id: userId } })
+  }
+
+  async removeWatcher(issueId: number, userId: number): Promise<void> {
+    await this.transport.request({ method: 'DELETE', path: `/issues/${issueId}/watchers/${userId}.json` })
+  }
+
   // ----------------------------------------------------------------- tiempo
 
   async listTimeEntries(query: Query = {}): Promise<Paginated<TimeEntry>> {
