@@ -3,7 +3,18 @@ import tailwindcss from '@tailwindcss/vite'
 // SPA: el mismo build estático se empaqueta en Tauri (src-tauri, fase F8).
 // En web, Nitro sirve además el proxy /api/redmine/** hacia Redmine.
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/icon', '@pinia/nuxt', 'nuxt-auth-utils', 'motion-v/nuxt'],
+  modules: [
+    '@nuxt/eslint', '@nuxt/icon', '@pinia/nuxt', 'nuxt-auth-utils', 'motion-v/nuxt',
+    // Las rutas `/_demo/*` (revisión de estados, F2-T09) solo existen en desarrollo.
+    (_options, nuxt) => {
+      if (nuxt.options.dev) return
+      nuxt.hook('pages:extend', (pages) => {
+        for (let i = pages.length - 1; i >= 0; i--) {
+          if (pages[i]!.path.startsWith('/_demo')) pages.splice(i, 1)
+        }
+      })
+    },
+  ],
   ssr: false,
   devtools: { enabled: true },
 
