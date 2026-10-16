@@ -10,6 +10,7 @@
   - _Depende:_ F2-T03
   - _Acepta:_ abrir otra tarea desde la lista reemplaza el panel sin recargar; `Esc` cierra el panel y devuelve el foco a la fila.
   - _Nota (2026-10-15):_ adelantada una primera versión como página `/issues/:id` (código en inglés, ver CLAUDE.md), para el clic del workspace (F2c-T10): cabecera, cronómetro y flujo, descripción en texto plano, comentarios y datos. Falta el split view junto a la lista, `Esc` y recordar el ancho.
+  - _Hecho:_ fb3fc22. El detalle pasa a `issues/IssueDetail.vue` (página `/issues/:id` y panel `embedded`). En `/issues`, en ancho regular, Enter o doble clic abren el panel a la derecha con `?issue=ID` (abrir otra lo reemplaza sin apilar historial; atrás lo cierra); separador arrastrable y con ←/→ (`redmine-client:detail-width`, 360 px a 60 %); Esc (si nadie lo ha usado antes) cierra y devuelve el foco a la rejilla con la fila seleccionada. En compacto se abre la página (vista apilada). Pendiente de verificar en el navegador.
 
 - [~] **F3-T02** Edición inline de campos — estado (con `allowed_statuses`), asignado, prioridad, versión, categoría, fechas, estimación, % hecho y campos personalizados según tipo (lista, fecha, número, booleano, usuario, texto). Cada campo se guarda solo, con indicador "Guardado" y Deshacer. Campos sin permiso de edición se muestran como texto.
   - _Depende:_ F3-T01, F1-T07
