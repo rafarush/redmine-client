@@ -89,6 +89,14 @@ El transport se elige al arrancar con `isTauri()`. Nada fuera de `shared/redmine
 
 Imagen Node 22 con `.output` de Nitro (`docker/Dockerfile`), detrás del proxy inverso de la empresa con HTTPS. `NUXT_SESSION_PASSWORD` y `NUXT_REDMINE_ALLOWED_HOSTS` por entorno. Si más adelante Redmine es accesible desde internet, Nitro permite cambiar de preset (Vercel, Cloudflare) sin tocar código.
 
+### ADR-008 · Workspace local y arrastrar con vue-draggable-plus (F2c, F2d)
+
+- **Decisión:** el Workspace (boards, categorías, mapeo de estados, cronómetro activo y último tiempo registrado por tarea) vive en Pinia y se guarda en `localStorage` (`redmine-client:workspace`, `:timers`, `:logged-work`). En desktop pasará al store de Tauri (F8). Las tareas siguen saliendo de Redmine: el workspace solo guarda disposición y preferencias, nunca la API key.
+- **Por qué:** Redmine no tiene dónde guardar una disposición personal sin ser admin, y la app no tiene base de datos (ADR-001). Perder el workspace al cambiar de equipo es aceptable; perder datos de Redmine no lo sería, y no se toca ninguno.
+- **Todo cambio de una tarea va a Redmine al momento** (estado, prioridad, sprint, tiempo) por `useIssueChange`, con optimista y "Deshacer". Las consultas de boards y kanban usan claves `['issues', …]` con forma `{ pages }` para que el cambio optimista las parchee también.
+- **Arrastrar:** `vue-draggable-plus` (Sortable) para reordenar boards en la rejilla y mover tarjetas entre columnas del kanban; el lienzo libre usa pointer events propios. Todo lo que se arrastra tiene alternativa con teclado.
+- **Contras:** una dependencia más; Sortable manipula el DOM, así que cada lista trabaja sobre una copia local que se rehace cuando cambian los datos.
+
 ## Seguridad
 
 | Riesgo | Mitigación |
