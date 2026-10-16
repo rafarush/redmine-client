@@ -14,17 +14,17 @@ test.describe('proyectos', () => {
     await page.goto('/projects')
     const panel = page.getByRole('region', { name: 'Proyectos' })
     await panel.getByPlaceholder('Buscar proyecto…').fill('portal')
-    const link = panel.getByRole('link', { name: 'Portal web', exact: true })
+    const link = panel.getByRole('link', { name: 'Portal Web', exact: true })
     await expect(link).toBeVisible()
 
-    const pin = panel.getByRole('button', { name: 'Fijar Portal web en la sidebar' })
+    const pin = panel.getByRole('button', { name: 'Fijar Portal Web en la sidebar' })
     await pin.focus()
     await page.keyboard.press('Enter')
-    await expect(panel.getByRole('button', { name: 'Quitar Portal web de la sidebar' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(panel.getByRole('button', { name: 'Quitar Portal Web de la sidebar' })).toHaveAttribute('aria-pressed', 'true')
 
     if (!isMobile) {
       const sidebar = page.getByRole('navigation', { name: 'Proyectos' })
-      await sidebar.getByRole('link', { name: /Portal web/ }).click()
+      await sidebar.getByRole('link', { name: /Portal Web/ }).click()
       await expect(page).toHaveURL(/\/projects\/portal-web$/)
     }
     else {

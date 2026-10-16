@@ -7,13 +7,16 @@ import { apiKeyFor, REDMINE_URL } from './_session'
  */
 
 let key: string
+let adminKey: string
 
 test.beforeAll(() => {
   key = apiKeyFor('desarrollador')
+  // `desarrollador` no puede borrar sus registros (sin `edit_own_time_entries`): limpia el admin.
+  adminKey = apiKeyFor('admin')
 })
 
-async function api<T>(method: string, path: string): Promise<T> {
-  const response = await fetch(`${REDMINE_URL}${path}`, { method, headers: { 'X-Redmine-API-Key': key } })
+async function api<T>(method: string, path: string, as = key): Promise<T> {
+  const response = await fetch(`${REDMINE_URL}${path}`, { method, headers: { 'X-Redmine-API-Key': as } })
   if (!response.ok) throw new Error(`${method} ${path} → ${response.status}`)
   const text = await response.text()
   return (text ? JSON.parse(text) : undefined) as T
@@ -26,11 +29,12 @@ function localToday(): string {
 }
 
 test.describe('tiempo', () => {
-  test('registra, ajusta y borra horas desde el parte', async ({ page }) => {
-    const { issues } = await api<{ issues: { id: number }[] }>('GET', '/issues.json?assigned_to_id=me&status_id=open&limit=1')
-    const issueId = issues[0]!.id
+  test('registra y ajusta horas desde el parte', async ({ page }, testInfo) => {
+    // Una tarea distinta por resolución: los dos proyectos corren a la vez y no deben pisarse la celda.
+    const { issues } = await api<{ issues: { id: number }[] }>('GET', '/issues.json?assigned_to_id=me&status_id=open&limit=2')
+    const issueId = issues[testInfo.project.name === 'compact' ? 1 : 0]!.id
     const day = localToday()
-    const before = await api<{ time_entries: { id: number }[] }>('GET', `/time_entries.json?user_id=me&from=${day}&to=${day}&limit=100`)
+    const before = await api<{ time_entries: { id: number }[] }>('GET', `/time_entries.json?issue_id=${issueId}&from=${day}&to=${day}&limit=100`)
 
     try {
       await page.goto('/time')
@@ -50,15 +54,11 @@ test.describe('tiempo', () => {
       await cell.press('Enter')
       await expect(cell).toHaveValue('1:30')
       await expect(page.getByRole('region', { name: 'Registros de la semana' }).getByText('1:30').first()).toBeVisible()
-
-      await cell.fill('')
-      await cell.press('Enter')
-      await expect(page.getByRole('status').getByText('borrado', { exact: false })).toBeVisible()
     }
     finally {
-      const after = await api<{ time_entries: { id: number }[] }>('GET', `/time_entries.json?user_id=me&from=${day}&to=${day}&limit=100`)
+      const after = await api<{ time_entries: { id: number }[] }>('GET', `/time_entries.json?issue_id=${issueId}&from=${day}&to=${day}&limit=100`)
       const known = new Set(before.time_entries.map(e => e.id))
-      for (const entry of after.time_entries.filter(e => !known.has(e.id))) await api('DELETE', `/time_entries/${entry.id}.json`)
+      for (const entry of after.time_entries.filter(e => !known.has(e.id))) await api('DELETE', `/time_entries/${entry.id}.json`, adminKey)
     }
   })
 

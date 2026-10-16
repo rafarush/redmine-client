@@ -76,8 +76,15 @@ async function addIssue(): Promise<void> {
 
 // ---------------------------------------------------------------- edición
 
-function canLog(row: TimesheetRow): boolean {
-  return session.can('log_time', row.project.id)
+/**
+ * Una celda vacía se puede rellenar con `log_time`; una con registros solo se toca
+ * si además se pueden editar (los propios con `edit_own_time_entries`).
+ */
+function canEditCell(row: TimesheetRow, cell: TimeEntry[]): boolean {
+  const project = row.project.id
+  if (!session.can('log_time', project)) return false
+  if (cell.length === 0) return true
+  return session.can('edit_time_entries', project) || session.can('edit_own_time_entries', project)
 }
 
 function defaultActivity(): number | undefined {
@@ -223,37 +230,36 @@ function openIssue(id: number): void {
 
 <template>
   <div class="flex min-h-full flex-col gap-4 px-3 pb-6 wide:px-6">
-    <Teleport
-      defer
-      to="#toolbar-actions"
-    >
-      <UiButton
-        label="Semana anterior"
-        icon="lucide:chevron-left"
-        icon-only
-        variant="ghost"
-        @click="goToWeek(-1)"
-      />
-      <UiButton
-        label="Esta semana"
-        variant="ghost"
-        :disabled="isThisWeek"
-        @click="goToWeek(0)"
-      />
-      <UiButton
-        label="Semana siguiente"
-        icon="lucide:chevron-right"
-        icon-only
-        variant="ghost"
-        @click="goToWeek(1)"
-      />
-    </Teleport>
-
     <UiPanel label="Parte semanal">
       <template #header>
-        <h2 class="data text-[length:var(--text-title)] font-semibold">
-          {{ weekLabel }}
-        </h2>
+        <nav
+          aria-label="Semana"
+          class="flex items-center gap-1"
+        >
+          <UiButton
+            label="Semana anterior"
+            icon="lucide:chevron-left"
+            icon-only
+            variant="ghost"
+            @click="goToWeek(-1)"
+          />
+          <h2 class="data whitespace-nowrap text-[length:var(--text-title)] font-semibold">
+            {{ weekLabel }}
+          </h2>
+          <UiButton
+            label="Semana siguiente"
+            icon="lucide:chevron-right"
+            icon-only
+            variant="ghost"
+            @click="goToWeek(1)"
+          />
+          <UiButton
+            v-if="!isThisWeek"
+            label="Esta semana"
+            variant="ghost"
+            @click="goToWeek(0)"
+          />
+        </nav>
         <span
           v-if="entriesQuery.isFetching.value"
           class="text-[length:var(--text-caption)] text-secondary"
@@ -373,7 +379,7 @@ function openIssue(id: number): void {
                   :entries="cell"
                   :cell="`${r}-${c}`"
                   :label="`${rowLabel(row)}, ${longDay.format(asDate(week.days[c]!))}`"
-                  :editable="canLog(row)"
+                  :editable="canEditCell(row, cell)"
                   @save="saveCell(row, c, $event)"
                   @update="(entry, hours) => update.mutate({ entry, changes: { hours } })"
                   @remove="removeWithUndo"
