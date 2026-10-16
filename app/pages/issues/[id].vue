@@ -8,7 +8,7 @@ import { elapsedMs, timerFor } from '../../../shared/workspace/flow'
 
 /**
  * Detalle de una tarea (F3-T01, primera versión): cabecera, cronómetro y acciones
- * del flujo, descripción, comentarios y datos. La edición campo a campo llega con
+ * del flujo, descripción, historial con comentarios (F3-T04) y datos. La edición campo a campo llega con
  * F3-T02; mientras tanto se cambia desde el menú "…" (el mismo del clic derecho).
  *
  * La consulta usa la clave `['issues', 'detail', id]` con forma `{ pages }`, así los
@@ -69,7 +69,6 @@ const priorityIcon = computed(() => {
 })
 
 const dateFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', year: 'numeric' })
-const dateTimeFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 const formatDate = (iso?: string | null) => iso ? dateFormat.format(new Date(iso.length === 10 ? `${iso}T00:00:00` : iso)) : '—'
 const hours = (value?: number | null) => value ? formatDuration(value) : '—'
 
@@ -92,10 +91,6 @@ const fields = computed(() => {
     { label: 'Actualizada', value: formatDate(i.updated_on), data: true },
   ]
 })
-
-/** Solo los comentarios; los cambios de campo se cuentan (el historial completo es F3-T04). */
-const comments = computed(() => (issue.value?.journals ?? []).filter(j => j.notes?.trim()))
-const changes = computed(() => (issue.value?.journals ?? []).filter(j => !j.notes?.trim()).length)
 
 function openInRedmine(): void {
   window.open(`${session.url.replace(/\/$/, '')}/issues/${id.value}`, '_blank', 'noopener')
@@ -276,52 +271,7 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
             </p>
           </UiPanel>
 
-          <UiPanel label="Comentarios">
-            <template #header>
-              <h2 class="panel-label !text-content">
-                Comentarios
-              </h2>
-              <span class="data ml-auto text-[length:var(--text-caption)] text-secondary">
-                {{ comments.length }}{{ changes ? ` · ${changes} cambios de campo` : '' }}
-              </span>
-            </template>
-            <ol
-              v-if="comments.length > 0"
-              class="flex flex-col"
-            >
-              <li
-                v-for="(journal, index) in comments"
-                :key="journal.id"
-                class="px-4 py-3"
-                :class="index % 2 ? 'bg-fill-alt' : ''"
-              >
-                <p class="flex items-baseline gap-2 text-[length:var(--text-caption)]">
-                  <span class="font-semibold text-content">{{ journal.user?.name ?? 'Alguien' }}</span>
-                  <span class="data text-secondary">{{ dateTimeFormat.format(new Date(journal.created_on)) }}</span>
-                  <span
-                    v-if="journal.private_notes"
-                    class="inline-flex items-center gap-1 text-secondary"
-                  >
-                    <Icon
-                      name="lucide:lock"
-                      class="size-3"
-                      aria-hidden="true"
-                    />
-                    Privado
-                  </span>
-                </p>
-                <p class="mt-1 whitespace-pre-wrap break-words">
-                  {{ journal.notes }}
-                </p>
-              </li>
-            </ol>
-            <p
-              v-else
-              class="px-4 pb-4 text-secondary"
-            >
-              Nadie ha comentado todavía.
-            </p>
-          </UiPanel>
+          <IssuesIssueHistory :issue="issue" />
         </div>
 
         <UiPanel label="Datos de la tarea">

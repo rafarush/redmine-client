@@ -17,6 +17,8 @@ const MODULE_BY_PERMISSION: Record<string, string> = {
   edit_own_issues: 'issue_tracking',
   delete_issues: 'issue_tracking',
   add_issue_notes: 'issue_tracking',
+  set_notes_private: 'issue_tracking',
+  view_private_notes: 'issue_tracking',
   manage_subtasks: 'issue_tracking',
   manage_issue_relations: 'issue_tracking',
   manage_versions: 'issue_tracking',
