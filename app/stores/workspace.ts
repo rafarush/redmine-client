@@ -3,10 +3,12 @@ import type { LoggedWork, Timer } from '../../shared/workspace/flow'
 import { currentTimer, pauseTimer, runOnly, sanitizeTimers } from '../../shared/workspace/flow'
 import { defineStore } from 'pinia'
 import {
+  addIssuesToBoard,
   createBoard,
   EMPTY_WORKSPACE,
   moveBoard,
   removeBoard,
+  removeIssueFromBoard,
   sanitizeWorkspace,
   saveCategory,
   updateBoard,
@@ -89,6 +91,17 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     return () => commit(before)
   }
 
+  function addIssues(id: string, issueIds: readonly number[]): void {
+    commit(addIssuesToBoard(workspace.value, id, issueIds))
+  }
+
+  /** Saca una tarea de la lista (no la toca en Redmine) y devuelve cómo deshacerlo. */
+  function removeIssue(id: string, issueId: number): () => void {
+    const before = workspace.value
+    commit(removeIssueFromBoard(before, id, issueId))
+    return () => commit(before)
+  }
+
   function reorderBoard(id: string, toIndex: number): void {
     commit(moveBoard(workspace.value, id, toIndex))
   }
@@ -164,6 +177,8 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     addBoard,
     patchBoard,
     deleteBoard,
+    addIssues,
+    removeIssue,
     reorderBoard,
     upsertCategory,
     setLocked,

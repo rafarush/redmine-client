@@ -22,6 +22,8 @@ const props = withDefaults(defineProps<{
   variant?: 'row' | 'tile'
   /** Fila alterna del panel (relleno suave). */
   alternate?: boolean
+  /** Lista personalizada del workspace en la que se muestra (activa "Quitar de esta lista"). */
+  boardId?: string
 }>(), { variant: 'row' })
 
 const session = useSessionStore()
@@ -103,7 +105,7 @@ const description = computed(() => {
 
 function onKeydown(event: KeyboardEvent): void {
   if (event.target !== event.currentTarget) return
-  if (menu.handleKey(props.issue, event)) return
+  if (menu.handleKey(props.issue, event, props.boardId)) return
   if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
     event.preventDefault()
     void flow.bumpPriority(props.issue, event.key === 'ArrowUp' ? 'up' : 'down')
@@ -151,7 +153,7 @@ function onKeydown(event: KeyboardEvent): void {
     ]"
     @click="onClick"
     @dblclick="onDoubleClick"
-    @contextmenu.prevent="menu.open(issue, $event.clientX, $event.clientY)"
+    @contextmenu.prevent="menu.open(issue, $event.clientX, $event.clientY, boardId)"
     @keydown="onKeydown"
   >
     <!-- # -->

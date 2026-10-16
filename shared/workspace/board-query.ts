@@ -15,7 +15,9 @@ const BASE: IssueQuery = { assigned_to_id: 'me', status_id: 'open', sort: 'prior
 
 export function boardQueries(board: Board, categories: readonly Category[]): IssueQuery[] {
   if (board.kind === 'custom') {
-    return board.issueIds.length > 0 ? [{ ...BASE, issue_id: board.issueIds.join(',') }] : []
+    // Una lista enseña las tareas que se eligieron a mano, sean de quien sean.
+    const { assigned_to_id: _mine, ...open } = BASE
+    return board.issueIds.length > 0 ? [{ ...open, issue_id: board.issueIds.join(',') }] : []
   }
   const category: IssueQuery = board.kind === 'category' && board.issueCategoryIds.length > 0
     ? { category_id: board.issueCategoryIds.join(',') }

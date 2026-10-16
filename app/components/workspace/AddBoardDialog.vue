@@ -6,10 +6,13 @@ import { normalize } from '../../../shared/redmine/palette'
 
 /**
  * Añadir un board (F2c-T05): de un proyecto, de una o varias categorías de tareas
- * de Redmine de un proyecto, o una lista de tareas sueltas por número. Siempre
- * muestra solo las tareas asignadas a mí.
+ * de Redmine de un proyecto, o una lista de tareas sueltas que se buscan y marcan.
+ * Proyecto y categoría muestran solo las tareas asignadas a mí; la lista, las elegidas.
+ * Con `targetBoardId` solo se muestra el selector para añadir tareas a esa lista.
  */
 const open = defineModel<boolean>('open', { default: false })
+/** Con una lista como destino, el diálogo solo le añade tareas (menú "…" del board). */
+const props = defineProps<{ targetBoardId?: string }>()
 
 const session = useSessionStore()
 const workspace = useWorkspaceStore()
@@ -36,7 +39,8 @@ const { data: projectDetail, isPending: loadingCategories } = useProjectDetail(p
 const categoryOptions = computed(() =>
   [...(projectDetail.value?.issue_categories ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'es')))
 const name = ref('')
-const issueText = ref('')
+const issueIds = ref<number[]>([])
+const target = computed(() => workspace.boards.find(b => b.id === props.targetBoardId && b.kind === 'custom'))
 
 watch(open, (isOpen) => {
   if (!isOpen) return
@@ -44,7 +48,8 @@ watch(open, (isOpen) => {
   selected.value = []
   categoryIds.value = []
   name.value = ''
-  issueText.value = ''
+  issueIds.value = []
+  kind.value = target.value ? 'custom' : 'project'
 })
 watch(kind, () => {
   selected.value = []
@@ -54,9 +59,6 @@ watch(selected, () => {
   categoryIds.value = []
 })
 
-/** "4821, #4790 4800" → [4821, 4790, 4800]. */
-const issueIds = computed(() => [...new Set((issueText.value.match(/\d+/g) ?? []).map(Number).filter(n => n > 0))])
-
 const canCreate = computed(() => {
   if (kind.value === 'project') return selected.value.length === 1
   if (kind.value === 'category') return selected.value.length === 1 && categoryIds.value.length > 0
@@ -65,6 +67,12 @@ const canCreate = computed(() => {
 
 function create(): void {
   if (!canCreate.value) return
+  if (target.value) {
+    workspace.addIssues(target.value.id, issueIds.value)
+    toasts.show(issueIds.value.length === 1 ? 'Tarea añadida' : 'Tareas añadidas')
+    open.value = false
+    return
+  }
   if (kind.value === 'project') {
     const project = session.catalogs.projects.find(p => p.id === selected.value[0])!
     workspace.addBoard({ kind: 'project', title: project.name, projectIds: [project.id] })
@@ -95,8 +103,8 @@ function onListboxUpdate(value: unknown): void {
 <template>
   <UiDialog
     v-model:open="open"
-    title="Añadir board"
-    description="Verás solo las tareas abiertas asignadas a ti."
+    :title="target ? `Añadir tareas a ${target.title}` : 'Añadir board'"
+    :description="target ? 'Verás las tareas abiertas que elijas, sean de quien sean.' : kind === 'custom' ? 'Una lista muestra las tareas abiertas que elijas, sean de quien sean.' : 'Verás solo las tareas abiertas asignadas a ti.'"
     :width="28"
   >
     <form
@@ -104,13 +112,14 @@ function onListboxUpdate(value: unknown): void {
       @submit.prevent="create"
     >
       <UiSegmentedControl
+        v-if="!target"
         v-model="kind"
         label="Tipo de board"
         :options="KINDS"
       />
 
       <label
-        v-if="kind !== 'project'"
+        v-if="!target && kind !== 'project'"
         class="flex flex-col gap-1"
       >
         <span class="panel-label">{{ kind === 'category' ? 'Nombre del board (opcional)' : 'Nombre de la lista' }}</span>
@@ -123,22 +132,11 @@ function onListboxUpdate(value: unknown): void {
         >
       </label>
 
-      <label
+      <WorkspaceIssueMultiPicker
         v-if="kind === 'custom'"
-        class="flex flex-col gap-1"
-      >
-        <span class="panel-label">Números de tarea</span>
-        <input
-          v-model="issueText"
-          type="text"
-          inputmode="numeric"
-          placeholder="4821, 4790, 4802"
-          class="data min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2.5"
-        >
-        <span class="text-[length:var(--text-caption)] text-secondary">
-          {{ issueIds.length === 0 ? 'Separa los números con comas o espacios.' : issueIds.length === 1 ? '1 tarea' : `${issueIds.length} tareas` }}
-        </span>
-      </label>
+        v-model="issueIds"
+        :exclude="target?.issueIds"
+      />
 
       <div
         v-else
@@ -238,7 +236,7 @@ function onListboxUpdate(value: unknown): void {
         @click="open = false"
       />
       <UiButton
-        label="Añadir board"
+        :label="target ? 'Añadir tareas' : 'Añadir board'"
         variant="primary"
         :disabled="!canCreate"
         @click="create"

@@ -16,6 +16,16 @@ const session = useSessionStore()
 const flow = useCardFlow()
 
 const addOpen = ref(false)
+/** Lista a la que se añaden tareas; sin ella, el diálogo crea un board nuevo. */
+const addTarget = ref<string | undefined>()
+function openAddIssues(board: Board): void {
+  addTarget.value = board.id
+  addOpen.value = true
+}
+function openAddBoard(): void {
+  addTarget.value = undefined
+  addOpen.value = true
+}
 const locked = computed(() => workspace.workspace.locked)
 
 // En compacto todo es una columna y no se arrastra.
@@ -160,7 +170,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
         label="Añadir board"
         icon="lucide:plus"
         variant="primary"
-        @click="addOpen = true"
+        @click="openAddBoard"
       />
     </Teleport>
 
@@ -205,7 +215,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
       <UiButton
         label="Otro board…"
         variant="ghost"
-        @click="addOpen = true"
+        @click="openAddBoard"
       />
     </div>
 
@@ -228,6 +238,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
         :board="board"
         :locked="true"
         :class="board.span === 2 ? 'wide:col-span-2' : ''"
+        @add-issues="openAddIssues(board)"
         @keydown.capture="($event: KeyboardEvent) => ($event.target as HTMLElement).classList.contains('board-handle') && onHandleKeydown(board, $event)"
       />
     </VueDraggable>
@@ -249,6 +260,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
           class="absolute touch-none [&_.board-handle]:cursor-grab"
           :class="dragging?.id === board.id ? 'z-20 shadow-dialog [&_.board-handle]:cursor-grabbing' : 'z-10'"
           :style="{ left: `${position(board).x}px`, top: `${position(board).y}px`, width: `${board.free.w}px` }"
+          @add-issues="openAddIssues(board)"
           @pointerdown="onPointerDown(board, $event)"
           @pointermove="onPointerMove"
           @pointerup="onPointerUp(board)"
@@ -265,6 +277,9 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
       {{ announcement }}
     </p>
 
-    <WorkspaceAddBoardDialog v-model:open="addOpen" />
+    <WorkspaceAddBoardDialog
+      v-model:open="addOpen"
+      :target-board-id="addTarget"
+    />
   </div>
 </template>

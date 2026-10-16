@@ -146,6 +146,19 @@ export function updateBoard(workspace: Workspace, id: string, patch: Partial<Omi
   return { ...workspace, boards: workspace.boards.map(board => board.id === id ? { ...board, ...patch } : board) }
 }
 
+/** Añade tareas a una lista, sin repetir y detrás de las que ya había. */
+export function addIssuesToBoard(workspace: Workspace, id: string, issueIds: readonly number[]): Workspace {
+  const board = workspace.boards.find(b => b.id === id)
+  if (!board) return workspace
+  return updateBoard(workspace, id, { issueIds: [...new Set([...board.issueIds, ...issueIds])] })
+}
+
+export function removeIssueFromBoard(workspace: Workspace, id: string, issueId: number): Workspace {
+  const board = workspace.boards.find(b => b.id === id)
+  if (!board) return workspace
+  return updateBoard(workspace, id, { issueIds: board.issueIds.filter(n => n !== issueId) })
+}
+
 export function removeBoard(workspace: Workspace, id: string): Workspace {
   return { ...workspace, boards: workspace.boards.filter(board => board.id !== id) }
 }

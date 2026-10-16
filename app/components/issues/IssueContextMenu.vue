@@ -49,6 +49,14 @@ function restoreFocus(event: Event): void {
   returnFocus = null
 }
 
+const boardId = computed(() => menu.state.value?.boardId)
+
+function removeFromList(target: { id: number }): void {
+  if (!boardId.value) return
+  const undo = workspace.removeIssue(boardId.value, target.id)
+  toasts.show(`#${target.id} quitada de la lista`, { label: 'Deshacer', run: undo })
+}
+
 const issueId = computed(() => issue.value?.id ?? 0)
 const projectId = computed(() => issue.value?.project.id)
 
@@ -154,6 +162,20 @@ const HINT = 'ml-auto pl-6 text-[length:var(--text-caption)] text-tertiary data'
             />
             Ver detalles
             <span :class="HINT">↵</span>
+          </DropdownMenuItem>
+
+          <!-- Solo dentro de una lista personalizada del workspace; es estado local, sin permiso. -->
+          <DropdownMenuItem
+            v-if="boardId"
+            :class="MENU_ITEM"
+            @select="removeFromList(issue)"
+          >
+            <Icon
+              name="lucide:list-minus"
+              :class="ICON"
+              aria-hidden="true"
+            />
+            Quitar de esta lista
           </DropdownMenuItem>
 
           <!-- Tiempo -->

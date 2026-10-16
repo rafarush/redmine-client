@@ -15,6 +15,8 @@ const props = defineProps<{
   locked: boolean
 }>()
 
+const emit = defineEmits<{ addIssues: [] }>()
+
 const workspace = useWorkspaceStore()
 const session = useSessionStore()
 const toasts = useToastStore()
@@ -132,6 +134,18 @@ function remove(): void {
             :side-offset="6"
           >
             <DropdownMenuItem
+              v-if="board.kind === 'custom'"
+              :class="MENU_ITEM"
+              @select="emit('addIssues')"
+            >
+              <Icon
+                name="lucide:list-plus"
+                class="size-4 text-secondary"
+                aria-hidden="true"
+              />
+              Añadir tareas
+            </DropdownMenuItem>
+            <DropdownMenuItem
               :class="MENU_ITEM"
               @select="startRename"
             >
@@ -228,12 +242,20 @@ function remove(): void {
         />
       </div>
 
-      <p
+      <div
         v-else-if="empty"
-        class="px-4 py-6 text-center text-secondary"
+        class="flex flex-col items-center gap-2 px-4 py-6 text-center"
       >
-        Este board no tiene proyectos ni tareas. Edítalo desde "Añadir board".
-      </p>
+        <p class="text-secondary">
+          {{ board.kind === 'custom' ? 'Esta lista aún no tiene tareas.' : 'Este board no tiene proyectos.' }}
+        </p>
+        <UiButton
+          v-if="board.kind === 'custom'"
+          label="Añadir tareas"
+          icon="lucide:list-plus"
+          @click="emit('addIssues')"
+        />
+      </div>
 
       <p
         v-else-if="issues.length === 0"
@@ -259,6 +281,7 @@ function remove(): void {
           :key="issue.id"
           :issue="issue"
           :alternate="index % 2 === 1"
+          :board-id="board.kind === 'custom' ? board.id : undefined"
         />
       </TransitionGroup>
     </div>

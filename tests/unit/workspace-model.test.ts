@@ -1,11 +1,13 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import {
+  addIssuesToBoard,
   boardProjectIds,
   createBoard,
   EMPTY_WORKSPACE,
   moveBoard,
   removeBoard,
+  removeIssueFromBoard,
   sanitizeWorkspace,
   saveCategory,
 } from '../../shared/workspace/model'
@@ -46,6 +48,17 @@ describe('workspace: modelo', () => {
     expect(moved.boards.map(b => b.title)).toEqual(['Board', 'Uno', 'Dos'])
     expect(moveBoard(ws, ws.boards[0]!.id, 99).boards.at(-1)!.title).toBe('Uno')
     expect(removeBoard(ws, ws.boards[0]!.id).boards).toHaveLength(2)
+  })
+
+  it('añade tareas a una lista sin repetir y las quita una a una', () => {
+    let ws = createBoard(EMPTY_WORKSPACE, { kind: 'custom', title: 'Semana', issueIds: [10, 11] }, makeId)
+    const id = ws.boards[0]!.id
+    ws = addIssuesToBoard(ws, id, [11, 12, 12, 13])
+    expect(ws.boards[0]!.issueIds).toEqual([10, 11, 12, 13])
+    ws = removeIssueFromBoard(ws, id, 11)
+    expect(ws.boards[0]!.issueIds).toEqual([10, 12, 13])
+    expect(addIssuesToBoard(ws, 'no-existe', [1])).toBe(ws)
+    expect(removeIssueFromBoard(ws, 'no-existe', 1)).toBe(ws)
   })
 
   it('un board de categoría sale de los proyectos de la categoría', () => {
@@ -99,7 +112,9 @@ describe('workspace: consultas de un board', () => {
   })
 
   it('una lista de tareas sueltas pide por número', () => {
-    expect(boardQueries({ ...base, kind: 'custom', issueIds: [4821, 4790] }, [])[0]).toMatchObject({ issue_id: '4821,4790' })
+    const query = boardQueries({ ...base, kind: 'custom', issueIds: [4821, 4790] }, [])[0]!
+    expect(query).toMatchObject({ issue_id: '4821,4790', status_id: 'open' })
+    expect(query).not.toHaveProperty('assigned_to_id')
     expect(boardQueries({ ...base, kind: 'custom' }, [])).toEqual([])
   })
 
