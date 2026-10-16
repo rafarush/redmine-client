@@ -22,9 +22,10 @@
   - _Depende:_ F2-T01, F1-T06
   - _Acepta:_ checklist de diseño; lector de pantalla anuncia la frase como grupo; `Retroceso` sobre un token lo quita; atrás/adelante del navegador recorre los cambios. · ✔ 8854331
 
-- [ ] **F2-T10** Campos personalizados y personas en la frase — ofrecer `cf_<id>` con `is_filter` (T04 los dejó fuera: `/custom_fields.json` exige admin, hay que sacarlos de otro sitio) y listar personas desde las membresías de los proyectos en vez de las vistas en la lista.
+- [~] **F2-T10** Campos personalizados y personas en la frase — ofrecer `cf_<id>` con `is_filter` (T04 los dejó fuera: `/custom_fields.json` exige admin, hay que sacarlos de otro sitio) y listar personas desde las membresías de los proyectos en vez de las vistas en la lista.
   - _Depende:_ F2-T04
   - _Acepta:_ un campo personalizado filtrable aparece en "+ Filtro"; "Asignado a" ofrece miembros aunque no estén en la lista actual.
+  - _Hecho:_ 7557b55. `useFilterCatalog`: con admin, `/custom_fields.json` (de tareas, `is_filter`, listas con sus valores, fechas, el resto texto); sin admin (403, comprobado), campos deducidos de las tareas de la lista, con sus valores vistos si son ≤ 30. Personas: miembros de los proyectos de la frase o, sin proyecto, de los tuyos (máx. 20), más las de la lista. Lógica en `filter-fields.ts` con tests. Un `cf_` desconocido de un enlace viejo se edita como texto. El seed local no tiene campos personalizados: pendiente de probar con uno.
 
 - [x] **F2-T05** Vistas predefinidas en la sidebar — "Mis tareas" (asignadas a mí, abiertas), "Creadas por mí", "Todas las abiertas", "Vencen esta semana". Son frases predefinidas, editables en la lista.
   - _Depende:_ F2-T04
