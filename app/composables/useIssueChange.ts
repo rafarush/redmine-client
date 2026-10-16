@@ -18,6 +18,15 @@ interface ChangeVars {
   optimistic: Issue
   label: string
   undoable: boolean
+  /** Lo que hay que deshacer además del cambio (p. ej. borrar el tiempo registrado). */
+  onUndo?: () => void
+}
+
+export interface ChangeOptions {
+  /** Se llama al pulsar "Deshacer", además de devolver la tarea a como estaba. */
+  onUndo?: () => void
+  /** Sin "Deshacer" en el toast. */
+  undoable?: boolean
 }
 
 type IssueList = { pages: { items: Issue[] }[] }
@@ -55,7 +64,10 @@ export function useIssueChange() {
     onSuccess: (_data, vars, context) => {
       void queryClient.invalidateQueries({ queryKey: ['issues'] })
       toasts.show(vars.label, vars.undoable && context
-        ? { label: 'Deshacer', run: () => undo(context.before) }
+        ? { label: 'Deshacer', run: () => {
+            undo(context.before)
+            vars.onUndo?.()
+          } }
         : undefined)
     },
   })
@@ -75,10 +87,24 @@ export function useIssueChange() {
   }
 
   /** Aplica un cambio. Si la tarea ya tiene ese valor, no llama a Redmine. */
-  function change(issue: Issue, next: IssueChange, optimistic: Issue, label: string): void {
-    if (isNoop(issue, next)) return
-    mutation.mutate({ issue, change: next, optimistic, label, undoable: true })
+  function change(issue: Issue, next: IssueChange, optimistic: Issue, label: string, options: ChangeOptions = {}): void {
+    void changeAsync(issue, next, optimistic, label, options)
   }
 
-  return { change, isPending: computed(() => mutation.isPending.value) }
+  /**
+   * Igual que `change`, pero dice si Redmine lo aceptó, para encadenar lo que
+   * depende de ello (el flujo del workspace). El rechazo ya lo explica el toast.
+   */
+  async function changeAsync(issue: Issue, next: IssueChange, optimistic: Issue, label: string, options: ChangeOptions = {}): Promise<boolean> {
+    if (isNoop(issue, next)) return true
+    try {
+      await mutation.mutateAsync({ issue, change: next, optimistic, label, undoable: options.undoable ?? true, onUndo: options.onUndo })
+      return true
+    }
+    catch {
+      return false
+    }
+  }
+
+  return { change, changeAsync, isPending: computed(() => mutation.isPending.value) }
 }

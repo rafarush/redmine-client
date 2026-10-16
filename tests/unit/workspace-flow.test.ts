@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { elapsedHours, formatClock, formatDuration, parseDuration, roundHours } from '../../shared/time/duration'
+import { describeDue } from '../../shared/workspace/due'
 import { doubleClickStep, guessStatusMap, stageOf, targetStatus } from '../../shared/workspace/flow'
 
 describe('duraciones', () => {
@@ -65,5 +66,16 @@ describe('flujo de la card', () => {
     ]
     expect(guessStatusMap(statuses)).toEqual({ inProgress: 2, done: 3, rtqa: 5 })
     expect(guessStatusMap([{ id: 1, name: 'Nueva' }])).toEqual({ inProgress: undefined, done: undefined, rtqa: undefined })
+  })
+})
+
+describe('fecha fin', () => {
+  it('dice hoy, mañana, ayer o la fecha corta con su tono', () => {
+    expect(describeDue('2026-10-15', '2026-10-15')).toEqual({ label: 'Hoy', tone: 'today' })
+    expect(describeDue('2026-10-16', '2026-10-15')).toEqual({ label: 'Mañana', tone: 'soon' })
+    expect(describeDue('2026-10-14', '2026-10-15')).toEqual({ label: 'Ayer', tone: 'overdue' })
+    expect(describeDue('2026-10-01', '2026-10-15')).toEqual({ label: '1 oct', tone: 'overdue' })
+    expect(describeDue('2026-11-03', '2026-10-15')).toEqual({ label: '3 nov', tone: 'later' })
+    expect(describeDue(null, '2026-10-15')).toEqual({ label: '—', tone: 'none' })
   })
 })
