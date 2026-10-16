@@ -20,3 +20,6 @@ src-tauri/gen
 .DS_Store
 *.log
 tests/e2e/.auth/
+
+# Config local del agent-runner (F11)
+agent-runner.config.json

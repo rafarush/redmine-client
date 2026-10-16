@@ -18,10 +18,10 @@ describe('sanitizeAgentConfig', () => {
     expect(isLocalRunnerUrl('http://localhost:1')).toBe(true)
   })
 
-  it('descarta ids de estado inválidos y comandos vacíos', () => {
-    const config = sanitizeAgentConfig({ statusMap: { working: 3, pr_opened: -1, blocked: 'x' }, verifyCommands: ['pnpm test', '  ', 4] })
+  it('descarta ids de estado inválidos y no admite comandos', () => {
+    const config = sanitizeAgentConfig({ statusMap: { working: 3, pr_opened: -1, blocked: 'x' }, verifyCommands: ['rm -rf /'] })
     expect(config.statusMap).toEqual({ working: 3, pr_opened: undefined, blocked: undefined })
-    expect(config.verifyCommands).toEqual(['pnpm test'])
+    expect(config).not.toHaveProperty('verifyCommands')
   })
 
   it('sin runner válido no hay agente configurado', () => {

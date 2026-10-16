@@ -17,6 +17,7 @@
     "lint:fix": "eslint . --fix",
     "check:contrast": "jiti scripts/check-contrast.ts",
     "seed": "jiti scripts/seed-redmine.ts",
+    "agent:runner": "jiti agent-runner/main.ts",
     "capture:fixtures": "jiti scripts/capture-fixtures.ts"
   },
   "dependencies": {

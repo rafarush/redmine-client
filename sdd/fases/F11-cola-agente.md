@@ -9,9 +9,9 @@
 - [x] **F11-T01** ADR-009 y modelo — documentar la arquitectura (runner local aparte) y crear la lógica pura en `shared/agent/` (config, cola, transiciones) con tests. · ✔ 2077846
   - _Acepta:_ ADR-009 en `01-arquitectura.md`; tests de `sanitizeAgentConfig` y de las transiciones de la cola en verde.
 
-- [ ] **F11-T02** Runner local — `agent-runner/` (Node, `node:http`): escucha solo en `127.0.0.1`, token aleatorio al arrancar, CORS limitado al origen de la app, repo fijo en `agent-runner.config.json`; endpoints para encolar/cancelar y SSE de eventos. Script `pnpm agent:runner`.
+- [~] **F11-T02** Runner local — `agent-runner/` (Node, `node:http`): escucha solo en `127.0.0.1`, token aleatorio al arrancar, CORS limitado al origen de la app, repo y comandos de verificación fijos en `agent-runner.config.json` (el cliente no manda rutas ni comandos); endpoints para encolar/cancelar y SSE de eventos. Script `pnpm agent:runner`.
   - _Depende:_ F11-T01
-  - _Acepta:_ sin token responde 401; otro origen no recibe cabeceras CORS; el token no sale en logs.
+  - _Acepta:_ sin token responde 401; otro origen no recibe cabeceras CORS; el token solo se imprime una vez al arrancar y no sale en ningún log de peticiones.
 
 - [ ] **F11-T03** Flujo por tarea — rama `agent/<id>-<slug>`, `claude -p` (stream-json), verificación (`lint`, `typecheck`, `test`), `git push` y `gh pr create`. Sin `Co-Authored-By` ni "Generated with": se pasa `attribution` vacío al agente y se comprueba el `git log` antes de empujar.
   - _Depende:_ F11-T02
@@ -21,7 +21,7 @@
   - _Depende:_ F11-T01
   - _Acepta:_ recargar conserva la cola; el token no aparece en el almacenamiento del navegador.
 
-- [ ] **F11-T05** Integraciones IA — `AgentIntegrationsDialog` (agente, URL del runner, token, rama base, comandos de prueba, mapeo de estados, "Probar conexión") y entrada en el menú de cuenta.
+- [ ] **F11-T05** Integraciones IA — `AgentIntegrationsDialog` (agente, URL del runner, token, rama base, mapeo de estados, "Probar conexión") y entrada en el menú de cuenta.
   - _Depende:_ F11-T04
   - _Acepta:_ funciona con teclado; "Probar conexión" informa éxito o motivo del fallo.
 

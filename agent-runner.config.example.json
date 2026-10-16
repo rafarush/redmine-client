@@ -1,0 +1,6 @@
+{
+  "repoPath": "D:/ruta/al/repo",
+  "port": 4317,
+  "allowedOrigin": "http://localhost:3000",
+  "verifyCommands": ["pnpm lint", "pnpm typecheck", "pnpm test"]
+}

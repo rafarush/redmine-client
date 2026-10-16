@@ -4,6 +4,8 @@ import { z } from 'zod'
  * Modelo de la Cola de Agente (F11): configuración del agente y tareas encoladas.
  * Lógica pura; el store (`app/stores/agent.ts`) solo persiste lo que esto decide.
  * El token del runner nunca forma parte de este modelo: no se guarda en `localStorage`.
+ * Los comandos de verificación tampoco: viven en la config del runner, así que un cliente
+ * comprometido no puede mandarle comandos que ejecutar.
  */
 
 export type AgentKind = 'claude-code'
@@ -23,8 +25,6 @@ export interface AgentConfig {
   /** URL del runner local, p. ej. `http://127.0.0.1:4317`. Vacía = sin agente conectado. */
   runnerUrl: string
   baseBranch: string
-  /** Comandos que deben pasar antes de abrir la PR. */
-  verifyCommands: string[]
   statusMap: AgentStatusMap
 }
 
@@ -49,7 +49,6 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   kind: 'claude-code',
   runnerUrl: '',
   baseBranch: 'main',
-  verifyCommands: ['pnpm lint', 'pnpm typecheck', 'pnpm test'],
   statusMap: {},
 }
 
@@ -93,14 +92,10 @@ export function sanitizeAgentConfig(raw: unknown): AgentConfig {
   const runnerUrl = typeof value.runnerUrl === 'string' && isLocalRunnerUrl(value.runnerUrl.trim())
     ? value.runnerUrl.trim().replace(/\/+$/, '')
     : ''
-  const commands = Array.isArray(value.verifyCommands)
-    ? value.verifyCommands.filter((c): c is string => typeof c === 'string' && c.trim() !== '').map(c => c.trim())
-    : DEFAULT_AGENT_CONFIG.verifyCommands
   return {
     kind: 'claude-code',
     runnerUrl,
     baseBranch: typeof value.baseBranch === 'string' && value.baseBranch.trim() ? value.baseBranch.trim() : DEFAULT_AGENT_CONFIG.baseBranch,
-    verifyCommands: commands,
     statusMap: {
       working: statusId.parse(map.working),
       pr_opened: statusId.parse(map.pr_opened),
