@@ -25,8 +25,8 @@ function submit(): void {
   <PopoverRoot v-model:open="open">
     <PopoverTrigger
       :disabled="disabled"
-      class="inline-flex min-h-[var(--control-min)] shrink-0 items-center gap-1 rounded-full px-3 text-[length:var(--text-body)] text-secondary hover:text-content disabled:cursor-not-allowed disabled:opacity-50"
-      data-filter-add
+      class="inline-flex min-h-[var(--control-min)] shrink-0 items-center gap-1 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content disabled:cursor-not-allowed disabled:opacity-50"
+      data-filter-save
     >
       <Icon
         name="lucide:bookmark-plus"

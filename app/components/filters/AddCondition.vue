@@ -15,7 +15,7 @@ const emit = defineEmits<{ 'update:open': [open: boolean], 'pick': [field: Filte
     @update:open="emit('update:open', $event)"
   >
     <PopoverTrigger
-      class="inline-flex min-h-[var(--control-min)] shrink-0 items-center gap-1 rounded-full border border-dashed border-separator px-3 text-[length:var(--text-body)] text-secondary hover:border-secondary hover:text-content"
+      class="ml-1 inline-flex min-h-[var(--control-min)] shrink-0 items-center gap-1 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content data-[state=open]:bg-fill-selected"
       data-filter-add
     >
       <Icon

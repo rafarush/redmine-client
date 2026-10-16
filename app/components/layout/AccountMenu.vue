@@ -16,11 +16,11 @@ async function disconnect(): Promise<void> {
 <template>
   <DropdownMenuRoot>
     <DropdownMenuTrigger
-      class="flex min-h-[var(--control-min)] w-full items-center gap-2 rounded-[var(--radius-control)] px-2 text-left transition-colors hover:bg-raised"
+      class="flex min-h-[var(--control-min)] w-full items-center gap-2 rounded-[var(--radius-control)] px-2 text-left transition-colors hover:bg-fill-hover"
       :aria-label="`Cuenta de ${session.name} en ${host}`"
     >
       <span
-        class="data grid size-6 shrink-0 place-items-center rounded-full bg-accent text-[length:var(--text-caption)] font-semibold text-on-accent"
+        class="data grid size-6 shrink-0 place-items-center rounded-[var(--radius-plate)] bg-board text-[10px] font-semibold text-on-board"
         aria-hidden="true"
       >{{ session.initials }}</span>
       <span class="min-w-0 flex-1">

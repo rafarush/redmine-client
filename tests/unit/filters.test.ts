@@ -1,18 +1,7 @@
 // @vitest-environment node
 import type { FilterSentence } from '../../shared/redmine/filters'
 import { describe, expect, it } from 'vitest'
-import {
-  conditionFor,
-  describe as describeSentence,
-  fromUrl,
-  isFilterField,
-  relativeValue,
-  resolvePeriod,
-  toRedmineQuery,
-  toUrl,
-  withCondition,
-  withoutField,
-} from '../../shared/redmine/filters'
+import { conditionFor, describe as describeSentence, describeConditionParts, fromUrl, isFilterField, relativeValue, resolvePeriod, toRedmineQuery, toUrl, withCondition, withoutField } from '../../shared/redmine/filters'
 
 /**
  * La frase de filtros (F2-T01). Lo que importa aquí:
@@ -251,5 +240,16 @@ describe('edición de la frase', () => {
     withCondition(base, { field: 'status_id', operator: '=', values: ['closed'] })
     withoutField(base, 'status_id')
     expect(conditionFor(base, 'status_id')?.values).toEqual(['open'])
+  })
+})
+
+describe('describeConditionParts', () => {
+  it('separa las palabras de unión del valor que se puede cambiar', () => {
+    expect(describeConditionParts({ field: 'assigned_to_id', operator: '=', values: ['me'] }))
+      .toEqual({ lead: 'asignadas a', value: 'mí' })
+    expect(describeConditionParts({ field: 'due_date', operator: '>=', values: ['2026-10-01'] }).lead)
+      .toBe('que vencen desde')
+    expect(describeConditionParts({ field: 'assigned_to_id', operator: '!*', values: [] }))
+      .toEqual({ lead: '', value: 'sin asignadas a' })
   })
 })

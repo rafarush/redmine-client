@@ -1,7 +1,10 @@
+<script setup lang="ts">
+definePageMeta({ title: 'Wiki' })
+</script>
+
 <template>
   <LayoutPlaceholder
-    title="Wiki"
-    phase="F7"
+    icon="lucide:book-open"
     description="Aquí irá la documentación de cada proyecto."
   />
 </template>

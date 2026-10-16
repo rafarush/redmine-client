@@ -2,7 +2,7 @@
 import type { FilterCondition, FilterField, FilterSentence } from '../../../shared/redmine/filters'
 import type { FilterOption } from '../../../shared/redmine/filter-fields'
 import { availableFields, emptyCondition, FIELD_META, removeLast, setValues, toggleValue } from '../../../shared/redmine/filter-fields'
-import { conditionFor, describe, describeCondition, withoutField } from '../../../shared/redmine/filters'
+import { conditionFor, describe, describeConditionParts, withoutField } from '../../../shared/redmine/filters'
 
 /**
  * La frase de filtros (F2-T04): "Tareas asignadas a mí, en abierta…".
@@ -104,7 +104,7 @@ const showRow = computed(() => !compact.value || expanded.value)
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 border-b border-separator bg-surface px-2 py-1.5">
+  <div class="flex flex-col gap-1 px-3 pb-2 wide:px-6">
     <button
       v-if="compact"
       type="button"
@@ -126,7 +126,7 @@ const showRow = computed(() => !compact.value || expanded.value)
       role="group"
       tabindex="-1"
       :aria-label="summary"
-      class="flex items-center gap-1.5 overflow-x-auto wide:flex-wrap"
+      class="flex items-center gap-x-1 gap-y-0.5 overflow-x-auto wide:flex-wrap"
       @keydown="onKeydown"
     >
       <span
@@ -136,19 +136,34 @@ const showRow = computed(() => !compact.value || expanded.value)
         Todas las tareas
       </span>
 
-      <FiltersFilterToken
-        v-for="condition in conditions"
+      <span
+        v-else
+        class="shrink-0 text-[length:var(--text-body)] text-secondary"
+        aria-hidden="true"
+      >Tareas</span>
+
+      <template
+        v-for="(condition, index) in conditions"
         :key="condition.field"
-        :condition="condition"
-        :meta="FIELD_META[condition.field]!"
-        :text="describeCondition(condition, lookup)"
-        :options="options(condition.field)"
-        :open="openField === condition.field"
-        @update:open="setOpen(condition.field, $event)"
-        @toggle="update(toggleValue(modelValue, condition.field, $event))"
-        @set="(operator, values) => update(setValues(modelValue, condition.field, operator, values))"
-        @remove="remove(condition.field)"
-      />
+      >
+        <FiltersFilterToken
+          :condition="condition"
+          :meta="FIELD_META[condition.field]!"
+          :lead="describeConditionParts(condition, lookup).lead"
+          :text="describeConditionParts(condition, lookup).value"
+          :options="options(condition.field)"
+          :open="openField === condition.field"
+          @update:open="setOpen(condition.field, $event)"
+          @toggle="update(toggleValue(modelValue, condition.field, $event))"
+          @set="(operator, values) => update(setValues(modelValue, condition.field, operator, values))"
+          @remove="remove(condition.field)"
+        />
+        <span
+          v-if="index < conditions.length - 1"
+          class="-ml-1 shrink-0 text-secondary"
+          aria-hidden="true"
+        >,</span>
+      </template>
 
       <FiltersAddCondition
         :fields="addable"

@@ -2,8 +2,11 @@
 import type { FilterOption } from '../../shared/redmine/filter-fields'
 import type { FilterSentence } from '../../shared/redmine/filters'
 import type { IssueSort } from '../../shared/redmine/issue-query'
+import type { Issue } from '../../shared/redmine/types'
 import { fromUrl, toUrl } from '../../shared/redmine/filters'
 import { DEFAULT_SORT } from '../../shared/redmine/issue-query'
+
+definePageMeta({ title: 'Tareas' })
 
 /**
  * Pantalla principal: frase de filtros + lista de tareas.
@@ -35,7 +38,7 @@ function clearSavedQuery(): void {
 
 const sort = ref<IssueSort>({ ...DEFAULT_SORT })
 const { issues, totalCount, isStale, isPending, error, refetch, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort, savedQuery })
-const toasts = useToastStore()
+const session = useSessionStore()
 
 /** Hay algo que quitar: condiciones en la frase o una consulta guardada. */
 const filtered = computed(() => sentence.value.conditions.length > 0 || savedQuery.value !== null)
@@ -43,9 +46,9 @@ function clearFilters(): void {
   router.push({ query: { ...route.query, f: undefined, q: undefined, p: undefined } })
 }
 
-/** El detalle de tarea llega en F3: hasta entonces Enter y doble clic lo dicen en vez de callar. */
-function openIssue(): void {
-  toasts.show('El detalle de la tarea estará disponible pronto')
+/** Hasta que llegue la ficha propia (F3), Enter y doble clic abren la tarea en Redmine. */
+function openIssue(issue: Issue): void {
+  window.open(`${session.url.replace(/\/$/, '')}/issues/${issue.id}`, '_blank', 'noopener')
 }
 
 /** Personas que aparecen en la lista, para ofrecerlas en "Asignado a" y "Autor". */
@@ -63,7 +66,7 @@ const people = computed<FilterOption[]>(() => {
   <div class="flex h-full min-h-0 flex-col">
     <div
       v-if="savedQuery"
-      class="flex items-center gap-2 border-b border-separator bg-surface px-2 py-1.5"
+      class="mx-3 mb-2 flex items-center gap-2 rounded-[var(--radius-control)] bg-fill-selected py-1 pl-3 pr-1 wide:mx-6"
     >
       <Icon
         name="lucide:bookmark"

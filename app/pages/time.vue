@@ -1,7 +1,10 @@
+<script setup lang="ts">
+definePageMeta({ title: 'Tiempo' })
+</script>
+
 <template>
   <LayoutPlaceholder
-    title="Tiempo"
-    phase="F4"
+    icon="lucide:timer"
     description="Aquí irá el parte semanal de horas, editable celda a celda."
   />
 </template>

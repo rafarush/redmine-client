@@ -99,9 +99,15 @@ export const useUiStore = defineStore('ui', () => {
     persistSaved()
   }
 
-  function deleteSavedFilter(id: string): void {
-    savedFilters.value = removeFilter(savedFilters.value, id)
+  /** Quita el filtro y devuelve cómo deshacerlo (se ofrece en el toast). */
+  function deleteSavedFilter(id: string): () => void {
+    const before = savedFilters.value
+    savedFilters.value = removeFilter(before, id)
     persistSaved()
+    return () => {
+      savedFilters.value = before
+      persistSaved()
+    }
   }
 
   function toggleSidebar(): void {

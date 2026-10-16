@@ -21,7 +21,9 @@ import { relativeValue, RELATIVE_PERIODS } from '../../../shared/redmine/filters
 const props = defineProps<{
   condition: FilterCondition
   meta: FieldMeta
-  /** La condición dicha en palabras, p. ej. "asignadas a mí". */
+  /** Palabras de unión antes del valor, p. ej. "asignadas a" (texto secundario). */
+  lead: string
+  /** El valor dicho en palabras, p. ej. "mí": es lo que se pulsa. */
   text: string
   options: FilterOption[]
   open: boolean
@@ -84,18 +86,22 @@ function onKeydown(event: KeyboardEvent): void {
     :open="open"
     @update:open="emit('update:open', $event)"
   >
-    <div class="inline-flex shrink-0 items-center rounded-full border border-separator bg-raised text-[length:var(--text-body)]">
+    <span class="group inline-flex shrink-0 items-baseline gap-1 whitespace-nowrap text-[length:var(--text-body)]">
+      <span
+        v-if="lead"
+        class="text-secondary"
+      >{{ lead }}</span>
       <PopoverTrigger
-        class="min-h-[var(--control-min)] rounded-l-full pl-3 pr-1.5 text-content hover:bg-surface"
+        class="-mx-0.5 min-h-[var(--control-min)] rounded-[var(--radius-plate)] px-1 font-semibold text-content underline decoration-separator decoration-2 underline-offset-[5px] transition-colors hover:bg-fill-hover hover:decoration-secondary data-[state=open]:bg-fill-selected"
         :data-filter-token="condition.field"
+        :aria-label="`${meta.label}: ${lead} ${text}`"
         @keydown="onKeydown"
       >
-        <span class="text-secondary">{{ meta.label }}:</span>
         {{ text }}
       </PopoverTrigger>
       <button
         type="button"
-        class="grid min-h-[var(--control-min)] min-w-[var(--control-min)] place-items-center rounded-r-full text-secondary hover:bg-surface hover:text-content"
+        class="grid size-5 place-items-center self-center rounded-[var(--radius-plate)] text-tertiary opacity-0 transition-opacity hover:bg-fill-hover hover:text-content focus-visible:opacity-100 group-hover:opacity-100"
         :aria-label="`Quitar el filtro ${meta.label}`"
         @click="emit('remove')"
       >
@@ -105,7 +111,7 @@ function onKeydown(event: KeyboardEvent): void {
           aria-hidden="true"
         />
       </button>
-    </div>
+    </span>
 
     <PopoverPortal>
       <PopoverContent
@@ -123,7 +129,7 @@ function onKeydown(event: KeyboardEvent): void {
             v-model="search"
             placeholder="Buscar…"
             :aria-label="`Buscar en ${meta.label}`"
-            class="mb-1 w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1 text-[length:var(--text-body)] text-content"
+            class="mb-1 w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1.5 text-[length:var(--text-body)] text-content"
           />
           <ListboxContent class="max-h-64 overflow-y-auto">
             <ListboxItem
@@ -159,7 +165,7 @@ function onKeydown(event: KeyboardEvent): void {
               v-for="period in RELATIVE_PERIODS"
               :key="period"
               type="button"
-              class="min-h-[var(--control-min)] rounded-full border border-separator px-3 text-[length:var(--text-body)] text-content hover:bg-surface"
+              class="min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator px-2.5 text-[length:var(--text-body)] text-content hover:bg-fill-hover aria-pressed:border-content aria-pressed:bg-fill-selected aria-pressed:font-semibold"
               :aria-pressed="condition.values[0] === relativeValue(period)"
               @click="emit('set', '=', [relativeValue(period)])"
             >
@@ -172,7 +178,7 @@ function onKeydown(event: KeyboardEvent): void {
               <input
                 v-model="from"
                 type="date"
-                class="data rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1 text-[length:var(--text-body)] text-content"
+                class="data rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1.5 text-[length:var(--text-body)] text-content"
                 @change="applyRange"
               >
             </label>
@@ -181,7 +187,7 @@ function onKeydown(event: KeyboardEvent): void {
               <input
                 v-model="to"
                 type="date"
-                class="data rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1 text-[length:var(--text-body)] text-content"
+                class="data rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1.5 text-[length:var(--text-body)] text-content"
                 @change="applyRange"
               >
             </label>
@@ -197,7 +203,7 @@ function onKeydown(event: KeyboardEvent): void {
             v-model="textValue"
             type="text"
             :aria-label="meta.label"
-            class="w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1 text-[length:var(--text-body)] text-content"
+            class="w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2 py-1.5 text-[length:var(--text-body)] text-content"
           >
         </form>
       </PopoverContent>

@@ -5,15 +5,24 @@ import { activeView, PRESET_VIEWS, viewLocation } from '../../../shared/redmine/
 const items = useNavItems()
 const route = useRoute()
 const ui = useUiStore()
+const toasts = useToastStore()
 const { queries } = useSavedQueries()
 
 /** Vista predefinida que coincide con la frase de la URL; solo existe en la lista. */
 const current = computed(() => route.path === '/' ? activeView(typeof route.query.f === 'string' ? route.query.f : null) : undefined)
+
+/** Un solo nivel de selección: blanco con anillo, como el panel; hover neutro. */
+const NAV_ITEM = 'flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-semibold aria-[current=page]:text-content aria-[current=page]:shadow-panel aria-[current=page]:ring-1 aria-[current=page]:ring-separator'
+
+function deleteSaved(id: string, name: string): void {
+  const undo = ui.deleteSavedFilter(id)
+  toasts.show(`Filtro "${name}" eliminado`, { label: 'Deshacer', run: undo })
+}
 </script>
 
 <template>
   <aside
-    class="hidden w-56 shrink-0 flex-col gap-1 border-r border-separator bg-surface p-2 wide:flex"
+    class="hidden w-56 shrink-0 flex-col gap-1 bg-sidebar px-3 pb-3 pt-4 wide:flex"
     aria-label="Secciones"
   >
     <nav class="flex flex-col gap-0.5">
@@ -21,7 +30,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
         v-for="item in items"
         :key="item.to"
         :to="item.to"
-        class="flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-raised hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-medium aria-[current=page]:text-content"
+        :class="NAV_ITEM"
       >
         <Icon
           :name="item.icon"
@@ -34,11 +43,11 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
 
     <nav
       aria-labelledby="views-heading"
-      class="mt-3 flex flex-col gap-0.5"
+      class="mt-5 flex flex-col gap-0.5"
     >
       <h2
         id="views-heading"
-        class="px-2 pb-1 text-[length:var(--text-caption)] font-medium text-secondary"
+        class="panel-label px-2 pb-1"
       >
         Vistas
       </h2>
@@ -47,7 +56,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
         :key="view.id"
         :to="viewLocation(view)"
         :aria-current="current?.id === view.id ? 'page' : undefined"
-        class="flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-raised hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-medium aria-[current=page]:text-content"
+        :class="NAV_ITEM"
       >
         <Icon
           :name="view.icon"
@@ -61,11 +70,11 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
     <nav
       v-if="ui.savedFilters.length > 0 || queries.length > 0"
       aria-labelledby="saved-heading"
-      class="mt-3 flex flex-col gap-0.5"
+      class="mt-5 flex flex-col gap-0.5"
     >
       <h2
         id="saved-heading"
-        class="px-2 pb-1 text-[length:var(--text-caption)] font-medium text-secondary"
+        class="panel-label px-2 pb-1"
       >
         Filtros guardados
       </h2>
@@ -78,7 +87,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
         <NuxtLink
           :to="{ path: '/', query: { f: saved.f } }"
           :aria-current="route.path === '/' && route.query.f === saved.f ? 'page' : undefined"
-          class="flex min-h-[var(--control-min)] min-w-0 flex-1 items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-raised hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-medium aria-[current=page]:text-content"
+          :class="[NAV_ITEM, 'min-w-0 flex-1']"
         >
           <Icon
             name="lucide:bookmark"
@@ -93,7 +102,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
           icon="lucide:trash-2"
           :label="`Eliminar filtro ${saved.name}`"
           class="opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
-          @click="ui.deleteSavedFilter(saved.id)"
+          @click="deleteSaved(saved.id, saved.name)"
         />
       </div>
 
@@ -102,7 +111,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
         :key="`redmine-${query.id}`"
         :to="{ path: '/', query: { q: String(query.id), p: query.project_id ? String(query.project_id) : undefined } }"
         :aria-current="route.path === '/' && route.query.q === String(query.id) ? 'page' : undefined"
-        class="flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-raised hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-medium aria-[current=page]:text-content"
+        :class="NAV_ITEM"
       >
         <Icon
           name="lucide:list-filter"
@@ -116,7 +125,7 @@ const current = computed(() => route.path === '/' ? activeView(typeof route.quer
 
     <!-- Proyectos fijados: F6-T01. -->
 
-    <div class="mt-auto border-t border-separator pt-1">
+    <div class="mt-auto pt-2">
       <LayoutAccountMenu />
     </div>
   </aside>

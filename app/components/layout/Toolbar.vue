@@ -1,25 +1,51 @@
 <script setup lang="ts">
-/** Acciones sobre la vista actual. La navegación vive en la sidebar o la tab bar. */
+/**
+ * Toolbar único de la vista (F2b): título grande, acciones de la página y búsqueda.
+ * Cada página pone su título con `definePageMeta({ title })` y sus acciones con
+ * `<Teleport defer to="#toolbar-actions">` (secundarias) o `#toolbar-primary` (la
+ * acción Ruby, una por pantalla). La navegación vive en la sidebar o la tab bar.
+ */
 const ui = useUiStore()
+const route = useRoute()
+const session = useSessionStore()
+
+const title = computed(() => typeof route.meta.title === 'string' ? route.meta.title : '')
+
+/** Hasta que llegue el formulario propio (F3-T07), crear abre el de Redmine. */
+function openNewIssue(): void {
+  window.open(`${session.url.replace(/\/$/, '')}/issues/new`, '_blank', 'noopener')
+}
 </script>
 
 <template>
-  <header class="flex shrink-0 items-center gap-2 border-b border-separator bg-surface px-2 py-1.5">
+  <header class="flex shrink-0 items-center gap-2 px-3 pb-3 pt-3 wide:gap-3 wide:px-6 wide:pt-5">
     <UiButton
       label="Mostrar u ocultar las secciones"
       icon="lucide:panel-left"
       variant="ghost"
       icon-only
       shortcut="Mod+\"
-      class="hidden wide:inline-flex"
+      class="-ml-1 hidden wide:inline-flex"
       :aria-expanded="!ui.sidebarCollapsed"
       @click="ui.toggleSidebar()"
     />
 
+    <h1 class="min-w-0 truncate text-[length:var(--text-large-title)] font-semibold leading-tight tracking-[-0.02em]">
+      {{ title }}
+    </h1>
+
+    <div
+      id="toolbar-actions"
+      class="flex items-center gap-1"
+    />
+
+    <div class="flex-1" />
+
     <button
       type="button"
-      class="inline-flex min-h-[var(--control-min)] max-w-72 flex-1 items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-3 text-left text-[length:var(--text-body)] text-secondary hover:border-secondary"
+      class="inline-flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-2.5 text-left text-[length:var(--text-body)] text-secondary shadow-panel transition-colors hover:bg-fill-hover wide:w-60"
       aria-haspopup="dialog"
+      aria-label="Buscar tareas y proyectos"
       @click="ui.paletteOpen = true"
     >
       <Icon
@@ -27,24 +53,24 @@ const ui = useUiStore()
         class="size-4 shrink-0"
         aria-hidden="true"
       />
-      <span class="flex-1 truncate">Buscar tareas y proyectos</span>
+      <span class="hidden flex-1 truncate wide:inline">Buscar</span>
       <UiKbd
         keys="Mod+K"
         class="hidden wide:inline-flex"
       />
     </button>
 
-    <div class="flex-1 wide:flex-none" />
-
-    <!-- Nueva tarea: F3-T07. Solo donde el usuario puede crearlas. -->
     <Can permission="add_issues">
       <UiButton
         label="Nueva tarea"
         icon="lucide:plus"
-        variant="primary"
-        disabled
-        title="Disponible pronto: crear tareas llega con la ficha de tarea"
+        @click="openNewIssue"
       />
     </Can>
+
+    <div
+      id="toolbar-primary"
+      class="flex items-center"
+    />
   </header>
 </template>

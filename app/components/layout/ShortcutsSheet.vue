@@ -30,7 +30,7 @@ const GROUPS = [
     <DialogPortal>
       <DialogOverlay class="ui-scrim fixed inset-0 z-40 bg-scrim" />
       <DialogContent
-        class="fixed left-1/2 top-[15vh] ui-dialog z-50 w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 rounded-[var(--radius-surface)] border border-separator bg-raised p-4 shadow-dialog"
+        class="ui-dialog fixed left-1/2 top-[15vh] z-50 w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 rounded-[var(--radius-surface)] border border-separator bg-raised px-5 pb-4 pt-4 shadow-dialog"
       >
         <DialogTitle class="text-[length:var(--text-title)] font-semibold text-content">
           Atajos de teclado
@@ -44,14 +44,14 @@ const GROUPS = [
           :key="group.title"
           class="mt-4"
         >
-          <h3 class="text-[length:var(--text-caption)] text-secondary">
+          <h3 class="panel-label">
             {{ group.title }}
           </h3>
           <dl class="mt-1">
             <div
               v-for="item in group.items"
               :key="item.label"
-              class="flex min-h-[var(--control-min)] items-center justify-between gap-4 border-b border-separator text-[length:var(--text-body)] last:border-b-0"
+              class="-mx-2 flex min-h-[var(--control-min)] items-center justify-between gap-4 rounded-[var(--radius-plate)] px-2 text-[length:var(--text-body)] odd:bg-fill-alt"
             >
               <dt>{{ item.label }}</dt>
               <dd>

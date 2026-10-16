@@ -264,10 +264,20 @@ function describeValue(field: FilterField, value: string, lookup?: LabelLookup):
 }
 
 export function describeCondition(condition: FilterCondition, lookup?: LabelLookup): string {
+  const { lead, value } = describeConditionParts(condition, lookup)
+  return lead ? `${lead} ${value}` : value
+}
+
+/**
+ * La condición partida para pintarla en la frase (F2b): `lead` son las palabras de
+ * unión, en texto secundario ("asignadas a", "que vencen desde"), y `value` lo que
+ * se puede cambiar, que es el botón ("mí", "Abierta o En curso").
+ */
+export function describeConditionParts(condition: FilterCondition, lookup?: LabelLookup): { lead: string, value: string } {
   const phrase = FIELD_PHRASES[condition.field] ?? describeCustomField(condition.field, lookup)
 
-  if (condition.operator === '*') return `con ${phrase} cualquiera`
-  if (condition.operator === '!*') return `sin ${phrase}`
+  if (condition.operator === '*') return { lead: `con ${phrase}`, value: 'cualquiera' }
+  if (condition.operator === '!*') return { lead: '', value: `sin ${phrase}` }
 
   const values = condition.values.map(value => describeValue(condition.field, value, lookup))
   const joined = condition.operator === '><' && values.length === 2
@@ -275,11 +285,11 @@ export function describeCondition(condition: FilterCondition, lookup?: LabelLook
     : listToText(values)
 
   // "no asignadas a mí" se entiende; "asignadas a no mí", no.
-  if (condition.operator === '!' || condition.operator === '!~') return `no ${phrase} ${joined}`
-  if (condition.operator === '>=') return `${phrase} desde ${joined}`
-  if (condition.operator === '<=') return `${phrase} hasta ${joined}`
+  if (condition.operator === '!' || condition.operator === '!~') return { lead: `no ${phrase}`, value: joined }
+  if (condition.operator === '>=') return { lead: `${phrase} desde`, value: joined }
+  if (condition.operator === '<=') return { lead: `${phrase} hasta`, value: joined }
 
-  return `${phrase} ${joined}`
+  return { lead: phrase, value: joined }
 }
 
 function describeCustomField(field: FilterField, lookup?: LabelLookup): string {

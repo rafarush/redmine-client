@@ -196,7 +196,7 @@ const status = computed(() => {
     <DialogPortal>
       <DialogOverlay class="ui-scrim fixed inset-0 z-40 bg-scrim" />
       <DialogContent
-        class="fixed left-1/2 top-[12vh] ui-dialog z-50 flex max-h-[70vh] w-[min(36rem,calc(100vw-2rem))] -translate-x-1/2 flex-col overflow-hidden rounded-[var(--radius-surface)] border border-separator bg-raised shadow-dialog"
+        class="ui-dialog fixed left-1/2 top-[12vh] z-50 flex max-h-[70vh] w-[min(38rem,calc(100vw-2rem))] -translate-x-1/2 flex-col overflow-hidden rounded-[var(--radius-surface)] border border-separator bg-raised shadow-dialog"
         @open-auto-focus.prevent="inputEl?.focus()"
       >
         <DialogTitle class="sr-only">
@@ -206,10 +206,10 @@ const status = computed(() => {
           Busca tareas por número o asunto, proyectos y comandos. Usa las flechas para moverte y Intro para elegir.
         </DialogDescription>
 
-        <div class="flex items-center gap-2 border-b border-separator px-3">
+        <div class="flex items-center gap-2.5 border-b border-separator px-4">
           <Icon
             name="lucide:search"
-            class="size-4 shrink-0 text-secondary"
+            class="size-5 shrink-0 text-secondary"
             aria-hidden="true"
           />
           <input
@@ -224,7 +224,7 @@ const status = computed(() => {
             placeholder="Buscar tareas (#número o asunto), proyectos y comandos"
             autocomplete="off"
             spellcheck="false"
-            class="min-h-11 flex-1 bg-transparent text-[length:var(--text-body)] text-content placeholder:text-secondary focus:outline-none"
+            class="min-h-12 flex-1 bg-transparent text-[length:var(--text-title)] text-content placeholder:text-secondary focus:outline-none"
             @keydown="onKeydown"
           >
         </div>
@@ -246,43 +246,55 @@ const status = computed(() => {
             v-for="group in grouped"
             :key="group.name"
           >
-            <div class="flex items-center justify-between px-2 pb-0.5 pt-2">
-              <span
-                class="text-[length:var(--text-caption)] font-medium text-secondary"
-                aria-hidden="true"
-              >{{ group.name }}</span>
-              <button
-                v-if="group.name === 'Recientes'"
-                type="button"
-                class="rounded px-1 text-[length:var(--text-caption)] text-secondary hover:text-content"
-                @click="ui.clearRecentSearches()"
-              >
-                Borrar búsquedas recientes
-              </button>
-            </div>
             <div
-              v-for="{ row, index } in group.items"
-              :id="`palette-row-${index}`"
-              :key="row.key"
-              role="option"
-              :aria-selected="index === active"
-              class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content aria-selected:bg-surface"
-              @mousemove="active = index"
-              @click="choose(row)"
+              role="group"
+              :aria-labelledby="`palette-group-${group.name}`"
             >
-              <Icon
-                :name="row.icon"
-                class="size-4 shrink-0 text-secondary"
-                aria-hidden="true"
-              />
-              <span class="min-w-0 flex-1 truncate">{{ row.label }}</span>
-              <span
-                v-if="row.detail"
-                class="max-w-40 shrink-0 truncate text-[length:var(--text-caption)] text-secondary"
-              >{{ row.detail }}</span>
+              <p
+                :id="`palette-group-${group.name}`"
+                class="panel-label px-2 pb-1 pt-2.5"
+              >
+                {{ group.name }}
+              </p>
+              <div
+                v-for="{ row, index } in group.items"
+                :id="`palette-row-${index}`"
+                :key="row.key"
+                role="option"
+                :aria-selected="index === active"
+                class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content aria-selected:bg-fill-selected"
+                @mousemove="active = index"
+                @click="choose(row)"
+              >
+                <Icon
+                  :name="row.icon"
+                  class="size-4 shrink-0 text-secondary"
+                  aria-hidden="true"
+                />
+                <span class="min-w-0 flex-1 truncate">{{ row.label }}</span>
+                <span
+                  v-if="row.detail"
+                  class="max-w-40 shrink-0 truncate text-[length:var(--text-caption)] text-secondary"
+                >{{ row.detail }}</span>
+              </div>
             </div>
           </template>
         </div>
+
+        <!-- Fuera del listbox: dentro solo puede haber opciones. -->
+        <footer class="flex min-h-10 items-center gap-4 border-t border-separator px-4 text-[length:var(--text-caption)] text-secondary">
+          <span class="inline-flex items-center gap-1.5"><UiKbd keys="↑" /><UiKbd keys="↓" /> Moverse</span>
+          <span class="inline-flex items-center gap-1.5"><UiKbd keys="Enter" /> Abrir</span>
+          <span class="hidden items-center gap-1.5 wide:inline-flex"><UiKbd keys="Esc" /> Cerrar</span>
+          <button
+            v-if="grouped.some(group => group.name === 'Recientes')"
+            type="button"
+            class="ml-auto min-h-[var(--control-min)] rounded-[var(--radius-control)] px-2 hover:bg-fill-hover hover:text-content"
+            @click="ui.clearRecentSearches()"
+          >
+            Borrar búsquedas recientes
+          </button>
+        </footer>
 
         <p
           class="sr-only"
