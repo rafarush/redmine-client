@@ -186,9 +186,12 @@ const FIELD = 'min-h-[var(--control-min)] w-full rounded-[var(--radius-control)]
           <span class="col-start-2 text-[length:var(--text-caption)] text-secondary">{{ phase.hint }}</span>
         </label>
       </section>
+      <!-- Solo para que Enter envíe el formulario; el botón visible es el del pie. -->
       <button
         type="submit"
         class="sr-only"
+        tabindex="-1"
+        aria-hidden="true"
       >
         Guardar
       </button>

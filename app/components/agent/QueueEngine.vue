@@ -14,6 +14,7 @@ const toasts = useToastStore()
 let controller: AbortController | undefined
 let retryTimer: ReturnType<typeof setTimeout> | undefined
 const RETRY_MS = 4_000
+const RECONNECT_MS = 1_000
 
 function onEvent(event: RunnerEvent): void {
   const changed = store.applyEvent(event)
@@ -29,6 +30,7 @@ async function connect(): Promise<void> {
   }
   controller = new AbortController()
   const own = controller
+  let failed = false
   try {
     // Al conectar se pregunta si el runner sigue con algo: si no, lo "en curso" quedó huérfano.
     const health = await runner.health()
@@ -38,10 +40,12 @@ async function connect(): Promise<void> {
   }
   catch {
     // Sin runner o conexión cortada: se reintenta en silencio.
+    failed = true
   }
   if (own !== controller) return
-  connected.value = false
-  retryTimer = setTimeout(connect, RETRY_MS)
+  // Si el runner cerró el stream sin error sigue ahí: se reconecta enseguida sin marcarlo caído.
+  if (failed) connected.value = false
+  retryTimer = setTimeout(connect, failed ? RETRY_MS : RECONNECT_MS)
 }
 
 /** Siguiente tarea: la descripción y los comentarios salen de Redmine en ese momento. */
