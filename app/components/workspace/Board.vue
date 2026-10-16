@@ -72,7 +72,7 @@ function remove(): void {
     :data-board="board.id"
   >
     <header
-      class="board-handle flex min-h-12 shrink-0 items-center gap-2 pl-4 pr-2 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+      class="board-handle flex min-h-12 shrink-0 items-center gap-2 pl-4 pr-2 outline-none transition-colors hover:bg-fill-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       tabindex="0"
       :aria-describedby="`board-move-${board.id}`"
     >
@@ -119,7 +119,7 @@ function remove(): void {
         icon="lucide:square-kanban"
         icon-only
         variant="ghost"
-        :to="`/board/${board.id}/kanban`"
+        @click="navigateTo(`/board/${board.id}/kanban`)"
       />
       <DropdownMenuRoot>
         <DropdownMenuTrigger as-child>

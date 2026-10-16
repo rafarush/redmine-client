@@ -264,7 +264,7 @@ const title = computed(() => ({
           Suelta aquí la plantilla rellena o
           <button
             type="button"
-            class="font-medium text-content underline underline-offset-4"
+            class="font-medium text-content underline underline-offset-4 transition-colors hover:text-accent disabled:hover:text-content"
             :disabled="!ready || loading"
             @click="picker?.click()"
           >

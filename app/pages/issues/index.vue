@@ -229,7 +229,7 @@ const { people, customFields } = useFilterCatalog(sentence, issues)
           :aria-valuenow="panelWidth"
           :aria-valuemin="MIN_WIDTH"
           tabindex="0"
-          class="w-1.5 shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-separator focus-visible:bg-separator"
+          class="group relative w-1.5 shrink-0 cursor-col-resize bg-transparent outline-none transition-colors hover:bg-fill-hover focus-visible:bg-fill-hover active:bg-fill-selected after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-transparent after:transition-colors hover:after:bg-accent focus-visible:after:bg-accent active:after:bg-accent"
           @pointerdown.prevent="startResize"
           @keydown="onResizeKey"
         />

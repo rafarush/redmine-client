@@ -272,7 +272,7 @@ const status = computed(() => {
                 :key="row.key"
                 role="option"
                 :aria-selected="index === active"
-                class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content aria-selected:bg-fill-selected"
+                class="flex min-h-[var(--control-min)] scroll-my-1 cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-content aria-selected:bg-fill-selected"
                 @mousemove="active = index"
                 @click="choose(row)"
               >

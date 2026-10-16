@@ -33,8 +33,8 @@ defineOptions({ inheritAttrs: false })
 
 const VARIANT_STYLES = {
   primary: 'bg-accent text-on-accent font-semibold hover:brightness-110 active:brightness-95',
-  secondary: 'bg-raised text-content border border-separator shadow-panel hover:bg-fill-hover',
-  ghost: 'text-secondary hover:bg-fill-hover hover:text-content',
+  secondary: 'bg-raised text-content border border-separator shadow-panel hover:bg-fill-hover active:bg-fill-selected',
+  ghost: 'text-secondary hover:bg-fill-hover hover:text-content active:bg-fill-selected',
 } as const
 
 const classes = computed(() => [
