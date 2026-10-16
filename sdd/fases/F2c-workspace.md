@@ -20,7 +20,7 @@
   - _Acepta:_ tests unitarios. · ✔ 0b7dbd0
 
 - [x] **F2c-T03** Cliente: `updateTimeEntry` (PUT `/time_entries/:id.json`) en `client.ts` y en el contrato del transport.
-  - _Acepta:_ test del contrato.
+  - _Acepta:_ test del contrato. · ✔ a779275
 
 - [ ] **F2c-T04** Store y rutas — `stores/workspace.ts` persistido; `/` = Workspace, `/issues` = lista (redirección de `/?f=`); Workspace primera sección en `useNavItems`.
   - _Depende:_ F2c-T01
