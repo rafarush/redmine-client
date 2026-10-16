@@ -10,7 +10,7 @@ test.describe('proyectos', () => {
     await page.addInitScript(() => localStorage.removeItem('redmine-client:pinned-projects'))
   })
 
-  test('busca, fija con teclado y abre el proyecto desde la sidebar', async ({ page, isMobile }) => {
+  test('busca, fija con teclado y abre el proyecto desde la sidebar', async ({ page }) => {
     await page.goto('/projects')
     const panel = page.getByRole('region', { name: 'Proyectos' })
     await panel.getByPlaceholder('Buscar proyecto…').fill('portal')
@@ -22,7 +22,8 @@ test.describe('proyectos', () => {
     await page.keyboard.press('Enter')
     await expect(panel.getByRole('button', { name: 'Quitar Portal Web de la sidebar' })).toHaveAttribute('aria-pressed', 'true')
 
-    if (!isMobile) {
+    // En compacto no hay sidebar (es la tab bar): se abre desde la fila.
+    if ((page.viewportSize()?.width ?? 1280) >= 900) {
       const sidebar = page.getByRole('navigation', { name: 'Proyectos' })
       await sidebar.getByRole('link', { name: /Portal Web/ }).click()
       await expect(page).toHaveURL(/\/projects\/portal-web$/)
