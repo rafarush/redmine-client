@@ -36,7 +36,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'sort': [sort: IssueSort]
   'open': [issue: Issue]
-  'log-time': [issue: Issue]
+  /** `anchor`: el elemento al que anclar el popover de tiempo (el ⏱ de la fila). */
+  'log-time': [issue: Issue, anchor?: Element]
   'load-more': []
   'retry': []
   'clear-filters': []
@@ -168,6 +169,13 @@ function onKeydown(event: KeyboardEvent): void {
   else if (event.key === 'Enter' && selectedIndex.value >= 0) {
     event.preventDefault()
     emit('open', rows.value[selectedIndex.value]!.original)
+  }
+  // `T`: registrar tiempo en la fila seleccionada (F4-T03), anclado a su ⏱.
+  else if ((event.key === 't' || event.key === 'T') && props.timeLogging && selectedIndex.value >= 0) {
+    const issue = rows.value[selectedIndex.value]!.original
+    if (!session.can('log_time', issue.project.id)) return
+    event.preventDefault()
+    emit('log-time', issue, scroller.value?.querySelector(`[data-log-time="${issue.id}"]`) ?? scroller.value ?? undefined)
   }
 }
 
@@ -571,7 +579,8 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
                       icon-only
                       variant="ghost"
                       tabindex="-1"
-                      @click.stop="emit('log-time', rows[item.index]!.original)"
+                      :data-log-time="rows[item.index]!.original.id"
+                      @click.stop="emit('log-time', rows[item.index]!.original, $event.currentTarget as Element)"
                     />
                   </Can>
                   <UiButton

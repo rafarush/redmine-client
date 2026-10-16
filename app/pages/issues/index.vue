@@ -49,6 +49,14 @@ function openIssue(issue: Issue): void {
   void navigateTo(`/issues/${issue.id}`)
 }
 
+/** Popover "Registrar tiempo" (F4-T03): uno para toda la lista, anclado al ⏱ de la fila. */
+const logging = reactive<{ open: boolean, issue: Issue | null, anchor: Element | null }>({ open: false, issue: null, anchor: null })
+function logTime(issue: Issue, anchor?: Element): void {
+  logging.issue = issue
+  logging.anchor = anchor ?? null
+  logging.open = true
+}
+
 /** Personas y campos personalizados que ofrece la frase (F2-T10). */
 const { people, customFields } = useFilterCatalog(sentence, issues)
 </script>
@@ -99,11 +107,19 @@ const { people, customFields } = useFilterCatalog(sentence, issues)
       :loading="isPending"
       :error="error"
       :filtered="filtered"
+      time-logging
       @sort="sort = $event"
       @open="openIssue"
       @retry="refetch()"
       @clear-filters="clearFilters"
       @load-more="fetchNextPage()"
+      @log-time="logTime"
+    />
+
+    <TimeLogTimePopover
+      v-model:open="logging.open"
+      :issue="logging.issue"
+      :anchor="logging.anchor"
     />
   </div>
 </template>
