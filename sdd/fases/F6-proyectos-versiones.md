@@ -25,9 +25,10 @@
   - _Depende:_ F6-T03, F2-T03
   - _Acepta:_ sin `manage_versions` no se ve ninguna acción de edición.
 
-- [ ] **F6-T05** Miembros — lista de miembros del proyecto con roles; clic lleva a "tareas asignadas a *persona* en este proyecto".
+- [~] **F6-T05** Miembros — lista de miembros del proyecto con roles; clic lleva a "tareas asignadas a *persona* en este proyecto".
   - _Depende:_ F6-T02
   - _Acepta:_ los grupos se muestran como grupo con su número de miembros.
+  - _Hecho:_ d78fe51. `/projects/:id/members`, acceso "Miembros" en la página de proyecto. `listProjectMemberships` y `getGroupUsers` en el cliente; `projectMemberSchema` gana `group` y `roles`. Roles heredados juntados sin duplicar (`shared/redmine/members.ts`, con tests). El número de personas de un grupo solo lo da Redmine a administradores: sin permiso (403) el grupo sale sin número. Pendiente de verificar.
 
 ## Definición de hecho
 
