@@ -21,9 +21,10 @@
   - _Acepta:_ registrar 1h30 en una tarea de la lista con teclado: `T`, `1h30`, `Enter` (3 interacciones); toast "Tiempo registrado · Deshacer"; el Deshacer borra la entrada.
   - _Hecho:_ 80c0cfe. `time/LogTimePopover.vue`, una instancia en `/issues` anclada con `PopoverAnchor :reference` al ⏱ de la fila (la tabla ya tenía el botón tras `timeLogging`; ahora emite también el ancla). `T` sobre la fila seleccionada lo abre si hay `log_time`. Duración con la interpretación al lado, chips de las 3 actividades más usadas por ti en el proyecto en los últimos 60 días y la última preseleccionada (`shared/time/activities.ts`, con tests), Hoy / Ayer / fecha, comentario, Enter registra. Borrador por tarea al cerrar sin registrar. Aviso "Tiempo registrado" con Deshacer, que borra la entrada (requiere `edit_own_time_entries`). En el detalle sigue el diálogo del flujo del workspace ("Registrar tiempo…"), para no tocar el workspace. Falta la línea de `T` en la hoja de atajos (la está cambiando otra tarea). Pendiente de verificar.
 
-- [ ] **F4-T04** El momento de movimiento — roll numérico de las horas en la fila y pulso del ⏱ al registrar, con motion-v (`02-diseno.md › Movimiento`). Desactivado con reduced motion.
+- [~] **F4-T04** El momento de movimiento — roll numérico de las horas en la fila y pulso del ⏱ al registrar, con motion-v (`02-diseno.md › Movimiento`). Desactivado con reduced motion.
   - _Depende:_ F4-T03
   - _Acepta:_ con `prefers-reduced-motion: reduce` el número cambia sin animación; la animación no bloquea abrir otro popover.
+  - _Hecho:_ 978966d. `time/RollingHours.vue` en la columna Horas de la lista: al subir, `animate` de motion-v con resorte `visualDuration: 0.35, bounce: 0.15` y pulso de escala en el ⏱ de la fila (`data-log-time`). Con reduced motion o si baja, cambia sin animar; un cambio nuevo para el anterior. Como `useTimeEntryMutations` suma las horas al momento (optimista), la animación sale al registrar. Pendiente de verlo en el navegador.
 
 - [ ] **F4-T05** Temporizador — botón ▶ en la fila y en el detalle: un único temporizador activo, visible en la toolbar ("#4821 · 00:32:10") y persistido (sobrevive a recargar). Al detenerlo abre el popover prellenado con la duración redondeada (preferencia: 5 / 15 min).
   - _Depende:_ F4-T03
