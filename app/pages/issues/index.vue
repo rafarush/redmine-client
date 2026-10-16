@@ -44,9 +44,105 @@ function clearFilters(): void {
   router.push({ query: { ...route.query, f: undefined, q: undefined, p: undefined } })
 }
 
-/** Enter y doble clic abren el detalle de la tarea (F3-T01). */
+// ------------------------------------------------- detalle en panel (F3-T01)
+
+/**
+ * Enter y doble clic abren el detalle: en ancho regular, en un panel a la derecha
+ * (`?issue=ID`, así atrás lo cierra y el enlace se comparte); en compacto, la página
+ * de la tarea. Abrir otra tarea reemplaza el panel sin recargar.
+ */
+const wide = ref(false)
+let media: MediaQueryList | undefined
+const syncWide = () => {
+  wide.value = !!media?.matches
+}
+onMounted(() => {
+  media = window.matchMedia('(min-width: 900px)')
+  syncWide()
+  media.addEventListener('change', syncWide)
+})
+onBeforeUnmount(() => media?.removeEventListener('change', syncWide))
+
+const openId = computed(() => {
+  const id = Number(route.query.issue)
+  return Number.isInteger(id) && id > 0 ? id : null
+})
+const showPanel = computed(() => wide.value && openId.value !== null)
+
 function openIssue(issue: Issue): void {
-  void navigateTo(`/issues/${issue.id}`)
+  if (!wide.value) {
+    void navigateTo(`/issues/${issue.id}`)
+    return
+  }
+  // Cambiar de tarea con el panel abierto no apila historial; abrirlo sí.
+  const target = { query: { ...route.query, issue: String(issue.id) } }
+  if (openId.value) void router.replace(target)
+  else void router.push(target)
+}
+
+const listArea = useTemplateRef<HTMLElement>('listArea')
+
+/** Cerrar devuelve el foco a la lista, con la fila que estaba seleccionada. */
+function closePanel(): void {
+  void router.push({ query: { ...route.query, issue: undefined } })
+  void nextTick(() => listArea.value?.querySelector<HTMLElement>('[role="grid"]')?.focus())
+}
+
+/** Esc cierra el panel, salvo que algo (un editor, un popover) ya lo haya usado. */
+function onKeydown(event: KeyboardEvent): void {
+  if (event.key !== 'Escape' || event.defaultPrevented || !showPanel.value) return
+  event.preventDefault()
+  closePanel()
+}
+
+const WIDTH_KEY = 'redmine-client:detail-width'
+const MIN_WIDTH = 360
+const panelWidth = ref(480)
+onMounted(() => {
+  try {
+    const saved = Number(localStorage.getItem(WIDTH_KEY))
+    if (saved >= MIN_WIDTH) panelWidth.value = saved
+  }
+  catch {
+    // Sin almacenamiento se queda el ancho por defecto.
+  }
+})
+
+function maxWidth(): number {
+  return Math.max(MIN_WIDTH, Math.round((listArea.value?.parentElement?.clientWidth ?? 1200) * 0.6))
+}
+
+function setWidth(value: number): void {
+  panelWidth.value = Math.min(maxWidth(), Math.max(MIN_WIDTH, Math.round(value)))
+  try {
+    localStorage.setItem(WIDTH_KEY, String(panelWidth.value))
+  }
+  catch {
+    // Ver arriba.
+  }
+}
+
+/** Arrastrar el separador: el panel crece hacia la izquierda. */
+function startResize(event: PointerEvent): void {
+  const handle = event.currentTarget as HTMLElement
+  handle.setPointerCapture(event.pointerId)
+  const startX = event.clientX
+  const startWidth = panelWidth.value
+  const move = (e: PointerEvent) => setWidth(startWidth + (startX - e.clientX))
+  const up = () => {
+    handle.removeEventListener('pointermove', move)
+    handle.removeEventListener('pointerup', up)
+  }
+  handle.addEventListener('pointermove', move)
+  handle.addEventListener('pointerup', up)
+}
+
+function onResizeKey(event: KeyboardEvent): void {
+  const step = event.shiftKey ? 64 : 16
+  if (event.key === 'ArrowLeft') setWidth(panelWidth.value + step)
+  else if (event.key === 'ArrowRight') setWidth(panelWidth.value - step)
+  else return
+  event.preventDefault()
 }
 
 /** Popover "Registrar tiempo" (F4-T03): uno para toda la lista, anclado al ⏱ de la fila. */
@@ -62,7 +158,10 @@ const { people, customFields } = useFilterCatalog(sentence, issues)
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col">
+  <div
+    class="flex h-full min-h-0 flex-col"
+    @keydown="onKeydown"
+  >
     <div
       v-if="savedQuery"
       class="mx-3 mb-2 flex items-center gap-2 rounded-[var(--radius-control)] bg-fill-selected py-1 pl-3 pr-1 wide:mx-6"
@@ -97,24 +196,56 @@ const { people, customFields } = useFilterCatalog(sentence, issues)
         />
       </template>
     </FiltersFilterSentence>
-    <IssuesIssueTable
-      :issues="issues"
-      :total-count="totalCount"
-      :sort="sort"
-      :stale="isStale"
-      :has-more="hasNextPage"
-      :loading-more="isFetchingNextPage"
-      :loading="isPending"
-      :error="error"
-      :filtered="filtered"
-      time-logging
-      @sort="sort = $event"
-      @open="openIssue"
-      @retry="refetch()"
-      @clear-filters="clearFilters"
-      @load-more="fetchNextPage()"
-      @log-time="logTime"
-    />
+    <div class="flex min-h-0 flex-1">
+      <div
+        ref="listArea"
+        class="flex min-h-0 min-w-0 flex-1 flex-col"
+      >
+        <IssuesIssueTable
+          :issues="issues"
+          :total-count="totalCount"
+          :sort="sort"
+          :stale="isStale"
+          :has-more="hasNextPage"
+          :loading-more="isFetchingNextPage"
+          :loading="isPending"
+          :error="error"
+          :filtered="filtered"
+          time-logging
+          @sort="sort = $event"
+          @open="openIssue"
+          @retry="refetch()"
+          @clear-filters="clearFilters"
+          @load-more="fetchNextPage()"
+          @log-time="logTime"
+        />
+      </div>
+
+      <template v-if="showPanel">
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Ancho del panel de detalle"
+          :aria-valuenow="panelWidth"
+          :aria-valuemin="MIN_WIDTH"
+          tabindex="0"
+          class="w-1.5 shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-separator focus-visible:bg-separator"
+          @pointerdown.prevent="startResize"
+          @keydown="onResizeKey"
+        />
+        <aside
+          aria-label="Detalle de la tarea"
+          class="min-h-0 shrink-0 overflow-y-auto border-l border-separator bg-surface"
+          :style="{ width: `${panelWidth}px` }"
+        >
+          <IssuesIssueDetail
+            :id="openId!"
+            embedded
+            @close="closePanel"
+          />
+        </aside>
+      </template>
+    </div>
 
     <TimeLogTimePopover
       v-model:open="logging.open"
