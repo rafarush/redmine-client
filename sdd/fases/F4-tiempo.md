@@ -26,9 +26,10 @@
   - _Acepta:_ con `prefers-reduced-motion: reduce` el número cambia sin animación; la animación no bloquea abrir otro popover.
   - _Hecho:_ 978966d. `time/RollingHours.vue` en la columna Horas de la lista: al subir, `animate` de motion-v con resorte `visualDuration: 0.35, bounce: 0.15` y pulso de escala en el ⏱ de la fila (`data-log-time`). Con reduced motion o si baja, cambia sin animar; un cambio nuevo para el anterior. Como `useTimeEntryMutations` suma las horas al momento (optimista), la animación sale al registrar. Pendiente de verlo en el navegador.
 
-- [ ] **F4-T05** Temporizador — botón ▶ en la fila y en el detalle: un único temporizador activo, visible en la toolbar ("#4821 · 00:32:10") y persistido (sobrevive a recargar). Al detenerlo abre el popover prellenado con la duración redondeada (preferencia: 5 / 15 min).
+- [-] **F4-T05** Temporizador — botón ▶ en la fila y en el detalle: un único temporizador activo, visible en la toolbar ("#4821 · 00:32:10") y persistido (sobrevive a recargar). Al detenerlo abre el popover prellenado con la duración redondeada (preferencia: 5 / 15 min).
   - _Depende:_ F4-T03
   - _Acepta:_ iniciar otro temporizador pregunta si detener el actual; cerrar la app y volver mantiene el tiempo.
+  - _Descartada (2026-10-16):_ la sustituye F2c-T09, pedida por el usuario: cada tarea tiene su cronómetro, arrancar otro pausa el anterior en vez de preguntar, y parar registra en Redmine sin popover. Persistencia y ▶ en el detalle ya existen. Lo que sigue valiendo pasa a F4-T08.
 
 - [~] **F4-T06** Timesheet semanal — vista "Tiempo" en la sidebar: filas = tareas con tiempo en la semana (más "Añadir tarea"), columnas = días, total por día y por semana (`.data`). Edición por celda (escribir duración y Enter; varias entradas en una celda se muestran desglosadas en un popover). Navegación de semana ← →, "Esta semana". Objetivo diario configurable (p. ej. 8 h) con la barra de total en `signal-success` / `signal-warning` + texto.
   - _Depende:_ F4-T02, F4-T01
@@ -39,6 +40,10 @@
   - _Depende:_ F4-T06
   - _Acepta:_ un usuario sin `edit_time_entries` no ve acciones sobre entradas ajenas.
   - _Hecho:_ 96c3052. Debajo del parte; editar en diálogo (tiempo, fecha, actividad, comentario). Borrar siempre ofrece Deshacer (se vuelve a crear igual), así que no hay `AlertDialog`. Pendiente de verificar contra el Redmine local.
+
+- [ ] **F4-T08** Cronómetro en la lista y en la toolbar (resto de F4-T05) — ▶/⏸ en la fila de `/issues` con el mismo `useCardFlow` del workspace, e indicador del cronómetro activo en la toolbar ("#4821 · 00:32:10") que lleva a la tarea. Solo lectura del store del workspace salvo las acciones que ya expone `useCardFlow`.
+  - _Depende:_ F2c-T09, F4-T03
+  - _Acepta:_ el indicador aparece en cualquier pantalla con un cronómetro corriendo o en pausa; pausar desde la lista se refleja en el workspace.
 
 ## Definición de hecho
 
