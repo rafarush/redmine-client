@@ -2,7 +2,7 @@
 
 **Objetivo:** la pantalla de inicio pasa a ser un espacio de trabajo personal: listas (boards) de tareas **asignadas a mí**, ordenadas por prioridad y fecha fin, con acciones rápidas sobre cada card. La lista actual se mueve a `/issues`.
 
-**Depende de:** F2b
+**Depende de:** F2b-T06 (F2b-T07, el cierre visual, se hace al terminar esta fase)
 
 ## Decisiones
 
@@ -13,7 +13,7 @@
 
 ## Tareas
 
-- [ ] **F2c-T01** Modelo y orden — `shared/workspace/model.ts` (Workspace, Board, Category), `sort.ts` (prioridad desc, fecha fin asc, sin fecha al final).
+- [x] **F2c-T01** Modelo y orden — `shared/workspace/model.ts` (Workspace, Board, Category), `sort.ts` (prioridad desc, fecha fin asc, sin fecha al final).
   - _Acepta:_ tests unitarios.
 
 - [ ] **F2c-T02** Flujo de la card — `shared/workspace/flow.ts`: `idle → in_progress → done → rtqa`, cálculo del tiempo (`ahora − startedAt`), mapeo a estados de Redmine con valores por defecto adivinados por nombre. `shared/redmine/duration.ts` (formato y redondeo; adelanta F4-T01).

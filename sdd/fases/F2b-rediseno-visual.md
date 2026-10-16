@@ -34,7 +34,8 @@
   - _Depende:_ F2b-T03 · ✔ 0e046bf
 
 - [ ] **F2b-T07** Cierre — capturas a 1280 y 375, `impeccable detect`, revisión final y `DESIGN.md` generado desde lo construido. Nueva crítica para comparar con 25/40.
-  - _Depende:_ F2b-T05, F2b-T06
+  - _Depende:_ F2b-T05, F2b-T06, F2c-T07
+  - _Nota:_ se hace después del Workspace (F2c): el contrato de dirección describe esa pantalla, así que la revisión final y `DESIGN.md` salen de ella.
 
 ## Definición de hecho
 
