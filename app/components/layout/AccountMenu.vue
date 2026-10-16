@@ -17,6 +17,8 @@ import {
 const session = useSessionStore()
 /** Integraciones IA (F11-T05): el diálogo vive en el layout. */
 const integrationsOpen = useState('agent-integrations-open', () => false)
+/** Ajustes (workspace, atajos, IA): el diálogo vive en el layout; aquí se llega desde cualquier pantalla. */
+const settingsOpen = useState('workspace-settings-open', () => false)
 const preferences = usePreferencesStore()
 
 /** Formato del texto de Redmine (F3-T03): la API no lo dice, así que se adivina o se fija aquí. */
@@ -108,6 +110,17 @@ async function disconnect(): Promise<void> {
 
         <DropdownMenuSeparator class="my-1 h-px bg-separator" />
 
+        <DropdownMenuItem
+          class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-[highlighted]:bg-fill-selected"
+          @select="settingsOpen = true"
+        >
+          <Icon
+            name="lucide:settings"
+            class="size-4"
+            aria-hidden="true"
+          />
+          Ajustes
+        </DropdownMenuItem>
         <DropdownMenuItem
           class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-control)] px-2 outline-none data-[highlighted]:bg-fill-selected"
           @select="integrationsOpen = true"

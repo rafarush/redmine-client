@@ -22,6 +22,12 @@ withDefaults(defineProps<{
 }>(), { width: 24 })
 
 const open = defineModel<boolean>('open', { default: false })
+
+/** Pulsar "Deshacer" en un aviso no es salir del diálogo: no lo cierra. */
+function keepForToasts(event: Event): void {
+  const target = event.target as Element | null
+  if (target?.closest?.('[data-toasts]')) event.preventDefault()
+}
 </script>
 
 <template>
@@ -32,6 +38,7 @@ const open = defineModel<boolean>('open', { default: false })
       <DialogContent
         :class="[DIALOG_PANEL, 'top-[18vh] flex max-h-[70vh] flex-col']"
         :style="{ width: `min(${width}rem, calc(100vw - 2rem))` }"
+        @interact-outside="keepForToasts"
       >
         <header class="flex items-start gap-3 px-5 pb-2 pt-4">
           <div class="min-w-0 flex-1">

@@ -5,6 +5,7 @@ const toasts = useToastStore()
 <template>
   <div
     class="pointer-events-none fixed inset-x-0 top-14 z-50 flex flex-col items-center gap-2 px-4"
+    data-toasts
   >
     <!-- aria-live aquí, no en cada toast: así el anuncio llega aunque el aviso aparezca ya montado. -->
     <div
