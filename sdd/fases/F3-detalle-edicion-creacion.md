@@ -15,9 +15,10 @@
   - _Depende:_ F3-T01, F1-T07
   - _Acepta:_ errores 422 aparecen junto al campo; un usuario con `edit_own_issues` solo edita las suyas.
 
-- [ ] **F3-T03** Descripción y formato de texto — render de textile o markdown según la detección (`03-api-redmine.md › Riesgos`), sanitizado con DOMPurify. Edición con un textarea con preview y atajos básicos (negrita, lista, código). Preferencia manual del formato en Preferencias.
+- [~] **F3-T03** Descripción y formato de texto — render de textile o markdown según la detección (`03-api-redmine.md › Riesgos`), sanitizado con DOMPurify. Edición con un textarea con preview y atajos básicos (negrita, lista, código). Preferencia manual del formato en Preferencias.
   - _Depende:_ F3-T01
   - _Acepta:_ un `<script>` en la descripción no se ejecuta; los enlaces `#123` llevan a la tarea dentro de la app.
+  - _Hecho:_ 7fc0cb9. `shared/redmine/rich-text.ts`: detección por señales (ante la duda, textile), `markdown-it` (`html: false`) y `textile-js`, saneado con DOMPurify y `#N` → `/issues/N` fuera de `<a>/<code>/<pre>`; si DOMPurify no está soportado se escapa el texto. Tests en jsdom (happy-dom serializa mal `<template>`). `text/RichText.vue` y `text/RichTextEditor.vue` (Escribir / Vista previa, negrita Mod+B, lista, código, Mod+Enter guarda, Esc cancela). Se usa en la descripción (editable con `edit_issues` o `edit_own_issues` si es tuya, con Deshacer), en los comentarios del historial y en la descripción del proyecto. Preferencia "Formato del texto" en el menú de cuenta (`redmine-client:text-format`). Pendiente de verificar en el navegador.
 
 - [~] **F3-T04** Historial y comentarios — journals en línea de tiempo (comentarios y cambios de campo resumidos: "Estado: Nueva → En curso"). Caja de comentario fija abajo; `Ctrl/⌘+Enter` publica. Comentarios privados si el permiso existe.
   - _Depende:_ F3-T01
