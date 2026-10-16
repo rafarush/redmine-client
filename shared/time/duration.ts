@@ -58,3 +58,19 @@ export function formatClock(ms: number): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`
 }
+
+/** Horas para celdas y totales compactos: "1:30", "0:45", "8:00" (F4-T01). */
+export function formatHours(hours: number): string {
+  const total = Math.round(hours * 60)
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`
+}
+
+/**
+ * Lo que se entendió al escribir, para enseñarlo junto al campo (F4-T01): "45" no
+ * es obvio, así que se dice "= 45 min". `null` si no hay nada que decir.
+ */
+export function describeDuration(text: string): { hours: number | null, label: string } | null {
+  if (!text.trim()) return null
+  const hours = parseDuration(text)
+  return { hours, label: hours === null ? 'No se entiende (ej.: 1h30, 1:30, 1,5)' : `= ${formatDuration(hours)}` }
+}
