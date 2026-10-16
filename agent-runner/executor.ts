@@ -34,6 +34,8 @@ export interface ExecutorOptions {
   /** Modo de permisos de claude y herramientas que puede usar sin preguntar. */
   permissionMode: string
   allowedTools: string[]
+  /** Modelo de `claude`; sin él, el que tenga configurado Claude Code. */
+  model?: string
   exec?: Exec
   claudeCommand?: string
 }
@@ -101,6 +103,7 @@ ${task.description.trim() || '(sin descripción)'}${comments}
 - Sigue las instrucciones del repositorio (CLAUDE.md y documentación) si existen.
 - Haz los cambios mínimos y completos para la tarea, con tests si el repositorio los usa.
 - Haz commit de tu trabajo en la rama actual (no cambies de rama ni hagas push). El mensaje empieza por "#${task.issueId}: ".
+- Ejecuta git desde la carpeta actual y con un comando por llamada (\`git add …\`, luego \`git commit -m …\`), sin \`-C\` ni \`&&\`: es lo que tienes permitido sin pedir aprobación, y aquí no hay nadie para darla.
 - No añadas líneas Co-Authored-By ni "Generated with" a los commits.
 - Si no puedes completar la tarea, explica por qué en tu último mensaje.`
 }
@@ -123,8 +126,23 @@ export function describeStreamLine(line: string): { log?: string, result?: { isE
   return {}
 }
 
+/** Un programa que no está instalado se dice con su nombre y cómo arreglarlo. */
+const MISSING: Record<string, string> = {
+  gh: 'No se encontró gh (GitHub CLI). Instálalo y ejecuta gh auth login para que el agente pueda abrir la PR.',
+  claude: 'No se encontró claude (Claude Code) en el PATH del runner.',
+  git: 'No se encontró git en el PATH del runner.',
+}
+
+function explainSpawn(command: string, error: unknown): Error {
+  if ((error as { code?: string })?.code === 'ENOENT' && MISSING[command]) return new Error(MISSING[command])
+  return error instanceof Error ? error : new Error(String(error))
+}
+
 export function createExecutor(options: ExecutorOptions): TaskExecutor {
-  const exec = options.exec ?? realExec
+  const baseExec = options.exec ?? realExec
+  const exec: Exec = (command, args, opts) => baseExec(command, args, opts).catch((error: unknown) => {
+    throw explainSpawn(command, error)
+  })
   const cwd = options.repoPath
 
   return {
@@ -157,6 +175,7 @@ export function createExecutor(options: ExecutorOptions): TaskExecutor {
           '--output-format', 'stream-json',
           '--verbose',
           '--no-session-persistence',
+          ...(options.model ? ['--model', options.model] : []),
           '--permission-mode', options.permissionMode,
           '--allowedTools', ...options.allowedTools,
           // Atribución vacía: ni Co-Authored-By en los commits ni firma en la PR.

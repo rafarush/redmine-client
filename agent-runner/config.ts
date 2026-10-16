@@ -15,6 +15,8 @@ const schema = z.object({
   allowedOrigin: z.string().url().default('http://localhost:3000'),
   /** Comandos que deben pasar antes de abrir la PR. */
   verifyCommands: z.array(z.string().min(1)).default(['pnpm lint', 'pnpm typecheck', 'pnpm test']),
+  /** Modelo del agente; sin él, el que tenga configurado Claude Code. */
+  model: z.string().min(1).optional(),
   /** Modo de permisos de `claude` para el agente (F11-T03). */
   permissionMode: z.enum(['acceptEdits', 'auto', 'bypassPermissions', 'dontAsk']).default('acceptEdits'),
   /** Herramientas que el agente usa sin preguntar (sin nadie delante, lo demás se deniega). */

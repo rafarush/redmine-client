@@ -11,6 +11,7 @@ const executor = createExecutor({
   verifyCommands: config.verifyCommands,
   permissionMode: config.permissionMode,
   allowedTools: config.allowedTools,
+  model: config.model,
 })
 const token = randomBytes(24).toString('hex')
 const hub = new EventHub()

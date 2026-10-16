@@ -97,6 +97,18 @@ describe('flujo del agente', () => {
   })
 })
 
+describe('programas que faltan', () => {
+  it('sin gh se dice qué instalar', async () => {
+    const base = fakeExec()
+    const exec: Exec = async (command, args, options) => {
+      if (command === 'gh') throw Object.assign(new Error('spawn gh ENOENT'), { code: 'ENOENT' })
+      return base.exec(command, args, options)
+    }
+    const { error } = await run({ exec, calls: base.calls })
+    expect((error as Error).message).toContain('gh auth login')
+  })
+})
+
 describe('piezas', () => {
   it('nombres de rama', () => {
     expect(slugify('¿Arreglar el Login? — ya')).toBe('arreglar-el-login-ya')
