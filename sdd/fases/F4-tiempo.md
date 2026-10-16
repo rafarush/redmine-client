@@ -6,13 +6,15 @@
 
 ## Tareas
 
-- [ ] **F4-T01** Parser de duraciones — `shared/time/duration.ts`: `parseDuration(texto) → horas | error` y `formatHours(h)`. Acepta `1h30`, `1h 30m`, `1:30`, `1.5`, `1,5`, `90m`, `2h`, `45`. Para un número suelto, ≤ 12 se toma como horas y > 12 como minutos, mostrando siempre la interpretación. Rechaza 0, negativos y > 24 h.
+- [x] **F4-T01** Parser de duraciones — `shared/time/duration.ts`: `parseDuration(texto) → horas | error` y `formatHours(h)`. Acepta `1h30`, `1h 30m`, `1:30`, `1.5`, `1,5`, `90m`, `2h`, `45`. Para un número suelto, ≤ 12 se toma como horas y > 12 como minutos, mostrando siempre la interpretación. Rechaza 0, negativos y > 24 h.
   - _Nota:_ adelantado en F2c-T02 (`parseDuration`, `roundHours`, `formatDuration`, `formatClock`); falta mostrar la interpretación en el popover.
-  - _Acepta:_ tabla de tests con todos los formatos y casos límite.
+  - _Acepta:_ tabla de tests con todos los formatos y casos límite. · ✔ 98ea1a8
+  - _Hecho:_ `formatHours` ("1:30") y `describeDuration` ("= 45 min"), que el parte muestra bajo la tabla mientras se escribe.
 
-- [ ] **F4-T02** `useTimeEntries` — consultas por tarea y por rango (`user_id=me`, `from`, `to`), y mutación de crear/editar/borrar con actualización optimista de las horas de la tarea en la caché de la lista y del detalle.
+- [x] **F4-T02** `useTimeEntries` — consultas por tarea y por rango (`user_id=me`, `from`, `to`), y mutación de crear/editar/borrar con actualización optimista de las horas de la tarea en la caché de la lista y del detalle.
   - _Depende:_ F1-T09
-  - _Acepta:_ tras crear, la fila muestra las horas nuevas sin refetch; si falla, vuelve atrás.
+  - _Acepta:_ tras crear, la fila muestra las horas nuevas sin refetch; si falla, vuelve atrás. · ✔ 95fd754
+  - _Nota:_ `useMyTimeEntries(from, to)`, `useIssueTimeEntries(id)` y `useTimeEntryMutations()`. Claves `['time-entries', 'range' | 'issue', …]`; el registro provisional lleva id negativo hasta que Redmine responde. Las horas de la tarea se suman en todas las consultas `['issues']` con forma `{ pages }`.
 
 - [ ] **F4-T03** Popover "Registrar tiempo" — `components/time/LogTimePopover.vue` según `02-diseno.md › El popover de tiempo`: foco en duración con conversión visible, chips con las 3 actividades más usadas por proyecto, fecha "Hoy" con atajos (Ayer, selector), comentario opcional, Enter registra. Borrador por tarea si se cierra solo (`popovers.md`). Solo visible con `log_time` (`<Can>`). Anclado al ⏱ de la fila y al botón del detalle; atajo `T`.
   - _Depende:_ F4-T01, F4-T02, F2-T03, F1-T07
@@ -26,13 +28,15 @@
   - _Depende:_ F4-T03
   - _Acepta:_ iniciar otro temporizador pregunta si detener el actual; cerrar la app y volver mantiene el tiempo.
 
-- [ ] **F4-T06** Timesheet semanal — vista "Tiempo" en la sidebar: filas = tareas con tiempo en la semana (más "Añadir tarea"), columnas = días, total por día y por semana (`.data`). Edición por celda (escribir duración y Enter; varias entradas en una celda se muestran desglosadas en un popover). Navegación de semana ← →, "Esta semana". Objetivo diario configurable (p. ej. 8 h) con la barra de total en `signal-success` / `signal-warning` + texto.
+- [~] **F4-T06** Timesheet semanal — vista "Tiempo" en la sidebar: filas = tareas con tiempo en la semana (más "Añadir tarea"), columnas = días, total por día y por semana (`.data`). Edición por celda (escribir duración y Enter; varias entradas en una celda se muestran desglosadas en un popover). Navegación de semana ← →, "Esta semana". Objetivo diario configurable (p. ej. 8 h) con la barra de total en `signal-success` / `signal-warning` + texto.
   - _Depende:_ F4-T02, F4-T01
   - _Acepta:_ navegar con flechas entre celdas; editar una celda con una sola entrada la actualiza; con varias, abre el desglose.
+  - _Hecho:_ cfdf2fe. Lógica en `shared/time/timesheet.ts` (semana, filas, totales, `planCellEdit`, `goalTone`) con tests. Semana en la URL (`?w=` lunes). Vaciar una celda borra (con Deshacer). Lo registrado sin tarea sale como fila del proyecto. Objetivo diario en `localStorage` (`redmine-client:daily-goal`). e2e `tests/e2e/time.spec.ts` escrito, pendiente de ejecutar contra el Redmine local (Docker estaba en pausa).
 
-- [ ] **F4-T07** Lista de entradas — debajo del timesheet o en pestaña: entradas del rango con editar/borrar según `edit_own_time_entries` / `edit_time_entries`; borrar con confirmación (`AlertDialog`) solo si no hay Deshacer posible.
+- [~] **F4-T07** Lista de entradas — debajo del timesheet o en pestaña: entradas del rango con editar/borrar según `edit_own_time_entries` / `edit_time_entries`; borrar con confirmación (`AlertDialog`) solo si no hay Deshacer posible.
   - _Depende:_ F4-T06
   - _Acepta:_ un usuario sin `edit_time_entries` no ve acciones sobre entradas ajenas.
+  - _Hecho:_ 96c3052. Debajo del parte; editar en diálogo (tiempo, fecha, actividad, comentario). Borrar siempre ofrece Deshacer (se vuelve a crear igual), así que no hay `AlertDialog`. Pendiente de verificar contra el Redmine local.
 
 ## Definición de hecho
 
