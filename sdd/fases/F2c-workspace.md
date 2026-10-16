@@ -17,7 +17,7 @@
   - _Acepta:_ tests unitarios. · ✔ e2a1c35
 
 - [x] **F2c-T02** Flujo de la card — `shared/workspace/flow.ts`: `idle → in_progress → done → rtqa`, cálculo del tiempo (`ahora − startedAt`), mapeo a estados de Redmine con valores por defecto adivinados por nombre. `shared/time/duration.ts` (lectura, formato y redondeo; adelanta F4-T01).
-  - _Acepta:_ tests unitarios.
+  - _Acepta:_ tests unitarios. · ✔ 0b7dbd0
 
 - [ ] **F2c-T03** Cliente: `updateTimeEntry` (PUT `/time_entries/:id.json`) en `client.ts` y en el contrato del transport.
   - _Acepta:_ test del contrato.
