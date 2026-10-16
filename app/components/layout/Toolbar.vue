@@ -7,16 +7,12 @@
  */
 const ui = useUiStore()
 const route = useRoute()
-const session = useSessionStore()
+const newIssue = useNewIssue()
+const shortcuts = useShortcutsStore()
 
 /** Una página con título que depende de datos (un board) lo pone en `page-title`. */
 const pageTitle = useState<string | null>('page-title', () => null)
 const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'string' ? route.meta.title : ''))
-
-/** Hasta que llegue el formulario propio (F3-T07), crear abre el de Redmine. */
-function openNewIssue(): void {
-  window.open(`${session.url.replace(/\/$/, '')}/issues/new`, '_blank', 'noopener')
-}
 </script>
 
 <template>
@@ -63,11 +59,16 @@ function openNewIssue(): void {
     </button>
 
     <Can permission="add_issues">
-      <UiButton
-        label="Nueva tarea"
-        icon="lucide:plus"
-        @click="openNewIssue"
-      />
+      <UiTooltip
+        text="Nueva tarea"
+        :shortcut="shortcuts.bindings.newIssue"
+      >
+        <UiButton
+          label="Nueva tarea"
+          icon="lucide:plus"
+          @click="newIssue.open"
+        />
+      </UiTooltip>
     </Can>
 
     <div

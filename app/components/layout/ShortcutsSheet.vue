@@ -3,8 +3,9 @@ import { DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogRo
 
 /** Hoja de atajos (`?`): lo que la lista permite hacer sin ratón, en un solo sitio. */
 const ui = useUiStore()
+const shortcuts = useShortcutsStore()
 
-const GROUPS = [
+const GROUPS = computed(() => [
   {
     title: 'En la lista',
     items: [
@@ -32,9 +33,17 @@ const GROUPS = [
       { label: 'Buscar', keys: ['Mod', 'K'] },
       { label: 'Mostrar u ocultar las secciones', keys: ['Mod', '\\'] },
       { label: 'Ver esta hoja', keys: ['?'] },
+      { label: 'Nueva tarea', keys: shortcuts.bindings.newIssue.split('+') },
     ],
   },
-]
+  {
+    title: 'En el workspace (personalizables en ajustes)',
+    items: [
+      { label: 'Nuevo board', keys: shortcuts.bindings.addBoard.split('+') },
+      { label: 'Bloquear o desbloquear la rejilla', keys: shortcuts.bindings.toggleGrid.split('+') },
+    ],
+  },
+])
 </script>
 
 <template>

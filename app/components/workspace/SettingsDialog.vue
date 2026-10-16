@@ -1,96 +1,59 @@
 <script setup lang="ts">
-import type { StatusMap } from '../../../shared/workspace/model'
-import { guessStatusMap } from '../../../shared/workspace/flow'
+import { TabsContent, TabsList, TabsRoot, TabsTrigger } from 'reka-ui'
 
 /**
- * Ajustes del workspace (F2c-T06): a qué estado de Redmine lleva cada paso del
- * flujo de la card. Cada Redmine nombra sus estados a su manera; se propone un
- * mapeo por nombre y la persona lo confirma.
+ * Ajustes del workspace (F2c-T06, F2c-T12): un diálogo grande dividido en
+ * categorías. Se abre en la última que se usó; el aviso de "elige el estado"
+ * lo abre en Integración con Redmine.
  */
 const open = defineModel<boolean>('open', { default: false })
+const tab = useState<'redmine' | 'shortcuts'>('workspace-settings-tab', () => 'redmine')
 
-const session = useSessionStore()
-const workspace = useWorkspaceStore()
-const toasts = useToastStore()
-
-const draft = ref<StatusMap>({})
-watch(open, (isOpen) => {
-  if (isOpen) draft.value = { ...workspace.workspace.statusMap }
-})
-
-const STEPS: ReadonlyArray<{ key: keyof StatusMap, label: string, hint: string }> = [
-  { key: 'inProgress', label: 'En curso', hint: 'Primer doble clic: arranca el cronómetro.' },
-  { key: 'done', label: 'Completada', hint: 'Segundo doble clic: registra el tiempo medido.' },
-  { key: 'rtqa', label: 'RTQA', hint: 'El botón RTQA de una tarea completada.' },
-]
-
-function guess(): void {
-  const guessed = guessStatusMap(session.catalogs.statuses)
-  draft.value = {
-    inProgress: guessed.inProgress ?? draft.value.inProgress,
-    done: guessed.done ?? draft.value.done,
-    rtqa: guessed.rtqa ?? draft.value.rtqa,
-  }
-}
-
-function setStep(key: keyof StatusMap, value: string): void {
-  draft.value = { ...draft.value, [key]: value ? Number(value) : undefined }
-}
-
-function save(): void {
-  workspace.setStatusMap(draft.value)
-  toasts.show('Ajustes guardados')
-  open.value = false
-}
+const CATEGORIES = [
+  { value: 'redmine', label: 'Integración con Redmine', icon: 'lucide:plug' },
+  { value: 'shortcuts', label: 'Atajos de teclado', icon: 'lucide:keyboard' },
+] as const
 </script>
 
 <template>
   <UiDialog
     v-model:open="open"
     title="Ajustes del workspace"
-    description="Elige a qué estado de Redmine lleva cada paso."
-    :width="26"
+    description="Cómo se conecta con Redmine y cómo se maneja con el teclado."
+    :width="46"
   >
-    <div class="flex flex-col gap-3">
-      <label
-        v-for="step in STEPS"
-        :key="step.key"
-        class="grid grid-cols-[7rem_minmax(0,1fr)] items-center gap-x-3 gap-y-0.5"
+    <TabsRoot
+      v-model="tab"
+      orientation="vertical"
+      class="flex flex-col gap-4 wide:flex-row"
+    >
+      <TabsList
+        aria-label="Categorías de ajustes"
+        class="flex shrink-0 gap-1 overflow-x-auto wide:w-48 wide:flex-col"
       >
-        <span class="font-semibold">{{ step.label }}</span>
-        <select
-          :value="draft[step.key] ?? ''"
-          class="min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2"
-          @change="setStep(step.key, ($event.target as HTMLSelectElement).value)"
+        <TabsTrigger
+          v-for="category in CATEGORIES"
+          :key="category.value"
+          :value="category.value"
+          class="flex min-h-[var(--control-min)] shrink-0 items-center gap-2 rounded-[var(--radius-control)] px-2.5 text-left text-secondary outline-none hover:bg-fill-hover focus-visible:ring-2 focus-visible:ring-accent data-[state=active]:bg-fill-selected data-[state=active]:font-semibold data-[state=active]:text-content"
         >
-          <option value="">
-            Sin elegir
-          </option>
-          <option
-            v-for="status in session.catalogs.statuses"
-            :key="status.id"
-            :value="status.id"
-          >
-            {{ status.name }}{{ status.is_closed ? ' (cerrada)' : '' }}
-          </option>
-        </select>
-        <span class="col-start-2 text-[length:var(--text-caption)] text-secondary">{{ step.hint }}</span>
-      </label>
-    </div>
+          <Icon
+            :name="category.icon"
+            class="size-4 shrink-0"
+            aria-hidden="true"
+          />
+          {{ category.label }}
+        </TabsTrigger>
+      </TabsList>
 
-    <template #footer>
-      <UiButton
-        label="Proponer por nombre"
-        icon="lucide:wand-sparkles"
-        variant="ghost"
-        class="mr-auto"
-        @click="guess"
-      />
-      <UiButton
-        label="Guardar"
-        variant="primary"
-        @click="save"
-      />
-    </template>
+      <div class="min-w-0 flex-1">
+        <TabsContent value="redmine">
+          <WorkspaceSettingsRedmineSection />
+        </TabsContent>
+        <TabsContent value="shortcuts">
+          <WorkspaceSettingsShortcutsSection />
+        </TabsContent>
+      </div>
+    </TabsRoot>
   </UiDialog>
 </template>

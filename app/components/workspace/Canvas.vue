@@ -41,6 +41,13 @@ onMounted(() => {
 })
 onBeforeUnmount(() => media?.removeEventListener('change', syncMedia))
 
+// Atajos del workspace (personalizables en ajustes). Solo existen mientras está en pantalla.
+const shortcuts = useShortcutsStore()
+useShortcut('addBoard', openAddBoard)
+useShortcut('toggleGrid', () => {
+  if (workspace.boards.length > 0 && !compact.value) workspace.setLocked(!locked.value)
+})
+
 // Primera vez: se propone el mapeo de estados por nombre (se cambia en Ajustes).
 watchEffect(() => {
   const map = workspace.workspace.statusMap
@@ -151,6 +158,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
         icon-only
         variant="ghost"
         :aria-pressed="locked"
+        :shortcut="shortcuts.bindings.toggleGrid"
         class="hidden wide:inline-flex"
         @click="workspace.setLocked(!locked)"
       />
@@ -166,12 +174,17 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
       defer
       to="#toolbar-primary"
     >
-      <UiButton
-        label="Añadir board"
-        icon="lucide:plus"
-        variant="primary"
-        @click="openAddBoard"
-      />
+      <UiTooltip
+        text="Añadir board"
+        :shortcut="shortcuts.bindings.addBoard"
+      >
+        <UiButton
+          label="Añadir board"
+          icon="lucide:plus"
+          variant="primary"
+          @click="openAddBoard"
+        />
+      </UiTooltip>
     </Teleport>
 
     <WorkspaceDepartureStrip />

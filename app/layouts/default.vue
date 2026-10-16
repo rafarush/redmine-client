@@ -3,7 +3,10 @@ const ui = useUiStore()
 /** Ajustes del workspace: los abre el workspace o el aviso de "elige el estado" desde cualquier vista. */
 const settingsOpen = useState('workspace-settings-open', () => false)
 
-/** `Mod+\` muestra u oculta las secciones y `Mod+K` abre la búsqueda global. */
+/**
+ * `Mod+\` muestra u oculta las secciones y `Mod+K` abre la búsqueda global; son fijos.
+ * Los demás atajos son personalizables (`useShortcut`, ajustes del workspace).
+ */
 function onShortcut(event: KeyboardEvent): void {
   if (event.key.toLowerCase() === 'k' && (event.ctrlKey || event.metaKey) && !event.altKey) {
     event.preventDefault()
@@ -20,8 +23,14 @@ function onShortcut(event: KeyboardEvent): void {
   if (event.key === '\\' && (event.ctrlKey || event.metaKey)) {
     event.preventDefault()
     ui.toggleSidebar()
+    return
   }
+  runShortcut(event)
 }
+
+// Nueva tarea vale en toda la app; Ctrl+B y Ctrl+L los registra el workspace.
+const newIssue = useNewIssue()
+useShortcut('newIssue', newIssue.open)
 
 onMounted(() => {
   ui.restore()

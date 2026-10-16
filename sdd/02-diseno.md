@@ -196,6 +196,7 @@ Una sola animación con intención, el resto mínimo (`motion.md › Providing f
 - Objetivos interactivos: 28×28 px mínimo en desktop y 44×44 en táctil (`--control-min`).
 - Foco visible en todo (`outline` Ruby de 2 px); orden de tabulación lógico; toda la app se puede usar solo con teclado.
 - Atajos: `Ctrl/⌘+K` buscar, `N` nueva tarea, `T` registrar tiempo, `J/K` moverse por la lista, `Enter` abrir, `Esc` cerrar, `/` enfocar filtros. En desktop, todos accesibles también desde el menú nativo (F8).
+- Atajos personalizables (F2c-T12, Ajustes del workspace › Atajos de teclado): `Alt+T` nueva tarea (Ctrl+T lo intercepta el navegador; se puede elegir con aviso), `Ctrl+B` nuevo board y `Ctrl+L` candado, estos dos solo en el workspace. `Ctrl+K` y `Ctrl+\` son fijos. Una combinación necesita Ctrl/⌘ o Alt y no puede repetirse.
 - Lectores de pantalla: la frase de filtros se anuncia como un grupo ("Filtros: asignadas a mí, en Abierta, de Portal Web"). Los cambios de lista se anuncian con `aria-live="polite"` ("24 tareas").
 - Zoom al 200 % sin pérdida de funciones.
 
