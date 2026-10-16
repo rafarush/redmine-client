@@ -18,7 +18,7 @@ describe('filtrado', () => {
   it('comandos sin acentos ni mayúsculas, por etiqueta o palabra clave', () => {
     expect(filterCommands('TIEMPO').map(c => c.id)).toEqual(['go-time'])
     expect(filterCommands('horas').map(c => c.id)).toEqual(['go-time'])
-    expect(filterCommands('')).toHaveLength(4)
+    expect(filterCommands('')).toHaveLength(5)
   })
   it('proyectos por nombre, con tope y sin consulta vacía', () => {
     const projects = [{ name: 'Ingeniería' }, { name: 'Ingreso de datos' }, { name: 'Web' }]

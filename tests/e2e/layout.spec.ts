@@ -19,12 +19,12 @@ test.describe('ancho regular', () => {
     await expect(sidebar(page)).toBeVisible()
     await expect(tabBar(page)).toBeHidden()
     // Solo las secciones de primer nivel; las vistas y los filtros guardados van en sus propios grupos.
-    await expect(sidebar(page).getByRole('navigation').first().getByRole('link')).toHaveCount(4)
+    await expect(sidebar(page).getByRole('navigation').first().getByRole('link')).toHaveCount(5)
   })
 
   test('marca la sección actual para lectores de pantalla', async ({ page }) => {
     await page.goto('/')
-    await expect(sidebar(page).getByRole('link', { name: 'Tareas', exact: true })).toHaveAttribute('aria-current', 'page')
+    await expect(sidebar(page).getByRole('link', { name: 'Workspace', exact: true })).toHaveAttribute('aria-current', 'page')
   })
 
   test('el primer foco es saltar al contenido', async ({ page }) => {
@@ -89,7 +89,7 @@ test.describe('ancho compacto', () => {
     await page.goto('/')
     await expect(sidebar(page)).toBeHidden()
     await expect(tabBar(page)).toBeVisible()
-    await expect(tabBar(page).getByRole('link')).toHaveCount(4)
+    await expect(tabBar(page).getByRole('link')).toHaveCount(5)
   })
 
   test('no provoca scroll horizontal', async ({ page }) => {

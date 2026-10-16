@@ -13,7 +13,8 @@ export interface NavItem {
  */
 export function useNavItems(): NavItem[] {
   return [
-    { label: 'Tareas', short: 'Tareas', to: '/', icon: 'lucide:ticket' },
+    { label: 'Workspace', short: 'Inicio', to: '/', icon: 'lucide:layout-dashboard' },
+    { label: 'Tareas', short: 'Tareas', to: '/issues', icon: 'lucide:ticket' },
     { label: 'Tiempo', short: 'Tiempo', to: '/time', icon: 'lucide:timer' },
     { label: 'Proyectos', short: 'Proyectos', to: '/projects', icon: 'lucide:folder-kanban' },
     { label: 'Wiki', short: 'Wiki', to: '/wiki', icon: 'lucide:book-open' },

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { toUrl } from '../../../shared/redmine/filters'
 import { filterByName, filterCommands, parseSearch } from '../../../shared/redmine/palette'
+import { ISSUES_PATH } from '../../../shared/redmine/views'
 
 /**
  * Búsqueda global (F2-T07): `Ctrl/⌘+K`. Tareas por `#id` o asunto, proyectos por
@@ -135,7 +136,7 @@ const rows = computed<Row[]>(() => {
       group: 'Proyectos',
       label: project.name,
       icon: 'lucide:folder-kanban',
-      run: () => router.push({ path: '/', query: { f } }),
+      run: () => router.push({ path: ISSUES_PATH, query: { f } }),
     })
   }
 

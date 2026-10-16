@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { activeView, PRESET_VIEWS, viewLocation } from '../../../shared/redmine/views'
+import { activeView, ISSUES_PATH, PRESET_VIEWS, viewLocation } from '../../../shared/redmine/views'
 
 /** Navegación de primer nivel en ancho regular. Dos niveles como máximo (HIG sidebars.md). */
 const items = useNavItems()
@@ -9,7 +9,7 @@ const toasts = useToastStore()
 const { queries } = useSavedQueries()
 
 /** Vista predefinida que coincide con la frase de la URL; solo existe en la lista. */
-const current = computed(() => route.path === '/' ? activeView(typeof route.query.f === 'string' ? route.query.f : null) : undefined)
+const current = computed(() => route.path === ISSUES_PATH ? activeView(typeof route.query.f === 'string' ? route.query.f : null) : undefined)
 
 /** Un solo nivel de selección: blanco con anillo, como el panel; hover neutro. */
 const NAV_ITEM = 'flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-semibold aria-[current=page]:text-content aria-[current=page]:shadow-panel aria-[current=page]:ring-1 aria-[current=page]:ring-separator'
@@ -85,8 +85,8 @@ function deleteSaved(id: string, name: string): void {
         class="group flex items-center"
       >
         <NuxtLink
-          :to="{ path: '/', query: { f: saved.f } }"
-          :aria-current="route.path === '/' && route.query.f === saved.f ? 'page' : undefined"
+          :to="{ path: ISSUES_PATH, query: { f: saved.f } }"
+          :aria-current="route.path === ISSUES_PATH && route.query.f === saved.f ? 'page' : undefined"
           :class="[NAV_ITEM, 'min-w-0 flex-1']"
         >
           <Icon
@@ -109,8 +109,8 @@ function deleteSaved(id: string, name: string): void {
       <NuxtLink
         v-for="query in queries"
         :key="`redmine-${query.id}`"
-        :to="{ path: '/', query: { q: String(query.id), p: query.project_id ? String(query.project_id) : undefined } }"
-        :aria-current="route.path === '/' && route.query.q === String(query.id) ? 'page' : undefined"
+        :to="{ path: ISSUES_PATH, query: { q: String(query.id), p: query.project_id ? String(query.project_id) : undefined } }"
+        :aria-current="route.path === ISSUES_PATH && route.query.q === String(query.id) ? 'page' : undefined"
         :class="NAV_ITEM"
       >
         <Icon

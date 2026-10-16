@@ -41,9 +41,12 @@ export const PRESET_VIEWS: readonly PresetView[] = [
   },
 ]
 
+/** La lista de tareas (F2c: `/` pasa a ser el Workspace). */
+export const ISSUES_PATH = '/issues'
+
 /** Ruta de la vista, con la frase en `?f=`. */
 export function viewLocation(view: PresetView): { path: string, query: { f: string } } {
-  return { path: '/', query: { f: toUrl(view.sentence) } }
+  return { path: ISSUES_PATH, query: { f: toUrl(view.sentence) } }
 }
 
 /** Vista cuya frase es exactamente la de la URL, para marcarla como actual. */

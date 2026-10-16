@@ -13,14 +13,14 @@ const sidebar = (page: import('@playwright/test').Page) =>
 test.describe('lista de tareas', () => {
   test('una vista de la sidebar filtra y la URL la lleva', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 900, 'Vistas en la sidebar: ancho regular')
-    await page.goto('/')
+    await page.goto('/issues')
     await sidebar(page).getByRole('link', { name: 'Mis tareas' }).click()
     await expect(page).toHaveURL(/\?f=assigned_to_id/)
     await expect(page.getByRole('grid', { name: 'Tareas' })).toBeVisible()
   })
 
   test('filtrar, abrir el menú de la fila y ver las acciones del desarrollador', async ({ page }) => {
-    await page.goto('/?f=status_id:%3D:open')
+    await page.goto('/issues?f=status_id:%3D:open')
     const grid = page.getByRole('grid', { name: 'Tareas' })
     const firstRow = grid.getByRole('row').nth(1)
     await expect(firstRow).toBeVisible()
@@ -31,7 +31,7 @@ test.describe('lista de tareas', () => {
   })
 
   test('cambiar el estado desde la fila y deshacerlo', async ({ page }) => {
-    await page.goto('/?f=status_id:%3D:open')
+    await page.goto('/issues?f=status_id:%3D:open')
     const firstRow = page.getByRole('grid', { name: 'Tareas' }).getByRole('row').nth(1)
     await firstRow.getByRole('button', { name: /Acciones de la tarea/ }).click()
 
@@ -59,7 +59,7 @@ test.describe('permisos del cliente', () => {
     await connect(page, apiKeyFor('cliente'))
     await expect(page).toHaveURL(/\/$/)
 
-    await page.goto('/?f=status_id:%3D:open')
+    await page.goto('/issues?f=status_id:%3D:open')
     const firstRow = page.getByRole('grid', { name: 'Tareas' }).getByRole('row').nth(1)
     await firstRow.getByRole('button', { name: /Acciones de la tarea/ }).click()
 
@@ -72,7 +72,7 @@ test.describe('frase y filtros guardados', () => {
   test('guardar un filtro lo deja en la sidebar y lo reabre', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 900, 'Sidebar: ancho regular')
     const name = `Abiertas e2e ${Date.now()}`
-    await page.goto('/?f=status_id:%3D:open')
+    await page.goto('/issues?f=status_id:%3D:open')
     await page.getByRole('button', { name: 'Guardar filtro' }).click()
     await page.getByLabel('Nombre del filtro').fill(name)
     await page.getByRole('button', { name: 'Guardar filtro' }).last().click()

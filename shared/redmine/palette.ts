@@ -32,7 +32,8 @@ export interface PaletteCommand {
 }
 
 export const PALETTE_COMMANDS: readonly PaletteCommand[] = [
-  { id: 'go-issues', label: 'Ir a Tareas', icon: 'lucide:ticket', to: '/', keywords: ['lista', 'inicio'] },
+  { id: 'go-workspace', label: 'Ir al Workspace', icon: 'lucide:layout-dashboard', to: '/', keywords: ['inicio', 'boards', 'mis tareas'] },
+  { id: 'go-issues', label: 'Ir a Tareas', icon: 'lucide:ticket', to: '/issues', keywords: ['lista'] },
   { id: 'go-time', label: 'Ir a Tiempo', icon: 'lucide:timer', to: '/time', keywords: ['horas', 'imputar'] },
   { id: 'go-projects', label: 'Ir a Proyectos', icon: 'lucide:folder-kanban', to: '/projects' },
   { id: 'go-wiki', label: 'Ir a Wiki', icon: 'lucide:book-open', to: '/wiki' },
