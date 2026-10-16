@@ -16,6 +16,25 @@ const route = useRoute()
 const session = useSessionStore()
 const projectsStore = useProjectsStore()
 
+// ------------------------------------------------------- importar (F5)
+
+const importing = ref(false)
+/** El diálogo (y exceljs) se cargan la primera vez que se abre. */
+const importLoaded = ref(false)
+watch(importing, (open) => {
+  if (open) importLoaded.value = true
+})
+const downloading = ref(false)
+const canImport = computed(() => !!project.value && session.can('add_issues', project.value.id))
+/** La plantilla necesita el catálogo del proyecto: se pide al pulsar y se descarga cuando llega. */
+const templateCatalog = useImportCatalog(() => downloading.value ? project.value?.id : undefined)
+watch(() => templateCatalog.catalog.value, async (catalog) => {
+  if (!downloading.value || !catalog) return
+  const { templateBuffer, templateFilename } = await import('../../../../shared/import/template')
+  downloadFile(await templateBuffer(catalog), templateFilename(catalog))
+  downloading.value = false
+})
+
 const project = useProjectRef(() => String(route.params.id))
 const id = computed(() => project.value?.id)
 const detail = useProjectDetail(id)
@@ -76,6 +95,23 @@ const dueFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long' 
       defer
       to="#toolbar-actions"
     >
+      <template v-if="project && canImport">
+        <UiButton
+          label="Descargar plantilla de importación"
+          icon="lucide:file-down"
+          icon-only
+          variant="ghost"
+          :disabled="downloading"
+          @click="downloading = true"
+        />
+        <UiButton
+          label="Importar tareas"
+          icon="lucide:file-spreadsheet"
+          icon-only
+          variant="ghost"
+          @click="importing = true"
+        />
+      </template>
       <UiButton
         v-if="project"
         :label="projectsStore.isPinned(project.id) ? 'Quitar de la sidebar' : 'Fijar en la sidebar'"
@@ -300,5 +336,12 @@ const dueFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long' 
         </div>
       </div>
     </template>
+
+    <!-- Diferido: exceljs pesa y solo hace falta al importar. -->
+    <LazyImportImportDialog
+      v-if="project && canImport && importLoaded"
+      v-model:open="importing"
+      :project-id="project.id"
+    />
   </div>
 </template>
