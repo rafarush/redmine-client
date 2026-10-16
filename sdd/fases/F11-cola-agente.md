@@ -6,7 +6,7 @@
 
 ## Tareas
 
-- [~] **F11-T01** ADR-009 y modelo — documentar la arquitectura (runner local aparte) y crear la lógica pura en `shared/agent/` (config, cola, transiciones) con tests.
+- [x] **F11-T01** ADR-009 y modelo — documentar la arquitectura (runner local aparte) y crear la lógica pura en `shared/agent/` (config, cola, transiciones) con tests. · ✔ 2077846
   - _Acepta:_ ADR-009 en `01-arquitectura.md`; tests de `sanitizeAgentConfig` y de las transiciones de la cola en verde.
 
 - [ ] **F11-T02** Runner local — `agent-runner/` (Node, `node:http`): escucha solo en `127.0.0.1`, token aleatorio al arrancar, CORS limitado al origen de la app, repo fijo en `agent-runner.config.json`; endpoints para encolar/cancelar y SSE de eventos. Script `pnpm agent:runner`.
