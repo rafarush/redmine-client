@@ -52,6 +52,8 @@ const dateTimeFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 's
 // ------------------------------------------------------------- comentar
 
 const text = ref('')
+/** Caja de comentario (con texto fantasma), para el botón ✦ (F12). */
+const commentArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('commentArea')
 const isPrivate = ref(false)
 const canPrivate = computed(() => session.can('set_notes_private', projectId.value))
 const detailKey = computed(() => ['issues', 'detail', props.issue.id])
@@ -189,8 +191,9 @@ function submit(): void {
           for="issue-comment"
           class="sr-only"
         >Comentario</label>
-        <textarea
+        <AiGhostTextarea
           id="issue-comment"
+          ref="commentArea"
           v-model="text"
           rows="2"
           placeholder="Escribe un comentario…"
@@ -210,6 +213,10 @@ function submit(): void {
             Comentario privado
           </label>
           <span class="ml-auto inline-flex items-center gap-2 text-[length:var(--text-caption)] text-secondary">
+            <AiImproveButton
+              v-model="text"
+              :target="commentArea?.el"
+            />
             <UiKbd keys="Mod+Enter" />
             <UiButton
               type="submit"

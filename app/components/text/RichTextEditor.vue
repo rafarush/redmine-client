@@ -20,7 +20,9 @@ const text = defineModel<string>({ required: true })
 const preferences = usePreferencesStore()
 const format = computed(() => resolveFormat(text.value, preferences.textFormat))
 const tab = ref<'write' | 'preview'>('write')
-const area = useTemplateRef<HTMLTextAreaElement>('area')
+const ghostArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('ghostArea')
+/** El textarea de dentro del campo con texto fantasma (F12). */
+const area = computed(() => ghostArea.value?.el ?? null)
 
 onMounted(() => area.value?.focus())
 
@@ -86,6 +88,10 @@ const TAB = 'min-h-8 rounded-[var(--radius-control)] px-2.5 text-[length:var(--t
         role="toolbar"
         aria-label="Formato"
       >
+        <AiImproveButton
+          v-model="text"
+          :target="area"
+        />
         <UiButton
           label="Negrita"
           icon="lucide:bold"
@@ -112,9 +118,9 @@ const TAB = 'min-h-8 rounded-[var(--radius-control)] px-2.5 text-[length:var(--t
       </div>
     </div>
 
-    <textarea
+    <AiGhostTextarea
       v-show="tab === 'write'"
-      ref="area"
+      ref="ghostArea"
       v-model="text"
       rows="8"
       :aria-label="label"

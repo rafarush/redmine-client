@@ -195,6 +195,9 @@ function onKeydown(event: KeyboardEvent): void {
   }
 }
 
+/** Descripción (con texto fantasma), para el botón ✦ (F12). */
+const descriptionArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('descriptionArea')
+
 const FIELD = 'min-h-[var(--control-min)] w-full rounded-[var(--radius-control)] border border-separator bg-surface px-2.5 aria-[invalid=true]:border-warning'
 const LABEL = 'flex flex-col gap-1'
 </script>
@@ -281,8 +284,15 @@ const LABEL = 'flex flex-col gap-1'
       </label>
 
       <label :class="LABEL">
-        <span class="panel-label">Descripción</span>
-        <textarea
+        <span class="flex items-center justify-between gap-2">
+          <span class="panel-label">Descripción</span>
+          <AiImproveButton
+            v-model="draft.description"
+            :target="descriptionArea?.el"
+          />
+        </span>
+        <AiGhostTextarea
+          ref="descriptionArea"
           v-model="draft.description"
           rows="4"
           :class="[FIELD, 'py-2']"

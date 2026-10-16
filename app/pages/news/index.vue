@@ -70,6 +70,9 @@ async function publish(): Promise<void> {
   }
 }
 
+/** Campo del texto (con texto fantasma), para el botón ✦ (F12). */
+const newsArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('newsArea')
+
 const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2.5'
 </script>
 
@@ -199,8 +202,15 @@ const FIELD = 'min-h-[var(--control-min)] rounded-[var(--radius-control)] border
           >
         </label>
         <label class="flex flex-col gap-1">
-          <span class="panel-label">Texto</span>
-          <textarea
+          <span class="flex items-center justify-between gap-2">
+            <span class="panel-label">Texto</span>
+            <AiImproveButton
+              v-model="form.description"
+              :target="newsArea?.el"
+            />
+          </span>
+          <AiGhostTextarea
+            ref="newsArea"
             v-model="form.description"
             rows="8"
             required

@@ -99,6 +99,8 @@ watch(() => [page.isSuccess.value, route.query.edit] as const, ([ready, edit]) =
   }
 }, { immediate: true })
 
+/** Campo del editor (con texto fantasma), para el botón ✦ (F12). */
+const wikiArea = useTemplateRef<{ el: HTMLTextAreaElement | null }>('wikiArea')
 const editorFormat = computed(() => resolveFormat(draft.value, preferences.textFormat))
 
 async function save(): Promise<void> {
@@ -264,8 +266,15 @@ const sizeFormat = (bytes: number) => bytes < 1024 ? `${bytes} B` : bytes < 1_04
 
       <div class="grid gap-4 wide:grid-cols-2">
         <label class="flex flex-col gap-1">
-          <span class="panel-label">Texto · {{ editorFormat === 'markdown' ? 'Markdown' : 'Textile' }}</span>
-          <textarea
+          <span class="flex items-center justify-between gap-2">
+            <span class="panel-label">Texto · {{ editorFormat === 'markdown' ? 'Markdown' : 'Textile' }}</span>
+            <AiImproveButton
+              v-model="draft"
+              :target="wikiArea?.el"
+            />
+          </span>
+          <AiGhostTextarea
+            ref="wikiArea"
             v-model="draft"
             rows="20"
             class="data min-h-80 w-full resize-y rounded-[var(--radius-control)] border border-separator bg-surface px-3 py-2"
