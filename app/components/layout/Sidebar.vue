@@ -7,12 +7,25 @@ const route = useRoute()
 const ui = useUiStore()
 const toasts = useToastStore()
 const { queries } = useSavedQueries()
+const session = useSessionStore()
+const projectsStore = useProjectsStore()
+
+/** Fijados en el navegador de proyectos (F6-T01), en el orden en que se fijaron. */
+const pinnedProjects = computed(() => projectsStore.pinned.flatMap((id) => {
+  const project = session.catalogs.projects.find(p => p.id === id && p.status !== 9)
+  return project ? [project] : []
+}))
 
 /** Vista predefinida que coincide con la frase de la URL; solo existe en la lista. */
 const current = computed(() => route.path === ISSUES_PATH ? activeView(typeof route.query.f === 'string' ? route.query.f : null) : undefined)
 
 /** Un solo nivel de selección: blanco con anillo, como el panel; hover neutro. */
 const NAV_ITEM = 'flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-semibold aria-[current=page]:text-content aria-[current=page]:shadow-panel aria-[current=page]:ring-1 aria-[current=page]:ring-separator'
+
+function isInProject(identifier: string): boolean {
+  const base = `/projects/${identifier}`
+  return route.path === base || route.path.startsWith(`${base}/`)
+}
 
 function deleteSaved(id: string, name: string): void {
   const undo = ui.deleteSavedFilter(id)
@@ -123,7 +136,28 @@ function deleteSaved(id: string, name: string): void {
       </NuxtLink>
     </nav>
 
-    <!-- Proyectos fijados: F6-T01. -->
+    <nav
+      v-if="pinnedProjects.length > 0"
+      aria-labelledby="pinned-heading"
+      class="mt-5 flex flex-col gap-0.5"
+    >
+      <h2
+        id="pinned-heading"
+        class="panel-label px-2 pb-1"
+      >
+        Proyectos
+      </h2>
+      <NuxtLink
+        v-for="project in pinnedProjects"
+        :key="project.id"
+        :to="`/projects/${project.identifier}`"
+        :aria-current="isInProject(project.identifier) ? 'page' : undefined"
+        :class="NAV_ITEM"
+      >
+        <UiPlate :name="project.name" />
+        <span class="truncate">{{ project.name }}</span>
+      </NuxtLink>
+    </nav>
 
     <div class="mt-auto pt-2">
       <LayoutAccountMenu />
