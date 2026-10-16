@@ -35,6 +35,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Hosts de Redmine a los que el proxy puede llamar (separados por coma). Evita SSRF.
     redmineAllowedHosts: '',
+    // Clave de la API de Anthropic para todo el servidor (F12, opcional): si no hay,
+    // cada persona guarda la suya en Ajustes y va en su sesión sellada.
+    anthropicApiKey: '',
     // NUXT_SESSION_PASSWORD (>= 32 caracteres) lo lee nuxt-auth-utils para sellar la cookie.
   },
   compatibilityDate: '2026-10-01',

@@ -2,6 +2,9 @@ import { createHash, timingSafeEqual } from 'node:crypto'
 import { createServer } from 'node:http'
 import type { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { formatSse, taskRequestSchema } from '../shared/agent/events'
+import { aiRequestSchema } from '../shared/ai/contract'
+import type { AiHandler } from './ai'
+import { ClaudeTextError } from './ai'
 import type { EventHub, Scheduler } from './scheduler'
 
 const MAX_BODY = 256 * 1024
@@ -14,6 +17,8 @@ export interface RunnerServerOptions {
   scheduler: Scheduler
   /** Recibe una línea por petición (método, ruta y estado); nunca cabeceras ni cuerpos. */
   log?: (line: string) => void
+  /** IA para escribir (F12): mejorar, continuar o proponer campos con `claude -p`. */
+  ai?: AiHandler
 }
 
 function digest(value: string): Buffer {
@@ -59,7 +64,7 @@ function readJson(req: IncomingMessage): Promise<unknown> {
 }
 
 export function createRunnerServer(options: RunnerServerOptions): Server {
-  const { token, allowedOrigin, hub, scheduler } = options
+  const { token, allowedOrigin, hub, scheduler, ai } = options
 
   const handle = async (req: IncomingMessage, res: ServerResponse) => {
     const origin = req.headers.origin
@@ -111,6 +116,33 @@ export function createRunnerServer(options: RunnerServerOptions): Server {
       if (!parsed.success) return send(res, 400, { error: 'invalid_task' })
       if (!scheduler.start(parsed.data)) return send(res, 409, { error: 'busy' })
       return send(res, 202, { id: parsed.data.id })
+    }
+
+    if (req.method === 'POST' && url.pathname === '/ai/complete') {
+      if (!ai) return send(res, 501, { error: 'ai_disabled' })
+      let body: unknown
+      try {
+        body = await readJson(req)
+      }
+      catch (error) {
+        return send(res, error instanceof Error && error.message === 'too_large' ? 413 : 400, { error: 'bad_request' })
+      }
+      const parsed = aiRequestSchema.safeParse(body)
+      if (!parsed.success) return send(res, 400, { error: 'invalid_request' })
+      // Si la app cierra la petición (popover cerrado), se mata `claude`.
+      const controller = new AbortController()
+      // El `close` de la petición salta al leer el cuerpo; el de la respuesta, si el cliente se va.
+      res.on('close', () => {
+        if (!res.writableEnded) controller.abort()
+      })
+      try {
+        return send(res, 200, await ai(parsed.data, controller.signal))
+      }
+      catch (error) {
+        if (controller.signal.aborted) return res.destroy()
+        const status = error instanceof ClaudeTextError ? error.status : 502
+        return send(res, status, { error: 'ai_failed', message: error instanceof Error ? error.message : 'Error de la IA' })
+      }
     }
 
     const cancel = /^\/tasks\/([^/]+)\/cancel$/.exec(url.pathname)

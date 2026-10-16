@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import { createClaudeText } from './ai'
 import { loadRunnerConfig } from './config'
 import { EventHub, Scheduler } from './scheduler'
 import { createRunnerServer } from './server'
@@ -17,6 +18,7 @@ const server = createRunnerServer({
   allowedOrigin: config.allowedOrigin,
   hub,
   scheduler: new Scheduler(hub, executor),
+  ai: createClaudeText(),
   log: line => console.log(line),
 })
 

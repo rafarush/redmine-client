@@ -41,7 +41,9 @@ export const GHOST_MAX_CHARS = 180
  */
 export function cleanGhost(before: string, raw: string): string {
   let text = raw.replace(/\r/g, '')
-  if (/^\s*["“«]/.test(text) && /["”»]\s*$/.test(text)) text = text.trim().slice(1, -1)
+  // Envoltorios que a veces añade el modelo: "…", («…») o ("…").
+  const wrapped = /^\s*\(?\s*["“«]([\s\S]*?)["”»]\s*\)?\s*$/.exec(text)
+  if (wrapped) text = wrapped[1]!
   text = text.split('\n')[0] ?? ''
   // A veces repite el final de lo escrito: se quita el solape.
   const tail = before.slice(-60)

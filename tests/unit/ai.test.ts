@@ -95,6 +95,8 @@ describe('edición', () => {
     expect(cleanGhost('falla al guardar', ' guardar el usuario')).toBe(' el usuario')
     expect(cleanGhost('texto', 'primera línea\nsegunda')).toBe(' primera línea')
     expect(cleanGhost('texto', '   ')).toBe('')
+    expect(cleanGhost('aparece un error cuando', '(" el email ya existe.")')).toBe(' el email ya existe.')
+    expect(cleanGhost('aparece un error cuando', '«el email ya existe.»')).toBe(' el email ya existe.')
   })
 
   it('solo aplica valores que existen en el proyecto', () => {
