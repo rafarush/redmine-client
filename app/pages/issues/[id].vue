@@ -2,14 +2,14 @@
 import type { Issue, Paginated } from '../../../shared/redmine/types'
 import { useQuery } from '@tanstack/vue-query'
 import { PRIORITY_ICON, priorityLevel, projectCode } from '../../../shared/redmine/issue-display'
-import { formatClock, formatDuration } from '../../../shared/time/duration'
-import { describeDue } from '../../../shared/workspace/due'
+import { formatClock } from '../../../shared/time/duration'
 import { elapsedMs, timerFor } from '../../../shared/workspace/flow'
 
 /**
  * Detalle de una tarea (F3-T01, primera versión): cabecera, cronómetro y acciones
- * del flujo, descripción, historial con comentarios (F3-T04) y datos. La edición campo a campo llega con
- * F3-T02; mientras tanto se cambia desde el menú "…" (el mismo del clic derecho).
+ * del flujo, descripción (F3-T03), adjuntos (F3-T06), vínculos (F3-T05), historial
+ * con comentarios (F3-T04) y datos editables campo a campo (F3-T02). El menú "…" es
+ * el mismo del clic derecho.
  *
  * La consulta usa la clave `['issues', 'detail', id]` con forma `{ pages }`, así los
  * cambios optimistas de `useIssueChange` también se ven aquí.
@@ -66,30 +66,6 @@ const priorityIcon = computed(() => {
   const position = list.findIndex(p => p.id === issue.value?.priority.id)
   const defaultPosition = Math.max(0, list.findIndex(p => p.is_default))
   return PRIORITY_ICON[position < 0 ? 'normal' : priorityLevel(position, defaultPosition)]
-})
-
-const dateFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', year: 'numeric' })
-const formatDate = (iso?: string | null) => iso ? dateFormat.format(new Date(iso.length === 10 ? `${iso}T00:00:00` : iso)) : '—'
-const hours = (value?: number | null) => value ? formatDuration(value) : '—'
-
-/** Datos de la tarea, en el orden en que se miran. */
-const fields = computed(() => {
-  const i = issue.value
-  if (!i) return []
-  const due = describeDue(i.due_date, today())
-  return [
-    { label: 'Asignada a', value: i.assigned_to?.name ?? 'Sin asignar' },
-    { label: 'Sprint', value: i.fixed_version?.name ?? 'Sin sprint' },
-    { label: 'Categoría', value: i.category?.name ?? '—' },
-    { label: 'Empieza', value: formatDate(i.start_date), data: true },
-    { label: 'Vence', value: i.due_date ? `${formatDate(i.due_date)} · ${due.label}` : '—', data: true, warn: due.tone === 'overdue' },
-    { label: 'Estimado', value: hours(i.estimated_hours), data: true },
-    { label: 'Dedicado', value: hours(i.spent_hours), data: true },
-    { label: 'Hecho', value: `${i.done_ratio} %`, data: true },
-    { label: 'Autor', value: i.author.name },
-    { label: 'Creada', value: formatDate(i.created_on), data: true },
-    { label: 'Actualizada', value: formatDate(i.updated_on), data: true },
-  ]
 })
 
 function openInRedmine(): void {
@@ -260,31 +236,7 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
           <IssuesIssueHistory :issue="issue" />
         </div>
 
-        <UiPanel label="Datos de la tarea">
-          <template #header>
-            <h2 class="panel-label !text-content">
-              Datos
-            </h2>
-          </template>
-          <dl class="pb-2">
-            <div
-              v-for="(field, index) in fields"
-              :key="field.label"
-              class="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-2 px-4 py-2 text-[length:var(--text-body)]"
-              :class="index % 2 ? 'bg-fill-alt' : ''"
-            >
-              <dt class="text-secondary">
-                {{ field.label }}
-              </dt>
-              <dd
-                class="min-w-0 truncate"
-                :class="[field.data ? 'data' : '', field.warn ? 'font-semibold text-warning' : 'text-content']"
-              >
-                {{ field.value }}
-              </dd>
-            </div>
-          </dl>
-        </UiPanel>
+        <IssuesIssueFields :issue="issue" />
       </div>
     </template>
   </div>
