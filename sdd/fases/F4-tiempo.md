@@ -7,6 +7,7 @@
 ## Tareas
 
 - [ ] **F4-T01** Parser de duraciones — `shared/time/duration.ts`: `parseDuration(texto) → horas | error` y `formatHours(h)`. Acepta `1h30`, `1h 30m`, `1:30`, `1.5`, `1,5`, `90m`, `2h`, `45`. Para un número suelto, ≤ 12 se toma como horas y > 12 como minutos, mostrando siempre la interpretación. Rechaza 0, negativos y > 24 h.
+  - _Nota:_ adelantado en F2c-T02 (`parseDuration`, `roundHours`, `formatDuration`, `formatClock`); falta mostrar la interpretación en el popover.
   - _Acepta:_ tabla de tests con todos los formatos y casos límite.
 
 - [ ] **F4-T02** `useTimeEntries` — consultas por tarea y por rango (`user_id=me`, `from`, `to`), y mutación de crear/editar/borrar con actualización optimista de las horas de la tarea en la caché de la lista y del detalle.
