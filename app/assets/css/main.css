@@ -197,3 +197,19 @@ textarea {
   background-size: 48px 48px;
   background-position: -1px -1px;
 }
+
+/* Tarjeta del kanban (F2d): la misma card, en dos pisos. */
+.kanban-tile {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'id due actions'
+    'subject subject subject'
+    'priority status status';
+  align-items: center;
+}
+.kanban-tile > .card-id { grid-area: id; }
+.kanban-tile > .card-due { grid-area: due; }
+.kanban-tile > .card-actions { grid-area: actions; }
+.kanban-tile > .card-subject { grid-area: subject; }
+.kanban-tile > .card-priority { grid-area: priority; }
+.kanban-tile > .card-status { grid-area: status; justify-self: end; }

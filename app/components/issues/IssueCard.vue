@@ -105,7 +105,7 @@ function onKeydown(event: KeyboardEvent): void {
     :class="[
       variant === 'row'
         ? 'board-row grid min-h-[var(--row-height)] items-center pr-2 text-[length:var(--text-body)]'
-        : 'flex flex-col gap-2 rounded-[var(--radius-control)] border border-separator bg-raised p-3 text-[length:var(--text-body)] shadow-panel',
+        : 'kanban-tile grid gap-x-2 gap-y-1.5 rounded-[var(--radius-control)] border border-separator bg-raised p-3 text-[length:var(--text-body)] shadow-panel',
       moved ? 'bg-change' : variant === 'row' && alternate ? 'bg-fill-alt hover:bg-fill-hover' : 'hover:bg-fill-hover',
     ]"
     @dblclick="flow.onDoubleClick(issue)"
@@ -113,23 +113,23 @@ function onKeydown(event: KeyboardEvent): void {
   >
     <!-- # -->
     <span
-      class="data text-secondary"
-      :class="variant === 'row' ? 'pl-4 text-[length:var(--text-caption)]' : 'text-[length:var(--text-caption)]'"
+      class="card-id data text-[length:var(--text-caption)] text-secondary"
+      :class="variant === 'row' ? 'pl-4' : ''"
     >{{ issue.id }}</span>
 
     <!-- Tarea -->
     <span
-      class="min-w-0 truncate"
+      class="card-subject min-w-0"
       :class="[
         stage === 'in_progress' ? 'font-semibold text-content' : stage === 'done' || stage === 'rtqa' ? 'text-secondary' : 'text-content',
-        variant === 'row' ? 'pr-3' : 'whitespace-normal',
+        variant === 'row' ? 'truncate pr-3' : 'line-clamp-3 font-medium',
       ]"
       :title="issue.subject"
     >{{ issue.subject }}</span>
 
     <!-- Vence -->
     <span
-      class="data text-[length:var(--text-caption)]"
+      class="card-due data text-[length:var(--text-caption)]"
       :class="DUE_CLASS[due.tone]"
     >
       <span
@@ -140,7 +140,7 @@ function onKeydown(event: KeyboardEvent): void {
 
     <!-- Prioridad -->
     <span
-      class="board-priority flex min-w-0 flex-col justify-center text-[length:var(--text-caption)]"
+      class="card-priority board-priority flex min-w-0 flex-col justify-center text-[length:var(--text-caption)]"
       :class="urgent ? 'font-semibold text-content' : 'text-secondary'"
     >
       <span class="inline-flex items-center gap-1">
@@ -159,7 +159,7 @@ function onKeydown(event: KeyboardEvent): void {
 
     <!-- Estado -->
     <span
-      class="flex min-w-0 items-center gap-1.5 text-[length:var(--text-caption)]"
+      class="card-status flex min-w-0 items-center gap-1.5 text-[length:var(--text-caption)]"
       :class="stage === 'in_progress' ? 'font-semibold text-content' : stage === 'done' ? 'text-success' : 'text-secondary'"
     >
       <Icon
@@ -175,7 +175,7 @@ function onKeydown(event: KeyboardEvent): void {
     </span>
 
     <!-- Acciones -->
-    <span class="flex items-center justify-end gap-1">
+    <span class="card-actions flex items-center justify-end gap-1">
       <template v-if="stage === 'done' || stage === 'rtqa'">
         <Can
           v-if="stage === 'done'"

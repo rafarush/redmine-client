@@ -16,9 +16,6 @@ definePageMeta({
     },
   ],
 })
-
-const workspace = useWorkspaceStore()
-onMounted(() => workspace.restore())
 </script>
 
 <template>

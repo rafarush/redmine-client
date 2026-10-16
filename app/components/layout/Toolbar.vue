@@ -9,7 +9,9 @@ const ui = useUiStore()
 const route = useRoute()
 const session = useSessionStore()
 
-const title = computed(() => typeof route.meta.title === 'string' ? route.meta.title : '')
+/** Una página con título que depende de datos (un board) lo pone en `page-title`. */
+const pageTitle = useState<string | null>('page-title', () => null)
+const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'string' ? route.meta.title : ''))
 
 /** Hasta que llegue el formulario propio (F3-T07), crear abre el de Redmine. */
 function openNewIssue(): void {

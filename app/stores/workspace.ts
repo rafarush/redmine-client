@@ -70,6 +70,10 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     write(WORKSPACE_KEY, next)
   }
 
+  // SPA (`ssr: false`): al crear el store ya hay `localStorage`; así ninguna pantalla
+  // pinta el vacío un instante antes de leer los boards.
+  if (import.meta.client) restore()
+
   const boards = computed(() => workspace.value.boards)
   const categories = computed(() => workspace.value.categories)
 
