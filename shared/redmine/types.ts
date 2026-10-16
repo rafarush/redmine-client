@@ -82,6 +82,7 @@ export const projectSchema = z.object({
   is_public: z.boolean().optional(),
   trackers: z.array(refSchema).optional(),
   enabled_modules: z.array(refSchema).optional(),
+  issue_categories: z.array(refSchema).optional(),
   issue_custom_fields: z.array(refSchema).optional(),
   time_entry_activities: z.array(refSchema).optional(),
 }).loose()

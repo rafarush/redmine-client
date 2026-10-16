@@ -1,4 +1,4 @@
-import type { Board, BoardKind, Category, StatusMap, Workspace } from '../../shared/workspace/model'
+import type { Board, BoardInput, Category, StatusMap, Workspace } from '../../shared/workspace/model'
 import type { LoggedWork, Timer } from '../../shared/workspace/flow'
 import { currentTimer, pauseTimer, runOnly, sanitizeTimers } from '../../shared/workspace/flow'
 import { defineStore } from 'pinia'
@@ -72,7 +72,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
   const boards = computed(() => workspace.value.boards)
   const categories = computed(() => workspace.value.categories)
 
-  function addBoard(input: { kind: BoardKind, title: string, projectIds?: number[], categoryId?: string, issueIds?: number[] }): string {
+  function addBoard(input: BoardInput): string {
     const next = createBoard(workspace.value, input, () => crypto.randomUUID())
     commit(next)
     return next.boards.at(-1)!.id

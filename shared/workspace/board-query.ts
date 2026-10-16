@@ -17,7 +17,10 @@ export function boardQueries(board: Board, categories: readonly Category[]): Iss
   if (board.kind === 'custom') {
     return board.issueIds.length > 0 ? [{ ...BASE, issue_id: board.issueIds.join(',') }] : []
   }
-  return boardProjectIds(board, categories).map(projectId => ({ ...BASE, project_id: projectId }))
+  const category: IssueQuery = board.kind === 'category' && board.issueCategoryIds.length > 0
+    ? { category_id: board.issueCategoryIds.join(',') }
+    : {}
+  return boardProjectIds(board, categories).map(projectId => ({ ...BASE, ...category, project_id: projectId }))
 }
 
 /** Une las respuestas sin repetir tareas (un subproyecto puede salir en dos consultas). */

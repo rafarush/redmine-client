@@ -181,7 +181,7 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
           Tu panel está vacío
         </p>
         <p class="mt-1 max-w-sm text-secondary">
-          Añade un board por proyecto, agrupa varios en una categoría o arma una lista con las tareas que quieras. Solo verás las asignadas a ti.
+          Añade un board por proyecto, elige categorías de tareas o arma una lista con las tareas que quieras. Solo verás las asignadas a ti.
         </p>
       </div>
       <div

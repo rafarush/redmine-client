@@ -83,13 +83,19 @@ describe('workspace: orden', () => {
 })
 
 describe('workspace: consultas de un board', () => {
-  const base = { id: 'x', title: 'X', span: 1 as const, free: { x: 0, y: 0, w: 560 }, issueIds: [] as number[], projectIds: [] as number[] }
+  const base = { id: 'x', title: 'X', span: 1 as const, free: { x: 0, y: 0, w: 560 }, issueIds: [] as number[], issueCategoryIds: [] as number[], projectIds: [] as number[] }
 
   it('siempre pide mis tareas abiertas, una consulta por proyecto', () => {
     const queries = boardQueries({ ...base, kind: 'category', categoryId: 'c' }, [{ id: 'c', name: 'C', projectIds: [1, 2] }])
     expect(queries).toHaveLength(2)
     expect(queries[0]).toMatchObject({ assigned_to_id: 'me', status_id: 'open', project_id: 1 })
     expect(queries[1]).toMatchObject({ project_id: 2 })
+  })
+
+  it('un board de categorías de Redmine filtra por ellas en su proyecto', () => {
+    const queries = boardQueries({ ...base, kind: 'category', projectIds: [7], issueCategoryIds: [3, 5] }, [])
+    expect(queries).toHaveLength(1)
+    expect(queries[0]).toMatchObject({ project_id: 7, category_id: '3,5', assigned_to_id: 'me' })
   })
 
   it('una lista de tareas sueltas pide por número', () => {

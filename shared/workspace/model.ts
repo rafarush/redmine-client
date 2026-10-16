@@ -29,6 +29,8 @@ export interface Board {
   /** `project`: uno; `category`: se resuelve desde la categoría; `custom`: vacío. */
   projectIds: number[]
   categoryId?: string
+  /** `category`: categorías de tareas de Redmine de las que salen las tareas (de `projectIds`). */
+  issueCategoryIds: number[]
   /** `custom`: las tareas elegidas a mano. */
   issueIds: number[]
   /** Columnas que ocupa en la rejilla (1 o 2). */
@@ -69,6 +71,7 @@ const boardSchema = z.object({
   title: z.string().min(1).max(80),
   projectIds: ids,
   categoryId: z.string().optional().catch(undefined),
+  issueCategoryIds: ids,
   issueIds: ids,
   span: z.union([z.literal(1), z.literal(2)]).catch(1),
   free: z.object({ x: z.number(), y: z.number(), w: z.number().min(280) }).catch({ x: 0, y: 0, w: FREE_BOARD_WIDTH }),
@@ -111,9 +114,18 @@ export function nextFreePosition(boards: readonly Board[]): FreePosition {
     : { x: 0, y: Math.max(...boards.map(b => b.free.y)) + 480 + FREE_GAP, w: FREE_BOARD_WIDTH }
 }
 
+export interface BoardInput {
+  kind: BoardKind
+  title: string
+  projectIds?: number[]
+  categoryId?: string
+  issueCategoryIds?: number[]
+  issueIds?: number[]
+}
+
 export function createBoard(
   workspace: Workspace,
-  input: { kind: BoardKind, title: string, projectIds?: number[], categoryId?: string, issueIds?: number[] },
+  input: BoardInput,
   makeId: () => string,
 ): Workspace {
   const board: Board = {
@@ -122,6 +134,7 @@ export function createBoard(
     title: input.title.trim().slice(0, 80) || 'Board',
     projectIds: input.projectIds ?? [],
     categoryId: input.categoryId,
+    issueCategoryIds: input.issueCategoryIds ?? [],
     issueIds: input.issueIds ?? [],
     span: 1,
     free: nextFreePosition(workspace.boards),
@@ -159,6 +172,7 @@ export function saveCategory(workspace: Workspace, category: Category): Workspac
 
 /** Proyectos de los que salen las tareas de un board. */
 export function boardProjectIds(board: Board, categories: readonly Category[]): number[] {
-  if (board.kind === 'category') return categories.find(c => c.id === board.categoryId)?.projectIds ?? []
+  // Los boards de categorías de Redmine guardan sus proyectos; los antiguos, un grupo local.
+  if (board.kind === 'category' && board.categoryId) return categories.find(c => c.id === board.categoryId)?.projectIds ?? []
   return board.projectIds
 }

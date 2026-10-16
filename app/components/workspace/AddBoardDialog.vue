@@ -5,8 +5,8 @@ import { projectCode } from '../../../shared/redmine/issue-display'
 import { normalize } from '../../../shared/redmine/palette'
 
 /**
- * Añadir un board (F2c-T05): de un proyecto, de una categoría (varios proyectos
- * agrupados con un nombre) o una lista de tareas sueltas por número. Siempre
+ * Añadir un board (F2c-T05): de un proyecto, de una o varias categorías de tareas
+ * de Redmine de un proyecto, o una lista de tareas sueltas por número. Siempre
  * muestra solo las tareas asignadas a mí.
  */
 const open = defineModel<boolean>('open', { default: false })
@@ -30,6 +30,11 @@ const projects = computed(() => {
 })
 
 const selected = ref<number[]>([])
+const categoryIds = ref<number[]>([])
+const projectId = computed(() => kind.value === 'category' ? selected.value[0] : undefined)
+const { data: projectDetail, isPending: loadingCategories } = useProjectDetail(projectId)
+const categoryOptions = computed(() =>
+  [...(projectDetail.value?.issue_categories ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'es')))
 const name = ref('')
 const issueText = ref('')
 
@@ -37,11 +42,16 @@ watch(open, (isOpen) => {
   if (!isOpen) return
   search.value = ''
   selected.value = []
+  categoryIds.value = []
   name.value = ''
   issueText.value = ''
 })
 watch(kind, () => {
   selected.value = []
+  categoryIds.value = []
+})
+watch(selected, () => {
+  categoryIds.value = []
 })
 
 /** "4821, #4790 4800" → [4821, 4790, 4800]. */
@@ -49,7 +59,7 @@ const issueIds = computed(() => [...new Set((issueText.value.match(/\d+/g) ?? []
 
 const canCreate = computed(() => {
   if (kind.value === 'project') return selected.value.length === 1
-  if (kind.value === 'category') return selected.value.length > 0 && name.value.trim() !== ''
+  if (kind.value === 'category') return selected.value.length === 1 && categoryIds.value.length > 0
   return issueIds.value.length > 0
 })
 
@@ -60,9 +70,14 @@ function create(): void {
     workspace.addBoard({ kind: 'project', title: project.name, projectIds: [project.id] })
   }
   else if (kind.value === 'category') {
-    const id = crypto.randomUUID()
-    workspace.upsertCategory({ id, name: name.value.trim(), projectIds: [...selected.value] })
-    workspace.addBoard({ kind: 'category', title: name.value.trim(), categoryId: id })
+    const project = session.catalogs.projects.find(p => p.id === selected.value[0])!
+    const names = categoryOptions.value.filter(c => categoryIds.value.includes(c.id)).map(c => c.name)
+    workspace.addBoard({
+      kind: 'category',
+      title: name.value.trim() || `${project.name} · ${names.join(', ')}`,
+      projectIds: [project.id],
+      issueCategoryIds: [...categoryIds.value],
+    })
   }
   else {
     workspace.addBoard({ kind: 'custom', title: name.value.trim() || 'Mi lista', issueIds: issueIds.value })
@@ -73,7 +88,7 @@ function create(): void {
 
 function onListboxUpdate(value: unknown): void {
   const values = (Array.isArray(value) ? value : [value]).filter((v): v is number => typeof v === 'number')
-  selected.value = kind.value === 'project' ? values.slice(-1) : values
+  selected.value = values.slice(-1)
 }
 </script>
 
@@ -98,12 +113,12 @@ function onListboxUpdate(value: unknown): void {
         v-if="kind !== 'project'"
         class="flex flex-col gap-1"
       >
-        <span class="panel-label">{{ kind === 'category' ? 'Nombre de la categoría' : 'Nombre de la lista' }}</span>
+        <span class="panel-label">{{ kind === 'category' ? 'Nombre del board (opcional)' : 'Nombre de la lista' }}</span>
         <input
           v-model="name"
           type="text"
           maxlength="60"
-          :placeholder="kind === 'category' ? 'Clientes' : 'Esta semana'"
+          :placeholder="kind === 'category' ? 'Se arma con las categorías' : 'Esta semana'"
           class="min-h-[var(--control-min)] rounded-[var(--radius-control)] border border-separator bg-surface px-2.5"
         >
       </label>
@@ -129,10 +144,9 @@ function onListboxUpdate(value: unknown): void {
         v-else
         class="flex flex-col gap-1"
       >
-        <span class="panel-label">{{ kind === 'project' ? 'Proyecto' : 'Proyectos de la categoría' }}</span>
+        <span class="panel-label">Proyecto</span>
         <ListboxRoot
-          :multiple="kind === 'category'"
-          :model-value="kind === 'project' ? selected[0] : selected"
+          :model-value="selected[0]"
           class="overflow-hidden rounded-[var(--radius-control)] border border-separator"
           @update:model-value="onListboxUpdate"
         >
@@ -167,6 +181,51 @@ function onListboxUpdate(value: unknown): void {
             >
               Ningún proyecto coincide.
             </p>
+          </ListboxContent>
+        </ListboxRoot>
+      </div>
+
+      <div
+        v-if="kind === 'category' && selected.length === 1"
+        class="flex flex-col gap-1"
+      >
+        <span class="panel-label">Categorías de tareas</span>
+        <p
+          v-if="loadingCategories"
+          class="text-secondary"
+        >
+          Cargando categorías…
+        </p>
+        <p
+          v-else-if="categoryOptions.length === 0"
+          class="text-secondary"
+        >
+          Este proyecto no tiene categorías de tareas.
+        </p>
+        <ListboxRoot
+          v-else
+          v-model="categoryIds"
+          multiple
+          class="overflow-hidden rounded-[var(--radius-control)] border border-separator"
+        >
+          <ListboxContent
+            class="max-h-40 overflow-y-auto p-1"
+            aria-label="Categorías de tareas"
+          >
+            <ListboxItem
+              v-for="category in categoryOptions"
+              :key="category.id"
+              :value="category.id"
+              class="flex min-h-[var(--control-min)] cursor-pointer items-center gap-2 rounded-[var(--radius-plate)] px-2 data-[highlighted]:bg-fill-hover data-[state=checked]:bg-fill-selected data-[state=checked]:font-semibold"
+            >
+              <span class="min-w-0 flex-1 truncate">{{ category.name }}</span>
+              <Icon
+                v-if="categoryIds.includes(category.id)"
+                name="lucide:check"
+                class="size-4 shrink-0"
+                aria-hidden="true"
+              />
+            </ListboxItem>
           </ListboxContent>
         </ListboxRoot>
       </div>
