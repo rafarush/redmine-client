@@ -25,9 +25,10 @@
   - _Acepta:_ el comentario aparece al instante (optimista) y se reconcilia con la respuesta.
   - _Hecho:_ 2170315. `shared/redmine/journals.ts` (frases de cambio con nombres de catálogo, campos personalizados, adjuntos y relaciones) con tests; `issues/IssueHistory.vue` sustituye al panel de comentarios de `/issues/:id`. Notas privadas con `set_notes_private` (añadido al mapa de permisos). Si falla, el texto vuelve a la caja. Pendiente de verificar contra el Redmine local.
 
-- [ ] **F3-T05** Relaciones, subtareas y observadores — listas compactas con añadir/quitar (búsqueda de tareas por `#id` o texto).
+- [~] **F3-T05** Relaciones, subtareas y observadores — listas compactas con añadir/quitar (búsqueda de tareas por `#id` o texto).
   - _Depende:_ F3-T01
   - _Acepta:_ crear "bloquea a #N" desde el detalle se refleja en ambas tareas.
+  - _Hecho:_ 4d92a81. `issues/IssueLinks.vue` en `/issues/:id` (el detalle pide `relations,children,watchers`). Relaciones nombradas desde la tarea abierta (`shared/redmine/relations.ts`, con tests: "Bloquea a" / "Bloqueada por", retraso en días); al crear o quitar se revalidan las dos tareas. Subtareas en árbol; "hacer subtarea" una existente con `parent_issue_id`. Observadores desde los miembros del proyecto. `issues/IssuePicker.vue` busca por `#N` o asunto (combobox con flechas). Permisos `manage_issue_relations`, `manage_subtasks`, `add_issue_watchers`/`delete_issue_watchers` (añadidos al mapa). Esquemas en `relations.ts` para no tocar `types.ts`. Pendiente de verificar.
 
 - [~] **F3-T06** Adjuntos — lista con descarga y vista previa de imágenes; subir arrastrando sobre el panel (`/uploads.json` → token → `PUT issue.uploads`), con progreso por archivo.
   - _Depende:_ F3-T01, F1-T02
