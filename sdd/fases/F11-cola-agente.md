@@ -9,7 +9,7 @@
 - [x] **F11-T01** ADR-009 y modelo — documentar la arquitectura (runner local aparte) y crear la lógica pura en `shared/agent/` (config, cola, transiciones) con tests. · ✔ 2077846
   - _Acepta:_ ADR-009 en `01-arquitectura.md`; tests de `sanitizeAgentConfig` y de las transiciones de la cola en verde.
 
-- [~] **F11-T02** Runner local — `agent-runner/` (Node, `node:http`): escucha solo en `127.0.0.1`, token aleatorio al arrancar, CORS limitado al origen de la app, repo y comandos de verificación fijos en `agent-runner.config.json` (el cliente no manda rutas ni comandos); endpoints para encolar/cancelar y SSE de eventos. Script `pnpm agent:runner`.
+- [x] **F11-T02** Runner local — `agent-runner/` (Node, `node:http`): escucha solo en `127.0.0.1`, token aleatorio al arrancar, CORS limitado al origen de la app, repo y comandos de verificación fijos en `agent-runner.config.json` (el cliente no manda rutas ni comandos); endpoints para encolar/cancelar y SSE de eventos. Script `pnpm agent:runner`. · ✔ b17e04a
   - _Depende:_ F11-T01
   - _Acepta:_ sin token responde 401; otro origen no recibe cabeceras CORS; el token solo se imprime una vez al arrancar y no sale en ningún log de peticiones.
 
