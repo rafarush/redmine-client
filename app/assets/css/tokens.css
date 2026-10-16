@@ -68,7 +68,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --surface: #0f1012;
     --raised: #1a1b1e;
     --sidebar: #151619;
@@ -103,13 +103,48 @@
   }
 }
 
+/* Tema oscuro elegido a mano: mismos valores que el bloque anterior (los verifica check:contrast). */
+:root[data-theme='dark'] {
+  --surface: #0f1012;
+  --raised: #1a1b1e;
+  --sidebar: #151619;
+  --fill-alt: #1e1f22;
+  --fill-hover: #232428;
+  --fill-selected: #2d2e33;
+
+  --content: #f2f2ef;
+  --content-secondary: #a1a1a6;
+  --content-tertiary: #7c7c82;
+  --separator: #2c2d31;
+
+  --accent: #ff7088;
+  --on-accent: #1a0a0e;
+
+  --board: #26272b;
+  --on-board: #f2f2ef;
+  --on-board-secondary: #a8a8ad;
+  --board-separator: #3a3b40;
+
+  --change-fill: #3a3000;
+  --on-change: #ffd84d;
+
+  --signal-success: #4cc38a;
+  --signal-warning: #e0a63a;
+  --signal-info: #7aa2ff;
+
+  --scrim: rgb(0 0 0 / 0.5);
+  --shadow-panel: 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-popover: 0 2px 6px rgb(0 0 0 / 0.3), 0 12px 28px rgb(0 0 0 / 0.4);
+  --shadow-dialog: 0 4px 12px rgb(0 0 0 / 0.35), 0 28px 56px rgb(0 0 0 / 0.5);
+}
+
 /*
  * Alto contraste por tema. Un bloque suelto de `prefers-contrast: more` vendría
  * después del de oscuro y le ganaría, dejando texto gris oscuro sobre fondo casi
  * negro. scripts/check-contrast.ts verifica los cuatro modos y exige esta separación.
  */
 @media (prefers-contrast: more) and (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme='dark']) {
     --content-secondary: #3d3e42;
     --content-tertiary: #5f6064;
     --separator: #76777c;
@@ -118,10 +153,19 @@
 }
 
 @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --content-secondary: #c8c8cc;
     --content-tertiary: #a8a8ad;
     --separator: #6b6c72;
     --fill-selected: #3a3b41;
   }
+}
+
+/* Controles nativos (scrollbars, inputs) acordes al tema elegido a mano. */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }

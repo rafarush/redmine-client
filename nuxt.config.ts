@@ -23,6 +23,10 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'es' },
       title: 'Redmine Client',
       meta: [{ name: 'color-scheme', content: 'light dark' }],
+      // Aplica el tema guardado antes de pintar, para que no parpadee al abrir.
+      script: [{
+        innerHTML: 'try{var t=localStorage.getItem("redmine-client:theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}',
+      }],
     },
   },
 

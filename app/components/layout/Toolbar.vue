@@ -16,7 +16,7 @@ const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'st
 </script>
 
 <template>
-  <header class="flex shrink-0 items-center gap-2 px-3 pb-3 pt-3 wide:gap-3 wide:px-6 wide:pt-5">
+  <header class="relative flex shrink-0 items-center gap-2 px-3 pb-3 pt-3 wide:gap-3 wide:px-6 wide:pt-5">
     <UiButton
       label="Mostrar u ocultar las secciones"
       icon="lucide:panel-left"
@@ -39,9 +39,16 @@ const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'st
 
     <div class="flex-1" />
 
+    <!--
+      Casi centrado en la ventana: con la sidebar visible el centro de la ventana queda
+      7rem a la derecha del centro del toolbar; se compensa solo 3rem para no pasarse.
+    -->
     <button
       type="button"
-      class="inline-flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-2.5 text-left text-[length:var(--text-body)] text-secondary shadow-panel transition-colors hover:bg-fill-hover wide:w-60"
+      :class="[
+        'inline-flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] border border-separator bg-raised px-2.5 text-left text-[length:var(--text-body)] text-secondary shadow-panel transition-colors hover:bg-fill-hover wide:absolute wide:left-1/2 wide:w-60 wide:-translate-x-1/2',
+        ui.sidebarCollapsed ? '' : 'wide:ml-12',
+      ]"
       aria-haspopup="dialog"
       aria-label="Buscar tareas y proyectos"
       @click="ui.paletteOpen = true"
@@ -57,6 +64,8 @@ const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'st
         class="hidden wide:inline-flex"
       />
     </button>
+
+    <LayoutThemeSwitcher />
 
     <Can permission="add_issues">
       <UiTooltip
