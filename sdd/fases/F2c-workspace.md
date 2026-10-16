@@ -63,7 +63,7 @@
 
 - [x] **F2c-T13** Boards agrupados por estado con orden configurable (pedido del usuario, 2026-10-15) — las tareas de un board se agrupan por estado y, dentro de cada uno, siguen por prioridad y fecha fin. Por defecto En curso/En proceso va primero, luego Nueva/ToDo y después el resto; Ajustes → Boards permite reordenarlos (`Workspace.statusOrder`). El kanban por estado usa el mismo orden.
   - _Depende:_ F2c-T06
-  - _Acepta:_ tests unitarios de `defaultStatusOrder`, `effectiveStatusOrder`, `sortIssues` con estado y `sanitizeWorkspace`.
+  - _Acepta:_ tests unitarios de `defaultStatusOrder`, `effectiveStatusOrder`, `sortIssues` con estado y `sanitizeWorkspace`. · ✔ 35ffc3e
 
 ## Definición de hecho
 
