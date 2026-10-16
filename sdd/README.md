@@ -31,6 +31,8 @@ Plan de desarrollo guiado por especificación. Lo puede ejecutar una persona o u
 | [F9](fases/F9-pulido-accesibilidad.md) | Auditoría de diseño, accesibilidad y rendimiento | F2–F7 |
 | [F10](fases/F10-movil.md) | Móvil (iOS/Android) con Tauri | F8, F9 |
 
+| [F11](fases/F11-cola-agente.md) | Cola de Agente e Integraciones IA | F2c, F3 |
+
 F6, F7 y F8 pueden avanzar en paralelo a F2–F5 una vez cerrada F1.
 
 F2b–F2d salen de la crítica de diseño del 2026-10-15 y van antes que el resto de F2: F2-T09 y F2-T10 se retoman al cerrar F2b.

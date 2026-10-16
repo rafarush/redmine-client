@@ -97,6 +97,13 @@ Imagen Node 22 con `.output` de Nitro (`docker/Dockerfile`), detrás del proxy i
 - **Arrastrar:** `vue-draggable-plus` (Sortable) para reordenar boards en la rejilla y mover tarjetas entre columnas del kanban; el lienzo libre usa pointer events propios. Todo lo que se arrastra tiene alternativa con teclado.
 - **Contras:** una dependencia más; Sortable manipula el DOM, así que cada lista trabaja sobre una copia local que se rehace cuando cambian los datos.
 
+### ADR-009 · Cola de Agente con runner local aparte (F11)
+
+- **Decisión:** el agente (inicialmente Claude Code CLI) lo ejecuta un proceso local, `agent-runner/` (Node), que escucha solo en `127.0.0.1` con un token aleatorio y emite eventos por SSE. La app lo usa con `fetch`; el runner **no habla con Redmine**: los cambios de estado los aplica la app con `useIssueChange`. Cada tarea va en su rama `agent/<id>-<slug>`, una a la vez, y termina en PR sin `Co-Authored-By` ni firma del agente.
+- **Por qué:** la web no puede lanzar procesos y Nitro es solo un proxy de Redmine (ADR-002); Tauri (F8) aún no existe. Un runner aparte sirve igual a la web y, luego, a desktop.
+- **Seguridad:** el repo de trabajo está fijo en la configuración del runner (el cliente no manda rutas); CORS limitado al origen de la app; el token no va a `localStorage` ni a logs.
+- **Contras:** hay que arrancar un proceso a mano; el estado de la cola vive en el navegador y el runner solo conoce la tarea en curso.
+
 ## Seguridad
 
 | Riesgo | Mitigación |
