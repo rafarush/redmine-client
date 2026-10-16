@@ -8,6 +8,7 @@
 @import '@fontsource/jetbrains-mono/latin-600.css';
 
 @import './tokens.css';
+@import './cursors.css';
 
 /* Tokens -> utilidades de Tailwind (bg-surface, text-content, etc.) */
 @theme inline {

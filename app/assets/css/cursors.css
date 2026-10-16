@@ -1,0 +1,67 @@
+/*
+ * Cursores con la estética de macOS: flecha negra con borde blanco, mano que señala,
+ * barra I fina, mano abierta / cerrada y flechas de redimensionado. Los SVG viven en
+ * `../cursors/`; el segundo valor de cada `cursor` es el del sistema, por si el
+ * navegador no admite SVG como cursor.
+ *
+ * Las utilidades `cursor-*` de Tailwind se redefinen aquí, así que todo lo que ya usa
+ * `cursor-pointer`, `cursor-col-resize`... recibe el cursor nuevo sin tocar los componentes.
+ */
+
+@utility cursor-default {
+  cursor: url('../cursors/default.svg') 4 2, default;
+}
+@utility cursor-pointer {
+  cursor: url('../cursors/pointer.svg') 10 3, pointer;
+}
+@utility cursor-text {
+  cursor: url('../cursors/text.svg') 10 10, text;
+}
+@utility cursor-grab {
+  cursor: url('../cursors/grab.svg') 11 11, grab;
+}
+@utility cursor-grabbing {
+  cursor: url('../cursors/grabbing.svg') 11 11, grabbing;
+}
+@utility cursor-col-resize {
+  cursor: url('../cursors/col-resize.svg') 11 11, col-resize;
+}
+@utility cursor-row-resize {
+  cursor: url('../cursors/row-resize.svg') 11 11, row-resize;
+}
+@utility cursor-not-allowed {
+  cursor: url('../cursors/not-allowed.svg') 4 2, not-allowed;
+}
+
+/* Base: flecha en todo; mano en lo que se pulsa; barra I donde se escribe. */
+html {
+  cursor: url('../cursors/default.svg') 4 2, default;
+}
+
+:where(a[href], button, summary, select, label[for], [role='button'], [role='tab'], [role='menuitem'],
+  [role='option'], [role='switch'], [role='checkbox'], [role='radio'],
+  input[type='checkbox'], input[type='radio'], input[type='range'], input[type='file']) {
+  cursor: url('../cursors/pointer.svg') 10 3, pointer;
+}
+
+:where(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='button'],
+  [type='submit'], [type='color']), textarea, [contenteditable='true'], [contenteditable='']) {
+  cursor: url('../cursors/text.svg') 10 10, text;
+}
+
+:where([role='separator'][aria-orientation='vertical']) {
+  cursor: url('../cursors/col-resize.svg') 11 11, col-resize;
+}
+:where([role='separator'][aria-orientation='horizontal']) {
+  cursor: url('../cursors/row-resize.svg') 11 11, row-resize;
+}
+
+:where(button:disabled, [aria-disabled='true'], [data-disabled], input:disabled, select:disabled,
+  textarea:disabled) {
+  cursor: url('../cursors/not-allowed.svg') 4 2, not-allowed;
+}
+
+/* Pulsado: respuesta inmediata en cualquier botón, sin tocar sus colores de hover. */
+:where(button:not(:disabled), [role='button']:not([aria-disabled='true'])):active {
+  opacity: 0.8;
+}
