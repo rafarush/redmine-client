@@ -37,9 +37,9 @@
 
 - [~] **F2c-T07** Canvas con candado — rejilla reordenable (`vue-draggable-plus`) y canvas libre (pointer events + pan); `shared/workspace/layout.ts` (encaje, colisiones, conversión libre↔rejilla) con tests; mover boards con teclado.
   - _Depende:_ F2c-T05
-  - _Hecho:_ ef22d53 (`vue-draggable-plus` para la rejilla; arrastre propio con pointer events y encaje de 8 px en el lienzo libre, que muestra la rejilla de construcción). Pendiente de verificar a mano.
+  - _Hecho:_ ef22d53 (`vue-draggable-plus` para la rejilla; arrastre propio con pointer events y encaje de 8 px en el lienzo libre, que muestra la rejilla de construcción). Sin `layout.ts` aparte: cada board guarda sus dos disposiciones (orden + ancho en la rejilla, x/y/ancho en el lienzo), así que no hace falta convertir ni resolver colisiones; el lienzo encaja a 8 px. Pendiente de verificar a mano.
 
-- [ ] **F2c-T08** e2e `workspace.spec.ts` (1280 y 375).
+- [~] **F2c-T08** e2e `workspace.spec.ts` (1280 y 375).
   - _Depende:_ F2c-T06, F2c-T07
 
 ## Definición de hecho
