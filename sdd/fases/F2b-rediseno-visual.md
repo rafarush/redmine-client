@@ -21,16 +21,17 @@
   - _Acepta:_ foco visible, `aria-label` en los de solo icono, `prefers-reduced-motion` respetado. · ✔ 78736e8
   - _Nota:_ en vez de envolver cada primitiva de Reka, `app/utils/ui-classes.ts` da la misma piel a popovers, menús y diálogos; animación de entrada/salida en `main.css` (`.ui-pop`, `.ui-dialog`, `.ui-scrim`). Nuevos: `UiDialog`, `UiSegmentedControl`, `UiPlate` (código de proyecto), `UiPanel`. El botón de solo icono sigue siendo `UiButton icon-only`. Los toasts se quedan arriba (decisión de `ebe56a4`) con la piel oscura de la franja de salidas.
 
-- [ ] **F2b-T04** Shell — un solo toolbar con título grande, sidebar al estilo macOS con un nivel de selección, avatar neutro, velo único `--scrim` en todos los overlays.
+- [x] **F2b-T04** Shell — un solo toolbar con título grande, sidebar al estilo macOS con un nivel de selección, avatar neutro, velo único `--scrim` en todos los overlays.
   - _Depende:_ F2b-T03
-  - _Acepta:_ Ruby solo en acción primaria y foco; e2e de layout actualizados.
+  - _Acepta:_ Ruby solo en acción primaria y foco; e2e de layout actualizados. · ✔ 0e046bf
+  - _Nota:_ "Nueva tarea" pasa a secundaria y abre el formulario de Redmine en otra pestaña hasta F3-T07 (ya no es un botón muerto). Cada página pone su título con `definePageMeta({ title })` y sus acciones en `#toolbar-actions` / `#toolbar-primary`.
 
-- [ ] **F2b-T05** Lista y frase de filtros — filas sin línea con selección inset y hover distinto; la frase vuelve a leerse como frase (palabras de unión en secundario, valores como botones en línea). Arreglos de la crítica: botones de fila fuera del orden de Tab (menú con Shift+F10), Enter abre en Redmine hasta F3, deshacer al borrar un filtro guardado, placeholders sin jerga de fases, 0 h como "—", altura de cabecera medida.
+- [x] **F2b-T05** Lista y frase de filtros — filas sin línea con selección inset y hover distinto; la frase vuelve a leerse como frase (palabras de unión en secundario, valores como botones en línea). Arreglos de la crítica: botones de fila fuera del orden de Tab (menú con Shift+F10), Enter abre en Redmine hasta F3, deshacer al borrar un filtro guardado, placeholders sin jerga de fases, 0 h como "—", altura de cabecera medida.
   - _Depende:_ F2b-T04
-  - _Acepta:_ e2e de `issues.spec.ts` en verde; checklist de diseño.
+  - _Acepta:_ e2e de `issues.spec.ts` en verde; checklist de diseño. · ✔ 0e046bf, 5ef39fa
 
-- [ ] **F2b-T06** Ctrl+K con el estilo nuevo — solo estilo; ARIA corregido (grupos con `role=group`, "Borrar búsquedas recientes" fuera del `listbox`).
-  - _Depende:_ F2b-T03
+- [x] **F2b-T06** Ctrl+K con el estilo nuevo — solo estilo; ARIA corregido (grupos con `role=group`, "Borrar búsquedas recientes" fuera del `listbox`).
+  - _Depende:_ F2b-T03 · ✔ 0e046bf
 
 - [ ] **F2b-T07** Cierre — capturas a 1280 y 375, `impeccable detect`, revisión final y `DESIGN.md` generado desde lo construido. Nueva crítica para comparar con 25/40.
   - _Depende:_ F2b-T05, F2b-T06
