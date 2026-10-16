@@ -69,6 +69,7 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
     <LayoutToasts />
     <!-- Una sola instancia para toda la app: menú de tarea y diálogos de tiempo y ajustes. -->
     <IssuesIssueContextMenu />
+    <IssuesNewIssueDialog />
     <WorkspaceTimeAdjustDialog />
     <WorkspaceSettingsDialog v-model:open="settingsOpen" />
   </div>

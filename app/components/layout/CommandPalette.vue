@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogRoot, DialogTitle } from 'reka-ui'
 import { toUrl } from '../../../shared/redmine/filters'
+import { normalize } from '../../../shared/redmine/projects'
 import { filterByName, filterCommands, parseSearch } from '../../../shared/redmine/palette'
 import { ISSUES_PATH } from '../../../shared/redmine/views'
 
@@ -69,6 +70,8 @@ const issueById = useQuery({
   retry: false,
   staleTime: 30_000,
 })
+
+const newIssue = useNewIssue()
 
 function close(): void {
   ui.paletteOpen = false
@@ -142,6 +145,12 @@ const rows = computed<Row[]>(() => {
 
   for (const command of filterCommands(query)) {
     result.push({ key: command.id, group: 'Comandos', label: command.label, icon: command.icon, run: () => router.push(command.to) })
+  }
+
+  // "Nueva tarea" abre el diálogo propio (F3-T07), no navega.
+  const wantsNew = !query || 'nueva tarea crear'.includes(normalize(query))
+  if (newIssue.allowed.value && wantsNew) {
+    result.push({ key: 'new-issue', group: 'Comandos', label: 'Nueva tarea', icon: 'lucide:plus', run: newIssue.open })
   }
 
   return result
