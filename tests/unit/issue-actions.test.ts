@@ -49,3 +49,21 @@ describe('explainRejection', () => {
     expect(explainRejection(new TypeError('network'))).toMatch(/conectar/)
   })
 })
+
+describe('cambio de sprint (F2d)', () => {
+  const versions = [{ id: 42, name: 'Sprint 42', status: 'open' }] as never
+
+  it('pinta la versión, la quita con null y la envía vacía', () => {
+    const moved = applyChange(issue as never, { fixed_version_id: 42 }, { statuses, priorities, members: [], versions })
+    expect(moved.fixed_version).toEqual({ id: 42, name: 'Sprint 42' })
+    const cleared = applyChange(moved, { fixed_version_id: null }, { statuses, priorities, members: [], versions })
+    expect(cleared.fixed_version).toBeUndefined()
+    expect(toRedminePayload({ fixed_version_id: null })).toEqual({ fixed_version_id: '' })
+  })
+
+  it('no llama a Redmine si ya está en ese sprint', () => {
+    expect(isNoop({ ...(issue as object), fixed_version: { id: 42, name: 'Sprint 42' } } as never, { fixed_version_id: 42 })).toBe(true)
+    expect(isNoop(issue, { fixed_version_id: null })).toBe(true)
+    expect(isNoop(issue, { fixed_version_id: 42 })).toBe(false)
+  })
+})

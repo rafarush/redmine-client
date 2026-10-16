@@ -1,4 +1,4 @@
-import type { Enumeration, Issue, IssueStatus, Ref } from './types'
+import type { Enumeration, Issue, IssueStatus, Ref, Version } from './types'
 import { RedmineError } from './transport'
 
 /**
@@ -11,6 +11,8 @@ export interface IssueChange {
   status_id?: number
   priority_id?: number
   assigned_to_id?: number | null
+  /** Versión objetivo (el sprint del kanban, F2d); `null` la quita. */
+  fixed_version_id?: number | null
 }
 
 /**
@@ -22,10 +24,11 @@ export function statusOptions(issue: Pick<Issue, 'status'>, allowed: readonly Is
 }
 
 /** La tarea ya tiene ese valor: no hace falta llamar a Redmine. */
-export function isNoop(issue: Pick<Issue, 'status' | 'priority' | 'assigned_to'>, change: IssueChange): boolean {
+export function isNoop(issue: Pick<Issue, 'status' | 'priority' | 'assigned_to' | 'fixed_version'>, change: IssueChange): boolean {
   if (change.status_id !== undefined && change.status_id === issue.status.id) return true
   if (change.priority_id !== undefined && change.priority_id === issue.priority.id) return true
   if (change.assigned_to_id !== undefined && change.assigned_to_id === (issue.assigned_to?.id ?? null)) return true
+  if (change.fixed_version_id !== undefined && change.fixed_version_id === (issue.fixed_version?.id ?? null)) return true
   return false
 }
 
@@ -33,7 +36,7 @@ export function isNoop(issue: Pick<Issue, 'status' | 'priority' | 'assigned_to'>
 export function applyChange(
   issue: Issue,
   change: IssueChange,
-  catalogs: { statuses: readonly IssueStatus[], priorities: readonly Enumeration[], members: readonly Ref[] },
+  catalogs: { statuses: readonly IssueStatus[], priorities: readonly Enumeration[], members: readonly Ref[], versions?: readonly Version[] },
 ): Issue {
   const next: Issue = { ...issue }
   if (change.status_id !== undefined) {
@@ -48,6 +51,10 @@ export function applyChange(
     const member = change.assigned_to_id === null ? undefined : catalogs.members.find(m => m.id === change.assigned_to_id)
     next.assigned_to = change.assigned_to_id === null ? undefined : member
   }
+  if (change.fixed_version_id !== undefined) {
+    const version = catalogs.versions?.find(v => v.id === change.fixed_version_id)
+    next.fixed_version = change.fixed_version_id === null || !version ? undefined : { id: version.id, name: version.name }
+  }
   return next
 }
 
@@ -57,6 +64,7 @@ export function toRedminePayload(change: IssueChange): Record<string, unknown> {
   if (change.status_id !== undefined) body.status_id = change.status_id
   if (change.priority_id !== undefined) body.priority_id = change.priority_id
   if (change.assigned_to_id !== undefined) body.assigned_to_id = change.assigned_to_id ?? ''
+  if (change.fixed_version_id !== undefined) body.fixed_version_id = change.fixed_version_id ?? ''
   return body
 }
 

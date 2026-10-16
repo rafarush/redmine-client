@@ -79,6 +79,7 @@ export function useIssueChange() {
         status_id: before.status.id,
         priority_id: before.priority.id,
         assigned_to_id: before.assigned_to?.id ?? null,
+        fixed_version_id: before.fixed_version?.id ?? null,
       },
       optimistic: before,
       label: 'Cambio deshecho',
