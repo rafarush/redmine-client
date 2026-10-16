@@ -9,6 +9,7 @@ import {
   sanitizeWorkspace,
   saveCategory,
 } from '../../shared/workspace/model'
+import { boardQueries, mergeIssues } from '../../shared/workspace/board-query'
 import { adjacentPriority, rankPriorities, sortIssues } from '../../shared/workspace/sort'
 
 let n = 0
@@ -78,5 +79,25 @@ describe('workspace: orden', () => {
     expect(adjacentPriority(priorities, 2, 'down')?.id).toBe(1)
     expect(adjacentPriority(priorities, 4, 'up')).toBeUndefined()
     expect(adjacentPriority(priorities, 1, 'down')).toBeUndefined()
+  })
+})
+
+describe('workspace: consultas de un board', () => {
+  const base = { id: 'x', title: 'X', span: 1 as const, free: { x: 0, y: 0, w: 560 }, issueIds: [] as number[], projectIds: [] as number[] }
+
+  it('siempre pide mis tareas abiertas, una consulta por proyecto', () => {
+    const queries = boardQueries({ ...base, kind: 'category', categoryId: 'c' }, [{ id: 'c', name: 'C', projectIds: [1, 2] }])
+    expect(queries).toHaveLength(2)
+    expect(queries[0]).toMatchObject({ assigned_to_id: 'me', status_id: 'open', project_id: 1 })
+    expect(queries[1]).toMatchObject({ project_id: 2 })
+  })
+
+  it('una lista de tareas sueltas pide por número', () => {
+    expect(boardQueries({ ...base, kind: 'custom', issueIds: [4821, 4790] }, [])[0]).toMatchObject({ issue_id: '4821,4790' })
+    expect(boardQueries({ ...base, kind: 'custom' }, [])).toEqual([])
+  })
+
+  it('une sin repetir', () => {
+    expect(mergeIssues([[{ id: 1 }, { id: 2 }], [{ id: 2 }, { id: 3 }]]).map(i => i.id)).toEqual([1, 2, 3])
   })
 })
