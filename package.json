@@ -21,6 +21,7 @@
     "capture:fixtures": "jiti scripts/capture-fixtures.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@iconify-json/lucide": "^1.2.143",
     "@nuxt/icon": "^2.5.1",

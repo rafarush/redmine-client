@@ -104,6 +104,13 @@ Imagen Node 22 con `.output` de Nitro (`docker/Dockerfile`), detrás del proxy i
 - **Seguridad:** el repo de trabajo está fijo en la configuración del runner (el cliente no manda rutas); CORS limitado al origen de la app; el token no va a `localStorage` ni a logs.
 - **Contras:** hay que arrancar un proceso a mano; el estado de la cola vive en el navegador y el runner solo conoce la tarea en curso.
 
+### ADR-010 · Motor de IA configurable para escribir (F12)
+
+- **Decisión:** dos motores, a elegir en Ajustes. **API**: Nitro llama a la API de Anthropic con `@anthropic-ai/sdk`; la clave vive en la sesión sellada (`secure.anthropicKey`, como la de Redmine) o en `NUXT_ANTHROPIC_API_KEY`, y nunca vuelve al navegador. **Runner**: el runner local de F11 expone `POST /ai/complete`, que ejecuta `claude -p --tools ""` sin herramientas ni sesión guardada. El contrato de entrada y salida es el mismo (`shared/ai/contract.ts`) y los prompts se construyen en el lado que llama al modelo.
+- **Modelos:** `claude-opus-5-5` por defecto, elegible por tarea; en la API, `fallbacks: "default"` ante un rechazo y `effort` bajo para autocompletar.
+- **Por qué:** la API funciona sin nada arrancado pero exige clave y cuesta por uso; el runner reutiliza la cuenta de Claude Code de la persona sin guardar claves, pero solo en su equipo.
+- **Contras:** dos caminos que mantener; el runner añade la latencia de arrancar `claude`.
+
 ## Seguridad
 
 | Riesgo | Mitigación |

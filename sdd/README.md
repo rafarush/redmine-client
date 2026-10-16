@@ -32,6 +32,7 @@ Plan de desarrollo guiado por especificación. Lo puede ejecutar una persona o u
 | [F10](fases/F10-movil.md) | Móvil (iOS/Android) con Tauri | F8, F9 |
 
 | [F11](fases/F11-cola-agente.md) | Cola de Agente e Integraciones IA | F2c, F3 |
+| [F12](fases/F12-ia-textos.md) | IA para escribir: mejorar textos y autocompletar | F3, F11-T02 |
 
 F6, F7 y F8 pueden avanzar en paralelo a F2–F5 una vez cerrada F1.
 
