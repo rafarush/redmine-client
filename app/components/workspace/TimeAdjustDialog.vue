@@ -14,15 +14,20 @@ const workspace = useWorkspaceStore()
 const toasts = useToastStore()
 const queryClient = useQueryClient()
 
-const issue = computed(() => flow.adjusting.value)
+/** "Registrar tiempo…" del menú crea un registro nuevo; si no, se ajusta el último. */
+const logging = computed(() => flow.logging.value !== null)
+const issue = computed(() => flow.logging.value ?? flow.adjusting.value)
 const open = computed({
   get: () => issue.value !== null,
   set: (value: boolean) => {
-    if (!value) flow.adjusting.value = null
+    if (!value) {
+      flow.adjusting.value = null
+      flow.logging.value = null
+    }
   },
 })
 
-const logged = computed(() => issue.value ? workspace.loggedFor(issue.value.id) : undefined)
+const logged = computed(() => issue.value && !logging.value ? workspace.loggedFor(issue.value.id) : undefined)
 const corrected = ref('')
 const extra = ref('')
 const saving = ref(false)
@@ -60,7 +65,7 @@ async function save(): Promise<void> {
     }
     void queryClient.invalidateQueries({ queryKey: ['time-entries'] })
     void queryClient.invalidateQueries({ queryKey: ['issues'] })
-    toasts.show('Tiempo ajustado')
+    toasts.show(logging.value ? 'Tiempo registrado' : 'Tiempo ajustado')
     open.value = false
   }
   catch (error) {
@@ -75,7 +80,7 @@ async function save(): Promise<void> {
 <template>
   <UiDialog
     v-model:open="open"
-    :title="issue ? `Tiempo de #${issue.id}` : 'Tiempo'"
+    :title="issue ? `${logging ? 'Registrar tiempo en' : 'Tiempo de'} #${issue.id}` : 'Tiempo'"
     :description="issue?.subject"
     :width="24"
   >
@@ -101,7 +106,10 @@ async function save(): Promise<void> {
         </span>
       </label>
 
-      <label class="flex flex-col gap-1">
+      <label
+        v-if="!logging"
+        class="flex flex-col gap-1"
+      >
         <span class="panel-label">Añadir más</span>
         <input
           v-model="extra"
@@ -134,7 +142,7 @@ async function save(): Promise<void> {
         @click="open = false"
       />
       <UiButton
-        label="Guardar tiempo"
+        :label="logging ? 'Registrar tiempo' : 'Guardar tiempo'"
         variant="primary"
         :disabled="!canSave || saving"
         @click="save"

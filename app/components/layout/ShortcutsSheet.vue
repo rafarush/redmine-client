@@ -17,7 +17,9 @@ const GROUPS = [
   {
     title: 'En el workspace (tarea enfocada)',
     items: [
-      { label: 'Empezar o completar', keys: ['Enter'] },
+      { label: 'Ver los detalles', keys: ['Enter'] },
+      { label: 'Empezar o completar', keys: ['Espacio'] },
+      { label: 'Menú de la tarea', keys: ['Shift', 'F10'] },
       { label: 'Pausar o reanudar el cronómetro', keys: ['P'] },
       { label: 'Parar y registrar el tiempo', keys: ['S'] },
       { label: 'Ajustar el tiempo', keys: ['T'] },

@@ -30,8 +30,10 @@ export function useCardFlow() {
   /** Tareas recolocadas hace poco: se marcan "Subida · ahora" hasta cambiar de vista. */
   const recentlyMoved = useState<Record<number, 'up' | 'down'>>('workspace-recently-moved', () => ({}))
 
-  /** Tarea cuyo tiempo se está ajustando. */
+  /** Tarea cuyo tiempo se está ajustando (corrige lo último registrado o añade). */
   const adjusting = useState<Issue | null>('workspace-adjusting', () => null)
+  /** Tarea en la que se registra tiempo a mano, sin cronómetro (menú "Registrar tiempo…"). */
+  const logging = useState<Issue | null>('time-logging', () => null)
   const settingsOpen = useState('workspace-settings-open', () => false)
 
   const map = computed(() => workspace.workspace.statusMap)
@@ -102,6 +104,17 @@ export function useCardFlow() {
       onUndo: () => workspace.stopTimer(issue.id),
     })
     if (!ok) workspace.stopTimer(issue.id)
+  }
+
+  /** Sin cronómetro lo arranca (y pasa a "En curso"); con él, pausa o reanuda. */
+  function toggleTimer(issue: Issue): void {
+    if (timerFor(workspace.timers, issue.id)) togglePause(issue)
+    else void start(issue)
+  }
+
+  /** Detalle de la tarea dentro de la app. */
+  function openDetails(issue: Pick<Issue, 'id'>): void {
+    void navigateTo(`/issues/${issue.id}`)
   }
 
   /** ⏸/▶: pausa o reanuda. No toca Redmine. */
@@ -219,7 +232,10 @@ export function useCardFlow() {
     rtqa,
     onDoubleClick,
     togglePause,
+    toggleTimer,
     stop,
+    openDetails,
+    logging,
     bumpPriority,
     canBump,
     recentlyMoved,

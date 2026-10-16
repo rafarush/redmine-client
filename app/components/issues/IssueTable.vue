@@ -131,17 +131,11 @@ function select(index: number): void {
   virtualizer.value.scrollToIndex(row.index)
 }
 
-/** Menú de acciones de una fila: el "…" o el clic derecho lo abren en su punto. */
-const menu = ref<{ issue: Issue, x: number, y: number } | null>(null)
-const menuOpen = computed({
-  get: () => menu.value !== null,
-  set: (open: boolean) => {
-    if (!open) menu.value = null
-  },
-})
+/** Menú de una fila: el de toda la app (`IssueContextMenu`), abierto en el punto pulsado. */
+const issueMenu = useIssueMenu()
 
 function openMenu(issue: Issue, x: number, y: number): void {
-  menu.value = { issue, x, y }
+  issueMenu.open(issue, x, y)
 }
 
 function openMenuFromButton(issue: Issue, event: MouseEvent): void {
@@ -596,13 +590,5 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
         </div>
       </div>
     </div>
-
-    <IssuesIssueActionsMenu
-      :issue="menu?.issue ?? null"
-      :x="menu?.x ?? 0"
-      :y="menu?.y ?? 0"
-      :open="menuOpen"
-      @update:open="menuOpen = $event"
-    />
   </div>
 </template>

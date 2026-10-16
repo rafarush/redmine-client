@@ -8,7 +8,9 @@ import { elapsedMs, timerFor } from '../../../shared/workspace/flow'
 /**
  * Una tarea en el panel del workspace (F2c-T06) o en el kanban (F2d).
  *
- * - Doble clic, Intro o Espacio: avanza el flujo (pendiente → en curso → completada).
+ * - Clic o Intro: abre el detalle de la tarea.
+ * - Doble clic o Espacio: avanza el flujo (pendiente → en curso → completada).
+ * - Clic derecho, tecla Menú o Mayús+F10: menú contextual de la tarea.
  * - En curso: ⏸/▶ pausa o reanuda el cronómetro (P) y ⏹ registra lo medido (S).
  * - ▲▼ o Alt+↑/↓: sube o baja la prioridad.
  * - Completada: botón RTQA y cronómetro para ajustar el tiempo (también con T).
@@ -25,6 +27,25 @@ const props = withDefaults(defineProps<{
 const session = useSessionStore()
 const workspace = useWorkspaceStore()
 const flow = useCardFlow()
+const menu = useIssueMenu()
+
+/**
+ * Un clic abre el detalle, pero un doble clic avanza el flujo: el clic espera lo
+ * justo para saber si llega el segundo. El retraso es el del doble clic del sistema
+ * aproximado; con teclado no hay espera (Intro abre, Espacio avanza).
+ */
+const DOUBLE_CLICK_MS = 260
+let pendingClick: ReturnType<typeof setTimeout> | undefined
+function onClick(event: MouseEvent): void {
+  if (event.detail > 1) return
+  clearTimeout(pendingClick)
+  pendingClick = setTimeout(() => flow.openDetails(props.issue), DOUBLE_CLICK_MS)
+}
+function onDoubleClick(): void {
+  clearTimeout(pendingClick)
+  flow.onDoubleClick(props.issue)
+}
+onBeforeUnmount(() => clearTimeout(pendingClick))
 
 const stage = computed(() => flow.stage(props.issue))
 const timer = computed(() => timerFor(workspace.timers, props.issue.id))
@@ -82,11 +103,16 @@ const description = computed(() => {
 
 function onKeydown(event: KeyboardEvent): void {
   if (event.target !== event.currentTarget) return
+  if (menu.handleKey(props.issue, event)) return
   if (event.altKey && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
     event.preventDefault()
     void flow.bumpPriority(props.issue, event.key === 'ArrowUp' ? 'up' : 'down')
   }
-  else if (event.key === 'Enter' || event.key === ' ') {
+  else if (event.key === 'Enter') {
+    event.preventDefault()
+    flow.openDetails(props.issue)
+  }
+  else if (event.key === ' ') {
     event.preventDefault()
     flow.onDoubleClick(props.issue)
   }
@@ -112,17 +138,20 @@ function onKeydown(event: KeyboardEvent): void {
   <li
     tabindex="0"
     :aria-label="description"
-    aria-keyshortcuts="Enter Alt+ArrowUp Alt+ArrowDown T P S"
+    aria-keyshortcuts="Enter Space Alt+ArrowUp Alt+ArrowDown T P S Shift+F10"
+    aria-haspopup="menu"
     :data-issue="issue.id"
     :data-stage="stage"
-    class="group relative cursor-default select-none outline-none transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+    class="group relative cursor-pointer select-none outline-none transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
     :class="[
       variant === 'row'
         ? 'board-row grid min-h-[var(--row-height)] items-center pr-2 text-[length:var(--text-body)]'
         : 'kanban-tile grid gap-x-2 gap-y-1.5 rounded-[var(--radius-control)] border border-separator bg-raised p-3 text-[length:var(--text-body)] shadow-panel',
       moved ? 'bg-change' : variant === 'row' && alternate ? 'bg-fill-alt hover:bg-fill-hover' : 'hover:bg-fill-hover',
     ]"
-    @dblclick="flow.onDoubleClick(issue)"
+    @click="onClick"
+    @dblclick="onDoubleClick"
+    @contextmenu.prevent="menu.open(issue, $event.clientX, $event.clientY)"
     @keydown="onKeydown"
   >
     <!-- # -->

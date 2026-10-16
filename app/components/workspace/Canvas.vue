@@ -266,7 +266,5 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
     </p>
 
     <WorkspaceAddBoardDialog v-model:open="addOpen" />
-    <WorkspaceSettingsDialog v-model:open="flow.settingsOpen.value" />
-    <WorkspaceTimeAdjustDialog />
   </div>
 </template>

@@ -74,9 +74,9 @@ function close(): void {
   ui.paletteOpen = false
 }
 
-/** La ficha de tarea llega con F3; hasta entonces se abre en Redmine. */
+/** Abre el detalle de la tarea dentro de la app (F3-T01). */
 function openIssue(id: number): void {
-  window.open(`${session.url.replace(/\/$/, '')}/issues/${id}`, '_blank', 'noopener')
+  void router.push(`/issues/${id}`)
 }
 
 function reuse(text: string): void {

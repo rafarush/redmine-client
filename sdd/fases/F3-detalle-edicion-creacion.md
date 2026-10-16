@@ -6,9 +6,10 @@
 
 ## Tareas
 
-- [ ] **F3-T01** Panel de detalle — split view a la derecha de la lista en desktop (ancho redimensionable y recordado), vista apilada en compacto. Ruta `/tareas/:id` (enlace directo). Cabecera: `#id` (`.data`), asunto, proyecto › tracker, botón "Abrir en Redmine".
+- [~] **F3-T01** Panel de detalle — split view a la derecha de la lista en desktop (ancho redimensionable y recordado), vista apilada en compacto. Ruta `/tareas/:id` (enlace directo). Cabecera: `#id` (`.data`), asunto, proyecto › tracker, botón "Abrir en Redmine".
   - _Depende:_ F2-T03
   - _Acepta:_ abrir otra tarea desde la lista reemplaza el panel sin recargar; `Esc` cierra el panel y devuelve el foco a la fila.
+  - _Nota (2026-10-15):_ adelantada una primera versión como página `/issues/:id` (código en inglés, ver CLAUDE.md), para el clic del workspace (F2c-T10): cabecera, cronómetro y flujo, descripción en texto plano, comentarios y datos. Falta el split view junto a la lista, `Esc` y recordar el ancho.
 
 - [ ] **F3-T02** Edición inline de campos — estado (con `allowed_statuses`), asignado, prioridad, versión, categoría, fechas, estimación, % hecho y campos personalizados según tipo (lista, fecha, número, booleano, usuario, texto). Cada campo se guarda solo, con indicador "Guardado" y Deshacer. Campos sin permiso de edición se muestran como texto.
   - _Depende:_ F3-T01, F1-T07

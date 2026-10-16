@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const ui = useUiStore()
+/** Ajustes del workspace: los abre el workspace o el aviso de "elige el estado" desde cualquier vista. */
+const settingsOpen = useState('workspace-settings-open', () => false)
 
 /** `Mod+\` muestra u oculta las secciones y `Mod+K` abre la búsqueda global. */
 function onShortcut(event: KeyboardEvent): void {
@@ -56,5 +58,9 @@ onUnmounted(() => window.removeEventListener('keydown', onShortcut))
     <LayoutCommandPalette />
     <LayoutShortcutsSheet />
     <LayoutToasts />
+    <!-- Una sola instancia para toda la app: menú de tarea y diálogos de tiempo y ajustes. -->
+    <IssuesIssueContextMenu />
+    <WorkspaceTimeAdjustDialog />
+    <WorkspaceSettingsDialog v-model:open="settingsOpen" />
   </div>
 </template>

@@ -171,6 +171,26 @@ test.describe('workspace', () => {
     }
   })
 
+  test('un clic abre el detalle y el clic derecho el menú de la tarea', async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 900, 'Se prueba en un ancho')
+    const board = await addProjectBoard(page, 'Soporte Interno')
+    const row = board.locator('li[data-issue]').first()
+    const issueId = Number(await row.getAttribute('data-issue'))
+
+    await row.click({ button: 'right' })
+    const menu = page.getByRole('menu')
+    await expect(menu.getByRole('menuitem', { name: 'Ver detalles' })).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Cambiar estado' })).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Registrar tiempo…' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(menu).toBeHidden()
+
+    await row.click()
+    await expect(page).toHaveURL(new RegExp(`/issues/${issueId}$`))
+    await expect(page.getByRole('region', { name: 'Datos de la tarea' })).toBeVisible()
+    await expect(page.getByRole('region', { name: 'Cronómetro y flujo' })).toBeVisible()
+  })
+
   test('el candado alterna rejilla y lienzo libre', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 900, 'El lienzo libre es de ancho regular')
     await addProjectBoard(page, 'Soporte Interno')

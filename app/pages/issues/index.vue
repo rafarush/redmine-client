@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { FilterOption } from '../../shared/redmine/filter-fields'
-import type { FilterSentence } from '../../shared/redmine/filters'
-import type { IssueSort } from '../../shared/redmine/issue-query'
-import type { Issue } from '../../shared/redmine/types'
-import { fromUrl, toUrl } from '../../shared/redmine/filters'
-import { DEFAULT_SORT } from '../../shared/redmine/issue-query'
+import type { FilterOption } from '../../../shared/redmine/filter-fields'
+import type { FilterSentence } from '../../../shared/redmine/filters'
+import type { IssueSort } from '../../../shared/redmine/issue-query'
+import type { Issue } from '../../../shared/redmine/types'
+import { fromUrl, toUrl } from '../../../shared/redmine/filters'
+import { DEFAULT_SORT } from '../../../shared/redmine/issue-query'
 
 definePageMeta({ title: 'Tareas' })
 
@@ -38,7 +38,6 @@ function clearSavedQuery(): void {
 
 const sort = ref<IssueSort>({ ...DEFAULT_SORT })
 const { issues, totalCount, isStale, isPending, error, refetch, hasNextPage, isFetchingNextPage, fetchNextPage } = useIssues({ sentence, sort, savedQuery })
-const session = useSessionStore()
 
 /** Hay algo que quitar: condiciones en la frase o una consulta guardada. */
 const filtered = computed(() => sentence.value.conditions.length > 0 || savedQuery.value !== null)
@@ -46,9 +45,9 @@ function clearFilters(): void {
   router.push({ query: { ...route.query, f: undefined, q: undefined, p: undefined } })
 }
 
-/** Hasta que llegue la ficha propia (F3), Enter y doble clic abren la tarea en Redmine. */
+/** Enter y doble clic abren el detalle de la tarea (F3-T01). */
 function openIssue(issue: Issue): void {
-  window.open(`${session.url.replace(/\/$/, '')}/issues/${issue.id}`, '_blank', 'noopener')
+  void navigateTo(`/issues/${issue.id}`)
 }
 
 /** Personas que aparecen en la lista, para ofrecerlas en "Asignado a" y "Autor". */

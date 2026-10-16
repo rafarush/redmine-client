@@ -46,6 +46,10 @@
   - _Depende:_ F2c-T06
   - _Acepta:_ tests unitarios de `pauseTimer`/`resumeTimer`/`runOnly` y migración del formato anterior; e2e de pausar, reanudar y parar.
 
+- [~] **F2c-T10** Clic y menú contextual (pedido del usuario, 2026-10-15) — en el workspace, un clic abre el detalle de la tarea (el doble clic sigue avanzando el flujo; el clic espera ~260 ms para distinguirlos). En toda la app, clic derecho / tecla Menú / Mayús+F10 sobre una tarea abre un menú propio (`IssueContextMenu`, una instancia en el layout): ver detalles, iniciar/pausar/reanudar, parar y registrar, registrar tiempo…, ajustar el último registro, cambiar estado (según `allowed_statuses`), prioridad, asignar, mover a sprint, editar en Redmine, copiar enlace y abrir en Redmine, con los atajos a la derecha.
+  - _Depende:_ F2c-T09, F3-T01
+  - _Acepta:_ e2e de clic → detalle y clic derecho → menú; la lista y el kanban usan el mismo menú.
+
 ## Definición de hecho
 
 Desde el workspace se lleva una tarea de "nueva" a RTQA con tiempo registrado sin salir de la pantalla, y la disposición sobrevive a una recarga.
