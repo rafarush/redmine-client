@@ -26,9 +26,10 @@
   - _Acepta:_ la sidebar muestra un punto "Novedades" con texto accesible si hay noticias desde la última visita.
   - _Hecho:_ 4d41d46. `/news` (todas o `?project=`), `/news/:id` con texto, adjuntos y comentarios, y "Publicar noticia" con `manage_news` (Redmine ≥ 5.1; comprobado contra el 6.1 local: responde 204). La API no deja comentar: "Comentar en Redmine". "Noticias" en la sidebar con punto neutro (no Ruby) y texto accesible "Novedades: N"; la primera visita no avisa (`shared/redmine/news.ts`, con tests; `redmine-client:news-seen`). Pendiente de verificar en el navegador.
 
-- [ ] **F7-T05** Archivos del proyecto — lista agrupada por versión con tamaño, autor y fecha; descarga; subir con arrastrar y soltar (`/uploads.json` → `/projects/:id/files.json`) con progreso, solo con `manage_files`.
+- [~] **F7-T05** Archivos del proyecto — lista agrupada por versión con tamaño, autor y fecha; descarga; subir con arrastrar y soltar (`/uploads.json` → `/projects/:id/files.json`) con progreso, solo con `manage_files`.
   - _Depende:_ F1-T06, F1-T02
   - _Acepta:_ cancelar una subida en curso la detiene y no deja un archivo a medias en el proyecto.
+  - _Hecho:_ 6f9e91f. `/projects/:id/files`, agrupados por versión (`shared/redmine/files.ts`, con tests), descarga por el proxy. `RedmineRequest` gana `signal` y `onUploadProgress` (opcionales); `ProxyTransport` usa XHR solo cuando hace falta progreso. Cliente: `upload` (token), `addProjectFile`, `listProjectFiles`. Cancelar aborta antes de `POST files.json`, así que el proyecto no recibe nada. Flujo comprobado por API contra el Redmine 6.1 local. Pendiente de verificar en el navegador (TauriTransport, F8-T04, deberá implementar los dos campos nuevos).
 
 ## Definición de hecho
 
