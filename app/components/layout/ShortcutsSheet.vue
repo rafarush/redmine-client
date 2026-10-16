@@ -15,6 +15,16 @@ const GROUPS = [
     ],
   },
   {
+    title: 'En el workspace (tarea enfocada)',
+    items: [
+      { label: 'Empezar o completar', keys: ['Enter'] },
+      { label: 'Pausar o reanudar el cronómetro', keys: ['P'] },
+      { label: 'Parar y registrar el tiempo', keys: ['S'] },
+      { label: 'Ajustar el tiempo', keys: ['T'] },
+      { label: 'Subir o bajar la prioridad', keys: ['Alt', '↑↓'] },
+    ],
+  },
+  {
     title: 'En toda la app',
     items: [
       { label: 'Buscar', keys: ['Mod', 'K'] },

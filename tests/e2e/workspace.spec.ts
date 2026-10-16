@@ -128,6 +128,31 @@ test.describe('workspace', () => {
     }
   })
 
+  test('el cronómetro se pausa y se reanuda, y ⏹ registra el tiempo', async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) < 900, 'Se prueba en un ancho')
+    const board = await addProjectBoard(page, 'Soporte Interno')
+    const row = board.locator('li[data-stage="idle"]').first()
+    const issueId = Number(await row.getAttribute('data-issue'))
+    const before = await snapshot(issueId)
+
+    try {
+      await row.dblclick()
+      const card = board.locator(`li[data-issue="${issueId}"]`)
+      await card.getByRole('button', { name: `Pausar el cronómetro de #${issueId}` }).click()
+      await expect(card).toContainText('En pausa')
+      await card.getByRole('button', { name: `Reanudar el cronómetro de #${issueId}` }).click()
+      await expect(card).toContainText('En curso')
+
+      await card.getByRole('button', { name: `Parar y registrar el tiempo de #${issueId}` }).click()
+      await expect(toast(page, `registradas en #${issueId}`)).toBeVisible()
+      await expect.poll(async () => (await snapshot(issueId)).entries.length).toBe(before.entries.length + 1)
+      await expect(card.getByRole('button', { name: /cronómetro de #/ })).toHaveCount(0)
+    }
+    finally {
+      await restore(issueId, before.statusId, before.entries)
+    }
+  })
+
   test('▲ sube la prioridad y la fila queda marcada', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 900, 'Se prueba en un ancho')
     const board = await addProjectBoard(page, 'Soporte Interno')

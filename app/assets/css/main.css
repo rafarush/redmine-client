@@ -157,14 +157,14 @@ textarea {
   container-type: inline-size;
 }
 .board-row {
-  grid-template-columns: 3.75rem minmax(0, 1fr) 4.25rem minmax(0, 8.5rem) 3.25rem;
+  grid-template-columns: 3.75rem minmax(0, 1fr) 4.25rem minmax(0, 8.5rem) 5.5rem;
 }
 .board-row > .board-priority {
   display: none;
 }
 @container (min-width: 38rem) {
   .board-row {
-    grid-template-columns: 3.75rem minmax(0, 1fr) 4.5rem 6.75rem minmax(0, 10rem) 4.25rem;
+    grid-template-columns: 3.75rem minmax(0, 1fr) 4.5rem 6.75rem minmax(0, 10rem) 5.75rem;
   }
   .board-row > .board-priority {
     display: flex;

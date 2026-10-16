@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { elapsedHours, formatClock, formatDuration, parseDuration, roundHours } from '../../shared/time/duration'
 import { describeDue } from '../../shared/workspace/due'
-import { doubleClickStep, guessStatusMap, stageOf, targetStatus } from '../../shared/workspace/flow'
+import { currentTimer, doubleClickStep, elapsedMs, guessStatusMap, newTimer, pauseTimer, resumeTimer, runOnly, sanitizeTimers, stageOf, targetStatus } from '../../shared/workspace/flow'
 
 describe('duraciones', () => {
   it('lee lo que escribe una persona', () => {
@@ -40,7 +40,7 @@ describe('flujo de la card', () => {
 
   it('deduce la etapa del estado y del cronómetro', () => {
     expect(stageOf(1, map)).toBe('idle')
-    expect(stageOf(1, map, { issueId: 7, startedAt: 0 })).toBe('in_progress')
+    expect(stageOf(1, map, newTimer(7, 0))).toBe('in_progress')
     expect(stageOf(2, map)).toBe('in_progress')
     expect(stageOf(3, map)).toBe('done')
     expect(stageOf(5, map)).toBe('rtqa')
@@ -77,5 +77,35 @@ describe('fecha fin', () => {
     expect(describeDue('2026-10-01', '2026-10-15')).toEqual({ label: '1 oct', tone: 'overdue' })
     expect(describeDue('2026-11-03', '2026-10-15')).toEqual({ label: '3 nov', tone: 'later' })
     expect(describeDue(null, '2026-10-15')).toEqual({ label: '—', tone: 'none' })
+  })
+})
+
+describe('cronómetro con pausa', () => {
+  const MIN = 60_000
+
+  it('suma solo mientras corre', () => {
+    let t = newTimer(7, 0)
+    expect(elapsedMs(t, 10 * MIN)).toBe(10 * MIN)
+    t = pauseTimer(t, 10 * MIN)
+    expect(elapsedMs(t, 30 * MIN)).toBe(10 * MIN)
+    t = resumeTimer(t, 30 * MIN)
+    expect(elapsedMs(t, 35 * MIN)).toBe(15 * MIN)
+    expect(pauseTimer(pauseTimer(t, 40 * MIN), 50 * MIN)).toEqual(pauseTimer(t, 40 * MIN))
+  })
+
+  it('arrancar otra tarea pausa la que corría y reanudar conserva lo medido', () => {
+    let timers = runOnly([], 1, 0)
+    timers = runOnly(timers, 2, 5 * MIN)
+    expect(timers.find(t => t.issueId === 1)).toMatchObject({ paused: true, accumulatedMs: 5 * MIN })
+    expect(currentTimer(timers)?.issueId).toBe(2)
+    timers = runOnly(timers, 1, 8 * MIN)
+    expect(timers.filter(t => !t.paused).map(t => t.issueId)).toEqual([1])
+    expect(elapsedMs(timers.find(t => t.issueId === 1)!, 9 * MIN)).toBe(6 * MIN)
+  })
+
+  it('migra el formato sin pausa y no deja dos corriendo', () => {
+    expect(sanitizeTimers([{ issueId: 3, startedAt: 100 }])).toEqual([{ issueId: 3, startedAt: 100, accumulatedMs: 0, paused: false }])
+    const fixed = sanitizeTimers([{ issueId: 1, startedAt: 0 }, { issueId: 2, startedAt: 0 }, 'x', { issueId: 2, startedAt: 5 }])
+    expect(fixed.map(t => [t.issueId, t.paused])).toEqual([[1, true], [2, false]])
   })
 })

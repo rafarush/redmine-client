@@ -1,16 +1,18 @@
 import type { Issue } from '../../shared/redmine/types'
-import type { FlowStep } from '../../shared/workspace/flow'
+import type { FlowStep, Timer } from '../../shared/workspace/flow'
 import { useQueryClient } from '@tanstack/vue-query'
 import { applyChange, explainRejection } from '../../shared/redmine/issue-actions'
-import { elapsedHours, formatDuration, roundHours } from '../../shared/time/duration'
-import { doubleClickStep, stageOf, targetStatus, timerFor } from '../../shared/workspace/flow'
+import { formatDuration, roundHours } from '../../shared/time/duration'
+import { doubleClickStep, elapsedMs, stageOf, targetStatus, timerFor } from '../../shared/workspace/flow'
 import { adjacentPriority } from '../../shared/workspace/sort'
 
 /**
  * Acciones rápidas de una card del workspace (F2c-T06). Todo va a Redmine al momento:
  *
  * - doble clic en pendiente → estado "En curso" y arranca el cronómetro;
- * - doble clic en curso → estado "Completada" y registra el tiempo medido;
+ * - ⏸/▶ → pausa o reanuda el cronómetro (solo en local; solo uno corre a la vez);
+ * - ⏹ → registra en Redmine lo medido y cierra el cronómetro (sigue en curso);
+ * - doble clic en curso → estado "Completada" y registra lo que quede medido;
  * - RTQA → estado RTQA;
  * - ▲▼ → prioridad vecina.
  *
@@ -28,8 +30,6 @@ export function useCardFlow() {
   /** Tareas recolocadas hace poco: se marcan "Subida · ahora" hasta cambiar de vista. */
   const recentlyMoved = useState<Record<number, 'up' | 'down'>>('workspace-recently-moved', () => ({}))
 
-  /** Tarea esperando confirmación para cambiar de cronómetro. */
-  const pendingSwitch = useState<Issue | null>('workspace-pending-switch', () => null)
   /** Tarea cuyo tiempo se está ajustando. */
   const adjusting = useState<Issue | null>('workspace-adjusting', () => null)
   const settingsOpen = useState('workspace-settings-open', () => false)
@@ -56,10 +56,43 @@ export function useCardFlow() {
     return status
   }
 
-  async function start(issue: Issue, force = false): Promise<void> {
-    const active = workspace.activeTimer
-    if (active && active.issueId !== issue.id && !force) {
-      pendingSwitch.value = issue
+  /** Horas a registrar de un cronómetro, redondeadas al paso; 0 si no midió nada. */
+  function measuredHours(timer: Timer): number {
+    const ms = elapsedMs(timer, Date.now())
+    return ms > 0 ? roundHours(ms / 3_600_000) : 0
+  }
+
+  /** Crea el registro de tiempo; devuelve su id o `undefined` si Redmine lo rechazó. */
+  async function logTime(issue: Issue, hours: number): Promise<number | undefined> {
+    try {
+      const entry = await redmine.createTimeEntry({
+        issue_id: issue.id,
+        hours,
+        activity_id: defaultActivity(),
+        spent_on: today(),
+      })
+      workspace.rememberLogged({ issueId: issue.id, timeEntryId: entry.id, hours })
+      void queryClient.invalidateQueries({ queryKey: ['time-entries'] })
+      return entry.id
+    }
+    catch (error) {
+      toasts.show(`No se pudo registrar el tiempo: ${explainRejection(error)}`, {
+        label: 'Ajustar',
+        run: () => {
+          adjusting.value = issue
+        },
+      })
+      return undefined
+    }
+  }
+
+  /**
+   * Primer doble clic: "En curso" en Redmine y cronómetro en marcha. Si la tarea
+   * ya tenía uno en pausa, se reanuda. El que corriera en otra tarea queda en pausa.
+   */
+  async function start(issue: Issue): Promise<void> {
+    if (timerFor(workspace.timers, issue.id)) {
+      workspace.startTimer(issue.id)
       return
     }
     const status = requireStatus('start')
@@ -71,20 +104,55 @@ export function useCardFlow() {
     if (!ok) workspace.stopTimer(issue.id)
   }
 
-  /** Para el cronómetro y registra el tiempo; sin cronómetro pide las horas. */
+  /** ⏸/▶: pausa o reanuda. No toca Redmine. */
+  function togglePause(issue: Issue): void {
+    const timer = timerFor(workspace.timers, issue.id)
+    if (!timer) return
+    if (timer.paused) workspace.startTimer(issue.id)
+    else workspace.pauseTimer(issue.id)
+  }
+
+  /** ⏹: registra lo medido en Redmine y cierra el cronómetro. La tarea sigue en curso. */
+  async function stop(issue: Issue): Promise<void> {
+    const timer = workspace.stopTimer(issue.id)
+    if (!timer) return
+    const hours = measuredHours(timer)
+    if (hours === 0) return
+    const entryId = await logTime(issue, hours)
+    if (entryId === undefined) {
+      workspace.restoreTimer(timer)
+      return
+    }
+    toasts.show(`${formatDuration(hours)} registradas en #${issue.id}`, {
+      label: 'Deshacer',
+      run: () => {
+        workspace.restoreTimer(timer)
+        void removeEntry(entryId)
+      },
+    })
+  }
+
+  /** Segundo doble clic: "Completada" y registra lo que quede en el cronómetro. */
   async function complete(issue: Issue): Promise<void> {
     const status = requireStatus('complete')
     if (status === undefined) return
 
     const timer = workspace.stopTimer(issue.id)
-    if (!timer) {
-      const ok = await changeAsync(issue, { status_id: status }, optimistic(issue, { status_id: status }), `#${issue.id} completada`)
-      if (ok) adjusting.value = issue
+    const hours = timer ? measuredHours(timer) : 0
+    if (!timer || hours === 0) {
+      const ok = await changeAsync(issue, { status_id: status }, optimistic(issue, { status_id: status }), `#${issue.id} completada`, {
+        onUndo: () => {
+          if (timer) workspace.restoreTimer(timer)
+        },
+      })
+      if (!ok && timer) workspace.restoreTimer(timer)
+      // Sin nada medido (p. ej. ya se registró con ⏹), se ofrece apuntar el tiempo a mano.
+      if (ok && !workspace.loggedFor(issue.id)) adjusting.value = issue
       return
     }
 
-    const hours = roundHours(elapsedHours(timer.startedAt, Date.now()))
-    let entryId: number | undefined
+    // El registro se crea después de que Redmine acepte el estado; "Deshacer" lo lee entonces.
+    const created: { entryId?: number } = {}
     const ok = await changeAsync(
       issue,
       { status_id: status },
@@ -93,7 +161,7 @@ export function useCardFlow() {
       {
         onUndo: () => {
           workspace.restoreTimer(timer)
-          if (entryId !== undefined) void removeEntry(entryId)
+          if (created.entryId !== undefined) void removeEntry(created.entryId)
         },
       },
     )
@@ -101,25 +169,7 @@ export function useCardFlow() {
       workspace.restoreTimer(timer)
       return
     }
-    try {
-      const entry = await redmine.createTimeEntry({
-        issue_id: issue.id,
-        hours,
-        activity_id: defaultActivity(),
-        spent_on: today(),
-      })
-      entryId = entry.id
-      workspace.rememberLogged({ issueId: issue.id, timeEntryId: entry.id, hours })
-      void queryClient.invalidateQueries({ queryKey: ['time-entries'] })
-    }
-    catch (error) {
-      toasts.show(`No se pudo registrar el tiempo: ${explainRejection(error)}`, {
-        label: 'Ajustar',
-        run: () => {
-          adjusting.value = issue
-        },
-      })
-    }
+    created.entryId = await logTime(issue, hours)
   }
 
   async function removeEntry(id: number): Promise<void> {
@@ -168,10 +218,11 @@ export function useCardFlow() {
     complete,
     rtqa,
     onDoubleClick,
+    togglePause,
+    stop,
     bumpPriority,
     canBump,
     recentlyMoved,
-    pendingSwitch,
     adjusting,
     settingsOpen,
     defaultActivity,

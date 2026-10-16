@@ -3,12 +3,13 @@ import type { Issue } from '../../../shared/redmine/types'
 import { PRIORITY_ICON, priorityLevel } from '../../../shared/redmine/issue-display'
 import { formatClock, formatDuration } from '../../../shared/time/duration'
 import { describeDue } from '../../../shared/workspace/due'
-import { timerFor } from '../../../shared/workspace/flow'
+import { elapsedMs, timerFor } from '../../../shared/workspace/flow'
 
 /**
  * Una tarea en el panel del workspace (F2c-T06) o en el kanban (F2d).
  *
  * - Doble clic, Intro o Espacio: avanza el flujo (pendiente → en curso → completada).
+ * - En curso: ⏸/▶ pausa o reanuda el cronómetro (P) y ⏹ registra lo medido (S).
  * - ▲▼ o Alt+↑/↓: sube o baja la prioridad.
  * - Completada: botón RTQA y cronómetro para ajustar el tiempo (también con T).
  *
@@ -39,12 +40,13 @@ const priorityIcon = computed(() => {
 })
 const urgent = computed(() => priorityIcon.value === PRIORITY_ICON.urgent)
 
-// El cronómetro solo hace tic en la card que lo tiene.
+// El cronómetro solo hace tic en la card cuyo cronómetro corre.
 const now = ref(Date.now())
 let tick: ReturnType<typeof setInterval> | undefined
-watch(timer, (active) => {
+watch(() => timer.value && !timer.value.paused, (running) => {
   clearInterval(tick)
-  if (active) {
+  now.value = Date.now()
+  if (running) {
     now.value = Date.now()
     tick = setInterval(() => {
       now.value = Date.now()
@@ -53,7 +55,8 @@ watch(timer, (active) => {
 }, { immediate: true })
 onBeforeUnmount(() => clearInterval(tick))
 
-const clock = computed(() => timer.value ? formatClock(now.value - timer.value.startedAt) : '')
+const clock = computed(() => timer.value ? formatClock(elapsedMs(timer.value, now.value)) : '')
+const paused = computed(() => !!timer.value?.paused)
 
 const STAGE_ICON = {
   idle: 'lucide:circle-dashed',
@@ -73,7 +76,7 @@ const DUE_CLASS = {
 /** Lo que oye un lector de pantalla al llegar a la fila. */
 const description = computed(() => {
   const parts = [`#${props.issue.id} ${props.issue.subject}`, `prioridad ${props.issue.priority.name}`, `vence ${due.value.label}`, props.issue.status.name]
-  if (clock.value) parts.push(`cronómetro ${clock.value}`)
+  if (clock.value) parts.push(`${paused.value ? 'cronómetro en pausa' : 'cronómetro'} ${clock.value}`)
   return parts.join(', ')
 })
 
@@ -87,9 +90,20 @@ function onKeydown(event: KeyboardEvent): void {
     event.preventDefault()
     flow.onDoubleClick(props.issue)
   }
-  else if (event.key.toLowerCase() === 't' && !event.metaKey && !event.ctrlKey) {
+  else if (event.metaKey || event.ctrlKey || event.altKey) {
+    // Atajos del navegador y del sistema: no son de la card.
+  }
+  else if (event.key.toLowerCase() === 't') {
     event.preventDefault()
     flow.adjusting.value = props.issue
+  }
+  else if (event.key.toLowerCase() === 'p' && timer.value) {
+    event.preventDefault()
+    flow.togglePause(props.issue)
+  }
+  else if (event.key.toLowerCase() === 's' && timer.value) {
+    event.preventDefault()
+    void flow.stop(props.issue)
   }
 }
 </script>
@@ -98,7 +112,7 @@ function onKeydown(event: KeyboardEvent): void {
   <li
     tabindex="0"
     :aria-label="description"
-    aria-keyshortcuts="Enter Alt+ArrowUp Alt+ArrowDown T"
+    aria-keyshortcuts="Enter Alt+ArrowUp Alt+ArrowDown T P S"
     :data-issue="issue.id"
     :data-stage="stage"
     class="group relative cursor-default select-none outline-none transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
@@ -163,12 +177,12 @@ function onKeydown(event: KeyboardEvent): void {
       :class="stage === 'in_progress' ? 'font-semibold text-content' : stage === 'done' ? 'text-success' : 'text-secondary'"
     >
       <Icon
-        :name="STAGE_ICON[stage]"
+        :name="paused ? 'lucide:pause' : STAGE_ICON[stage]"
         class="size-3.5 shrink-0"
         aria-hidden="true"
       />
       <span class="truncate">
-        <template v-if="stage === 'in_progress' && clock">En curso <span class="data font-medium">{{ clock }}</span></template>
+        <template v-if="stage === 'in_progress' && clock">{{ paused ? 'En pausa' : 'En curso' }} <span class="data font-medium">{{ clock }}</span></template>
         <template v-else-if="stage === 'done' && logged">Completada · <span class="data">{{ formatDuration(logged.hours) }}</span></template>
         <template v-else>{{ issue.status.name }}</template>
       </span>
@@ -210,45 +224,86 @@ function onKeydown(event: KeyboardEvent): void {
         </Can>
       </template>
 
-      <Can
-        v-else
-        permission="edit_issues"
-        :project="issue.project.id"
-      >
+      <template v-else>
+        <!-- Cronómetro en marcha o en pausa: un botón que alterna ⏸/▶ y ⏹ para registrar. -->
         <span
-          class="flex flex-col"
+          v-if="timer"
+          class="flex items-center"
           @dblclick.stop
         >
           <button
             type="button"
             tabindex="-1"
-            class="grid h-[18px] w-6 place-items-center rounded-t-[var(--radius-plate)] text-tertiary hover:bg-fill-selected hover:text-content disabled:opacity-30"
-            :aria-label="`Subir la prioridad de #${issue.id}`"
-            :disabled="!flow.canBump(issue, 'up')"
-            @click.stop="flow.bumpPriority(issue, 'up')"
+            class="grid size-7 place-items-center rounded-[var(--radius-plate)] text-content hover:bg-fill-selected"
+            :aria-label="paused ? `Reanudar el cronómetro de #${issue.id}` : `Pausar el cronómetro de #${issue.id}`"
+            :title="paused ? 'Reanudar (P)' : 'Pausar (P)'"
+            @click.stop="flow.togglePause(issue)"
           >
             <Icon
-              name="lucide:chevron-up"
-              class="size-3.5"
+              :name="paused ? 'lucide:play' : 'lucide:pause'"
+              class="size-4"
               aria-hidden="true"
             />
           </button>
-          <button
-            type="button"
-            tabindex="-1"
-            class="grid h-[18px] w-6 place-items-center rounded-b-[var(--radius-plate)] text-tertiary hover:bg-fill-selected hover:text-content disabled:opacity-30"
-            :aria-label="`Bajar la prioridad de #${issue.id}`"
-            :disabled="!flow.canBump(issue, 'down')"
-            @click.stop="flow.bumpPriority(issue, 'down')"
+          <Can
+            permission="log_time"
+            :project="issue.project.id"
           >
-            <Icon
-              name="lucide:chevron-down"
-              class="size-3.5"
-              aria-hidden="true"
-            />
-          </button>
+            <button
+              type="button"
+              tabindex="-1"
+              class="grid size-7 place-items-center rounded-[var(--radius-plate)] text-content hover:bg-fill-selected"
+              :aria-label="`Parar y registrar el tiempo de #${issue.id}`"
+              title="Parar y registrar (S)"
+              @click.stop="flow.stop(issue)"
+            >
+              <Icon
+                name="lucide:square"
+                class="size-3.5 fill-current"
+                aria-hidden="true"
+              />
+            </button>
+          </Can>
         </span>
-      </Can>
+        <Can
+          permission="edit_issues"
+          :project="issue.project.id"
+        >
+          <span
+            class="flex flex-col"
+            @dblclick.stop
+          >
+            <button
+              type="button"
+              tabindex="-1"
+              class="grid h-[18px] w-6 place-items-center rounded-t-[var(--radius-plate)] text-tertiary hover:bg-fill-selected hover:text-content disabled:opacity-30"
+              :aria-label="`Subir la prioridad de #${issue.id}`"
+              :disabled="!flow.canBump(issue, 'up')"
+              @click.stop="flow.bumpPriority(issue, 'up')"
+            >
+              <Icon
+                name="lucide:chevron-up"
+                class="size-3.5"
+                aria-hidden="true"
+              />
+            </button>
+            <button
+              type="button"
+              tabindex="-1"
+              class="grid h-[18px] w-6 place-items-center rounded-b-[var(--radius-plate)] text-tertiary hover:bg-fill-selected hover:text-content disabled:opacity-30"
+              :aria-label="`Bajar la prioridad de #${issue.id}`"
+              :disabled="!flow.canBump(issue, 'down')"
+              @click.stop="flow.bumpPriority(issue, 'down')"
+            >
+              <Icon
+                name="lucide:chevron-down"
+                class="size-3.5"
+                aria-hidden="true"
+              />
+            </button>
+          </span>
+        </Can>
+      </template>
     </span>
   </li>
 </template>

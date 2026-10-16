@@ -5,15 +5,54 @@ import type { StatusMap } from './model'
  *
  *   pendiente --doble clic--> en curso (+ cronómetro) --doble clic--> completada (+ tiempo registrado) --RTQA--> rtqa
  *
- * El cronómetro vive en local (`timers`); el estado, en Redmine. La etapa se deduce
- * de los dos.
+ * Mientras está en curso, el cronómetro se pausa y se reanuda (⏸/▶) sin tocar
+ * Redmine; ⏹ registra lo medido en Redmine y lo cierra. El cronómetro vive en
+ * local (`timers`); el estado, en Redmine. La etapa se deduce de los dos.
  */
 export type CardStage = 'idle' | 'in_progress' | 'done' | 'rtqa'
 
+/**
+ * Cronómetro de una tarea. Cada tarea tiene el suyo y solo uno corre a la vez:
+ * los demás quedan en pausa. El tiempo medido es `accumulatedMs` más, si corre,
+ * lo que lleva desde `startedAt`.
+ */
 export interface Timer {
   issueId: number
-  /** Instante de inicio (ms desde epoch). */
+  /** Inicio del tramo actual (ms desde epoch). */
   startedAt: number
+  /** Tiempo de los tramos anteriores a la última pausa. */
+  accumulatedMs: number
+  /** En pausa: no suma tiempo hasta reanudar. */
+  paused: boolean
+}
+
+export function newTimer(issueId: number, now: number): Timer {
+  return { issueId, startedAt: now, accumulatedMs: 0, paused: false }
+}
+
+/** Tiempo medido hasta `now`. */
+export function elapsedMs(timer: Timer, now: number): number {
+  return timer.accumulatedMs + (timer.paused ? 0 : Math.max(0, now - timer.startedAt))
+}
+
+export function pauseTimer(timer: Timer, now: number): Timer {
+  if (timer.paused) return timer
+  return { ...timer, accumulatedMs: elapsedMs(timer, now), startedAt: now, paused: true }
+}
+
+export function resumeTimer(timer: Timer, now: number): Timer {
+  if (!timer.paused) return timer
+  return { ...timer, startedAt: now, paused: false }
+}
+
+/**
+ * Arranca o reanuda el cronómetro de `issueId` y pausa el que estuviera corriendo:
+ * nunca hay dos sumando tiempo a la vez.
+ */
+export function runOnly(timers: readonly Timer[], issueId: number, now: number): Timer[] {
+  const others = timers.filter(t => t.issueId !== issueId).map(t => pauseTimer(t, now))
+  const own = timers.find(t => t.issueId === issueId)
+  return [...others, own ? resumeTimer(own, now) : newTimer(issueId, now)]
 }
 
 /** Tiempo que el flujo registró al completar, para poder ajustarlo después. */
@@ -69,7 +108,43 @@ export function guessStatusMap(statuses: ReadonlyArray<{ id: number, name: strin
   return { inProgress, done, rtqa }
 }
 
-/** El temporizador de esta tarea, si lo hay. Solo puede haber uno activo. */
+/** El cronómetro de esta tarea, si lo hay (corriendo o en pausa). */
 export function timerFor(timers: readonly Timer[], issueId: number): Timer | undefined {
   return timers.find(timer => timer.issueId === issueId)
+}
+
+/** El que está sumando tiempo ahora mismo; si ninguno, el último pausado. */
+export function currentTimer(timers: readonly Timer[]): Timer | undefined {
+  return timers.find(timer => !timer.paused) ?? timers.at(-1)
+}
+
+/**
+ * Lo guardado en `localStorage` puede venir de la versión sin pausa
+ * (`{ issueId, startedAt }`): se convierte a cronómetro corriendo.
+ */
+export function sanitizeTimers(raw: unknown): Timer[] {
+  if (!Array.isArray(raw)) return []
+  const seen = new Set<number>()
+  const timers: Timer[] = []
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') continue
+    const t = item as Record<string, unknown>
+    if (!Number.isInteger(t.issueId) || typeof t.startedAt !== 'number' || seen.has(t.issueId as number)) continue
+    seen.add(t.issueId as number)
+    timers.push({
+      issueId: t.issueId as number,
+      startedAt: t.startedAt,
+      accumulatedMs: typeof t.accumulatedMs === 'number' && t.accumulatedMs >= 0 ? t.accumulatedMs : 0,
+      paused: t.paused === true,
+    })
+  }
+  // Si por algo hubiera dos corriendo, se queda corriendo solo el último.
+  let running = false
+  for (let i = timers.length - 1; i >= 0; i--) {
+    if (!timers[i]!.paused) {
+      if (running) timers[i] = { ...timers[i]!, paused: true }
+      running = true
+    }
+  }
+  return timers.slice(-20)
 }

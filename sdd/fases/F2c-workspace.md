@@ -42,6 +42,10 @@
 - [~] **F2c-T08** e2e `workspace.spec.ts` (1280 y 375).
   - _Depende:_ F2c-T06, F2c-T07
 
+- [~] **F2c-T09** Cronómetro con pausa y parada (pedido del usuario, 2026-10-15) — cada tarea tiene su cronómetro y solo uno corre: arrancar o reanudar otro pausa el anterior (sustituye al diálogo de "ya hay un cronómetro"). En la card, un botón ⏸/▶ que alterna (P) y ⏹ (S) que registra en Redmine lo medido y cierra el cronómetro; la tarea sigue en curso. Mientras corre o está en pausa, todo es local. El segundo doble clic sigue completando y registrando lo que quede.
+  - _Depende:_ F2c-T06
+  - _Acepta:_ tests unitarios de `pauseTimer`/`resumeTimer`/`runOnly` y migración del formato anterior; e2e de pausar, reanudar y parar.
+
 ## Definición de hecho
 
 Desde el workspace se lleva una tarea de "nueva" a RTQA con tiempo registrado sin salir de la pantalla, y la disposición sobrevive a una recarga.

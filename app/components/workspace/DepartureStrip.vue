@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import { formatClock, formatDuration } from '../../../shared/time/duration'
+import { elapsedMs } from '../../../shared/workspace/flow'
 
 /**
  * Franja de salidas (F2c): qué me toca hoy de un vistazo. Fecha, la tarea en curso
@@ -38,9 +39,10 @@ const dateLabel = new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeri
 
 const now = ref(Date.now())
 let tick: ReturnType<typeof setInterval> | undefined
-watch(() => workspace.activeTimer, (timer) => {
+watch(() => workspace.activeTimer && !workspace.activeTimer.paused, (running) => {
   clearInterval(tick)
-  if (timer) tick = setInterval(() => {
+  now.value = Date.now()
+  if (running) tick = setInterval(() => {
     now.value = Date.now()
   }, 1000)
 }, { immediate: true })
@@ -71,12 +73,12 @@ const ITEM = 'flex shrink-0 items-center gap-2 border-l border-board-separator p
       v-if="workspace.activeTimer"
       type="button"
       :class="[ITEM, 'min-h-10 rounded-[var(--radius-control)] hover:bg-board-separator']"
-      :aria-label="`En curso: tarea ${workspace.activeTimer.issueId}, ${formatClock(now - workspace.activeTimer.startedAt)}. Ir a la tarea`"
+      :aria-label="`${workspace.activeTimer.paused ? 'En pausa' : 'En curso'}: tarea ${workspace.activeTimer.issueId}, ${formatClock(elapsedMs(workspace.activeTimer, now))}. Ir a la tarea`"
       @click="focusActive"
     >
-      <span class="panel-label !text-on-board-secondary">En curso</span>
+      <span class="panel-label !text-on-board-secondary">{{ workspace.activeTimer.paused ? 'En pausa' : 'En curso' }}</span>
       <span class="data text-on-board-secondary">#{{ workspace.activeTimer.issueId }}</span>
-      <span class="data text-[length:var(--text-title)] font-semibold">{{ formatClock(now - workspace.activeTimer.startedAt) }}</span>
+      <span class="data text-[length:var(--text-title)] font-semibold">{{ formatClock(elapsedMs(workspace.activeTimer, now)) }}</span>
     </button>
     <div
       v-else

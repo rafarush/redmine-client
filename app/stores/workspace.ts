@@ -1,5 +1,6 @@
 import type { Board, BoardKind, Category, StatusMap, Workspace } from '../../shared/workspace/model'
 import type { LoggedWork, Timer } from '../../shared/workspace/flow'
+import { currentTimer, pauseTimer, runOnly, sanitizeTimers } from '../../shared/workspace/flow'
 import { defineStore } from 'pinia'
 import {
   createBoard,
@@ -32,12 +33,6 @@ function write(key: string, value: unknown): void {
   catch {
     // Sin almacenamiento el workspace dura solo esta sesión; no es un error.
   }
-}
-
-function sanitizeTimers(raw: unknown): Timer[] {
-  if (!Array.isArray(raw)) return []
-  return raw.filter((t): t is Timer =>
-    !!t && Number.isInteger(t.issueId) && typeof t.startedAt === 'number').slice(0, 1)
 }
 
 function sanitizeLogged(raw: unknown): LoggedWork[] {
@@ -112,25 +107,35 @@ export const useWorkspaceStore = defineStore('workspace', () => {
 
   // ------------------------------------------------------------ cronómetro
 
-  const activeTimer = computed(() => timers.value[0])
+  /** El que suma tiempo ahora; si ninguno, el último en pausa (lo muestra la franja). */
+  const activeTimer = computed(() => currentTimer(timers.value))
 
-  /** Solo un cronómetro a la vez: arrancar otro sustituye al anterior. */
-  function startTimer(issueId: number, now = Date.now()): void {
-    timers.value = [{ issueId, startedAt: now }]
-    write(TIMERS_KEY, timers.value)
+  function saveTimers(next: Timer[]): void {
+    timers.value = next
+    write(TIMERS_KEY, next)
   }
 
+  /** Arranca o reanuda el de esta tarea y pausa el que corriera: solo uno suma tiempo. */
+  function startTimer(issueId: number, now = Date.now()): void {
+    saveTimers(runOnly(timers.value, issueId, now))
+  }
+
+  function pauseTimerFor(issueId: number, now = Date.now()): void {
+    saveTimers(timers.value.map(t => t.issueId === issueId ? pauseTimer(t, now) : t))
+  }
+
+  /** Lo quita y lo devuelve, para registrar lo medido. */
   function stopTimer(issueId: number): Timer | undefined {
     const timer = timers.value.find(t => t.issueId === issueId)
-    timers.value = timers.value.filter(t => t.issueId !== issueId)
-    write(TIMERS_KEY, timers.value)
+    saveTimers(timers.value.filter(t => t.issueId !== issueId))
     return timer
   }
 
-  /** Para deshacer un "parar": vuelve a dejarlo como estaba. */
-  function restoreTimer(timer: Timer): void {
-    timers.value = [timer]
-    write(TIMERS_KEY, timers.value)
+  /** Para deshacer un "parar": lo vuelve a poner como estaba (en pausa si otro corre ya). */
+  function restoreTimer(timer: Timer, now = Date.now()): void {
+    const others = timers.value.filter(t => t.issueId !== timer.issueId)
+    const restored = others.some(t => !t.paused) ? pauseTimer(timer, now) : timer
+    saveTimers([...others, restored])
   }
 
   // ----------------------------------------------------- tiempo registrado
@@ -164,6 +169,7 @@ export const useWorkspaceStore = defineStore('workspace', () => {
     setLocked,
     setStatusMap,
     startTimer,
+    pauseTimer: pauseTimerFor,
     stopTimer,
     restoreTimer,
     loggedFor,
