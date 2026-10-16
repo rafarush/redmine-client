@@ -1,16 +1,17 @@
 import { randomBytes } from 'node:crypto'
 import { createClaudeText } from './ai'
 import { loadRunnerConfig } from './config'
+import { createExecutor } from './executor'
 import { EventHub, Scheduler } from './scheduler'
 import { createRunnerServer } from './server'
-import type { TaskExecutor } from './types'
-
-/** Hasta F11-T03 el runner acepta tareas pero no sabe ejecutarlas. */
-const executor: TaskExecutor = {
-  run: () => Promise.reject(new Error('El flujo del agente aún no está implementado (F11-T03)')),
-}
 
 const config = loadRunnerConfig(process.cwd())
+const executor = createExecutor({
+  repoPath: config.repoPath,
+  verifyCommands: config.verifyCommands,
+  permissionMode: config.permissionMode,
+  allowedTools: config.allowedTools,
+})
 const token = randomBytes(24).toString('hex')
 const hub = new EventHub()
 const server = createRunnerServer({

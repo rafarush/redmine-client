@@ -15,6 +15,22 @@ const schema = z.object({
   allowedOrigin: z.string().url().default('http://localhost:3000'),
   /** Comandos que deben pasar antes de abrir la PR. */
   verifyCommands: z.array(z.string().min(1)).default(['pnpm lint', 'pnpm typecheck', 'pnpm test']),
+  /** Modo de permisos de `claude` para el agente (F11-T03). */
+  permissionMode: z.enum(['acceptEdits', 'auto', 'bypassPermissions', 'dontAsk']).default('acceptEdits'),
+  /** Herramientas que el agente usa sin preguntar (sin nadie delante, lo demás se deniega). */
+  allowedTools: z.array(z.string().min(1)).default([
+    'Read',
+    'Edit',
+    'Write',
+    'Glob',
+    'Grep',
+    'Bash(pnpm *)',
+    'Bash(git status*)',
+    'Bash(git diff*)',
+    'Bash(git add *)',
+    'Bash(git commit *)',
+    'Bash(git log*)',
+  ]),
 })
 
 export type RunnerConfig = z.infer<typeof schema>
