@@ -22,19 +22,22 @@
 - [x] **F2c-T03** Cliente: `updateTimeEntry` (PUT `/time_entries/:id.json`) en `client.ts` y en el contrato del transport.
   - _Acepta:_ test del contrato. · ✔ a779275
 
-- [ ] **F2c-T04** Store y rutas — `stores/workspace.ts` persistido; `/` = Workspace, `/issues` = lista (redirección de `/?f=`); Workspace primera sección en `useNavItems`.
+- [x] **F2c-T04** Store y rutas — `stores/workspace.ts` persistido; `/` = Workspace, `/issues` = lista (redirección de `/?f=`); Workspace primera sección en `useNavItems`.
   - _Depende:_ F2c-T01
-  - _Acepta:_ e2e de layout actualizados; abrir `/?f=…` lleva a `/issues?f=…`.
+  - _Acepta:_ e2e de layout actualizados; abrir `/?f=…` lleva a `/issues?f=…`. · ✔ 615cdee
 
-- [ ] **F2c-T05** Boards — `useBoardIssues(board)` (asignadas a mí, abiertas, por proyecto); componente Board con menú (renombrar, abrir kanban, quitar con deshacer) y "+ Añadir" (proyecto, categoría, lista).
-  - _Depende:_ F2c-T04
+- [x] **F2c-T05** Boards — `useBoardIssues(board)` (asignadas a mí, abiertas, por proyecto); componente Board con menú (renombrar, abrir kanban, quitar con deshacer) y "+ Añadir" (proyecto, categoría, lista).
+  - _Depende:_ F2c-T04 · ✔ 4bebafa
+  - _Nota:_ franja de salidas (fecha, en curso + cronómetro, pendientes, para hoy, registrado hoy) y vacío con proyectos sugeridos. La consulta de cada board lleva la clave `['issues', 'board', …]` con forma `{ pages }` para que `useIssueChange` la parchee.
 
-- [ ] **F2c-T06** Card y acciones rápidas — `issues/IssueCard.vue`: doble clic → "En curso" + cronómetro; doble clic → "Completada" + entrada de tiempo; botón RTQA; icono de cronómetro → Dialog para ajustar o añadir tiempo; ▲▼ cambian prioridad (Alt+↑/↓) y la lista se reordena con animación. Un solo temporizador activo. Ajustes del workspace para mapear los tres estados.
+- [~] **F2c-T06** Card y acciones rápidas — `issues/IssueCard.vue`: doble clic → "En curso" + cronómetro; doble clic → "Completada" + entrada de tiempo; botón RTQA; icono de cronómetro → Dialog para ajustar o añadir tiempo; ▲▼ cambian prioridad (Alt+↑/↓) y la lista se reordena con animación. Un solo temporizador activo. Ajustes del workspace para mapear los tres estados.
   - _Depende:_ F2c-T02, F2c-T03, F2c-T05
   - _Acepta:_ verificado contra el Redmine local; acciones protegidas con `<Can>`; un estado no permitido revierte y explica.
+  - _Hecho:_ 816adee. Falta la verificación contra el Redmine local (la hace F2c-T08). `useIssueChange` gana `onUndo` y `changeAsync`; deshacer "completar" borra el registro de tiempo y repone el cronómetro. Cambiar de cronómetro pregunta (descartar o cancelar) en vez de perder el tiempo en silencio.
 
-- [ ] **F2c-T07** Canvas con candado — rejilla reordenable (`vue-draggable-plus`) y canvas libre (pointer events + pan); `shared/workspace/layout.ts` (encaje, colisiones, conversión libre↔rejilla) con tests; mover boards con teclado.
+- [~] **F2c-T07** Canvas con candado — rejilla reordenable (`vue-draggable-plus`) y canvas libre (pointer events + pan); `shared/workspace/layout.ts` (encaje, colisiones, conversión libre↔rejilla) con tests; mover boards con teclado.
   - _Depende:_ F2c-T05
+  - _Hecho:_ ef22d53 (`vue-draggable-plus` para la rejilla; arrastre propio con pointer events y encaje de 8 px en el lienzo libre, que muestra la rejilla de construcción). Pendiente de verificar a mano.
 
 - [ ] **F2c-T08** e2e `workspace.spec.ts` (1280 y 375).
   - _Depende:_ F2c-T06, F2c-T07
