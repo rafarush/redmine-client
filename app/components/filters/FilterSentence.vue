@@ -18,11 +18,13 @@ const props = defineProps<{
   people?: FilterOption[]
   /** Campos personalizados filtrables (F2-T10). */
   customFields?: CustomFieldDef[]
+  /** Categorías de tareas de los proyectos de la frase. */
+  categories?: FilterOption[]
 }>()
 const emit = defineEmits<{ 'update:modelValue': [sentence: FilterSentence] }>()
 
 const customFields = computed(() => props.customFields ?? [])
-const options = useFilterOptions(() => props.people ?? [], customFields)
+const options = useFilterOptions(() => props.people ?? [], customFields, () => props.categories ?? [])
 /** Un `cf_` de un enlace viejo que ya no se conoce se edita como texto. */
 const metaOf = (field: FilterField): FieldMeta => fieldMeta(field, customFields.value) ?? { label: 'Campo personalizado', kind: 'text' }
 const lookup = (field: FilterField, value: string) => {

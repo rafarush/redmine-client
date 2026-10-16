@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   availableFields,
+  categoryOptions,
   customFieldsFromAdmin,
   customFieldsFromIssues,
   dateRange,
@@ -84,5 +85,23 @@ describe('campos personalizados y personas (F2-T10)', () => {
   it('mezcla personas sin repetir', () => {
     expect(mergePeople([{ value: '2', label: 'Zoe' }], [{ value: '1', label: 'Ana' }, { value: '2', label: 'Zoe' }]))
       .toEqual([{ value: '1', label: 'Ana' }, { value: '2', label: 'Zoe' }])
+  })
+})
+
+describe('categorías de tareas', () => {
+  it('se ofrece como campo de la frase', () => {
+    expect(fieldMeta('category_id')).toEqual({ label: 'Categoría', kind: 'list' })
+  })
+
+  it('junta las de varios proyectos y distingue los nombres repetidos', () => {
+    const options = categoryOptions([
+      { name: 'Portal', categories: [{ id: 1, name: 'Soporte' }, { id: 2, name: 'Bug' }] },
+      { name: 'Intranet', categories: [{ id: 7, name: 'Soporte' }] },
+    ])
+    expect(options).toEqual([
+      { value: '2', label: 'Bug' },
+      { value: '7', label: 'Soporte (Intranet)' },
+      { value: '1', label: 'Soporte (Portal)' },
+    ])
   })
 })

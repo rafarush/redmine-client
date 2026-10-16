@@ -22,6 +22,7 @@ export const FIELD_META: Partial<Record<FilterField, FieldMeta>> = {
   project_id: { label: 'Proyecto', kind: 'list' },
   tracker_id: { label: 'Tipo', kind: 'list' },
   priority_id: { label: 'Prioridad', kind: 'list' },
+  category_id: { label: 'Categoría', kind: 'list' },
   updated_on: { label: 'Actualizada', kind: 'date' },
   created_on: { label: 'Creada', kind: 'date' },
   due_date: { label: 'Vence', kind: 'date' },
@@ -116,6 +117,19 @@ export function customFieldsFromIssues(issues: readonly { custom_fields?: { id: 
       ? { id, name, kind: 'list', options: sorted.map(v => ({ value: v, label: v })) }
       : { id, name, kind: 'text' }
   }).sort((a, b) => a.name.localeCompare(b.name, 'es'))
+}
+
+/**
+ * Categorías de tareas de varios proyectos como opciones. Cada proyecto tiene las
+ * suyas (ids distintos): si un nombre se repite, se añade el proyecto para distinguirlas.
+ */
+export function categoryOptions(projects: readonly { name: string, categories: readonly { id: number, name: string }[] }[]): FilterOption[] {
+  const all = projects.flatMap(p => p.categories.map(c => ({ id: c.id, name: c.name, project: p.name })))
+  const counts = new Map<string, number>()
+  for (const c of all) counts.set(c.name, (counts.get(c.name) ?? 0) + 1)
+  return all
+    .map(c => ({ value: String(c.id), label: (counts.get(c.name) ?? 0) > 1 ? `${c.name} (${c.project})` : c.name }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'es'))
 }
 
 /** Personas sin repetir y por nombre, mezclando las de varios orígenes. */

@@ -275,6 +275,8 @@ const LANE_ICON: Record<KanbanMode, string> = { status: 'lucide:circle-dot', spr
               filter="button"
               :prevent-on-filter="false"
               ghost-class="opacity-40"
+              :force-fallback="true"
+              :fallback-on-body="true"
               class="flex min-h-24 flex-1 flex-col gap-2 overflow-y-auto p-2"
               :class="mode === 'matrix' ? 'max-h-[24rem]' : 'max-h-[calc(100dvh-16rem)]'"
               @add="onAdd(row.id, lane.id, $event)"

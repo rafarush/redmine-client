@@ -12,6 +12,8 @@ const GROUPS = computed(() => [
       { label: 'Siguiente tarea', keys: ['J'] },
       { label: 'Tarea anterior', keys: ['K'] },
       { label: 'Abrir la tarea', keys: ['Enter'] },
+      { label: 'Registrar tiempo', keys: ['T'] },
+      { label: 'Iniciar o pausar el cronómetro', keys: ['P'] },
       { label: 'Menú de la tarea', keys: ['Shift', 'F10'] },
     ],
   },

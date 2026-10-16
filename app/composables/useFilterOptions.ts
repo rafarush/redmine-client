@@ -15,7 +15,7 @@ const STATUS_SHORTCUTS: FilterOption[] = [
  * sesión: solo proyectos visibles, solo estados y tipos que existen.
  * Devuelve una función `campo → opciones`.
  */
-export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>, customFields: MaybeRefOrGetter<CustomFieldDef[]> = []) {
+export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>, customFields: MaybeRefOrGetter<CustomFieldDef[]> = [], categories: MaybeRefOrGetter<FilterOption[]> = []) {
   const session = useSessionStore()
   const toOptions = (items: { id: number, name: string }[]): FilterOption[] =>
     items.map(item => ({ value: String(item.id), label: item.name }))
@@ -30,6 +30,8 @@ export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>, custo
         return toOptions(trackers)
       case 'priority_id':
         return toOptions(priorities)
+      case 'category_id':
+        return toValue(categories)
       case 'project_id':
         return toOptions(projects)
       case 'assigned_to_id':

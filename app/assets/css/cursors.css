@@ -1,6 +1,7 @@
 /*
- * Cursores con la estética de macOS: flecha negra con borde blanco, mano que señala,
- * barra I fina, mano abierta / cerrada y flechas de redimensionado. Los SVG viven en
+ * Cursores con la estética de macOS. Modo oscuro: negros con borde blanco; modo claro:
+ * blancos con borde negro (`../cursors/light/`). Flecha, mano que señala con los nudillos marcados,
+ * barra I fina, mano abierta / cerrada y flechas de redimensionado y el símbolo de no permitido solo. Los SVG viven en
  * `../cursors/`; el segundo valor de cada `cursor` es el del sistema, por si el
  * navegador no admite SVG como cursor.
  *
@@ -8,60 +9,98 @@
  * `cursor-pointer`, `cursor-col-resize`... recibe el cursor nuevo sin tocar los componentes.
  */
 
+:root {
+  --cursor-default: url('../cursors/light/default.svg') 4 2;
+  --cursor-pointer: url('../cursors/light/pointer.svg') 13 5;
+  --cursor-text: url('../cursors/light/text.svg') 10 10;
+  --cursor-grab: url('../cursors/light/grab.svg') 16 16;
+  --cursor-grabbing: url('../cursors/light/grabbing.svg') 16 16;
+  --cursor-col-resize: url('../cursors/light/col-resize.svg') 11 11;
+  --cursor-row-resize: url('../cursors/light/row-resize.svg') 11 11;
+  --cursor-not-allowed: url('../cursors/light/not-allowed.svg') 11 11;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --cursor-default: url('../cursors/default.svg') 4 2;
+    --cursor-pointer: url('../cursors/pointer.svg') 13 5;
+    --cursor-text: url('../cursors/text.svg') 10 10;
+    --cursor-grab: url('../cursors/grab.svg') 16 16;
+    --cursor-grabbing: url('../cursors/grabbing.svg') 16 16;
+    --cursor-col-resize: url('../cursors/col-resize.svg') 11 11;
+    --cursor-row-resize: url('../cursors/row-resize.svg') 11 11;
+    --cursor-not-allowed: url('../cursors/not-allowed.svg') 11 11;
+  }
+}
+:root[data-theme='dark'] {
+  --cursor-default: url('../cursors/default.svg') 4 2;
+  --cursor-pointer: url('../cursors/pointer.svg') 13 5;
+  --cursor-text: url('../cursors/text.svg') 10 10;
+  --cursor-grab: url('../cursors/grab.svg') 16 16;
+  --cursor-grabbing: url('../cursors/grabbing.svg') 16 16;
+  --cursor-col-resize: url('../cursors/col-resize.svg') 11 11;
+  --cursor-row-resize: url('../cursors/row-resize.svg') 11 11;
+  --cursor-not-allowed: url('../cursors/not-allowed.svg') 11 11;
+}
+
 @utility cursor-default {
-  cursor: url('../cursors/default.svg') 4 2, default;
+  cursor: var(--cursor-default), default;
 }
 @utility cursor-pointer {
-  cursor: url('../cursors/pointer.svg') 10 3, pointer;
+  cursor: var(--cursor-pointer), pointer;
 }
 @utility cursor-text {
-  cursor: url('../cursors/text.svg') 10 10, text;
+  cursor: var(--cursor-text), text;
 }
 @utility cursor-grab {
-  cursor: url('../cursors/grab.svg') 11 11, grab;
+  cursor: var(--cursor-grab), grab;
 }
 @utility cursor-grabbing {
-  cursor: url('../cursors/grabbing.svg') 11 11, grabbing;
+  cursor: var(--cursor-grabbing), grabbing;
 }
 @utility cursor-col-resize {
-  cursor: url('../cursors/col-resize.svg') 11 11, col-resize;
+  cursor: var(--cursor-col-resize), col-resize;
 }
 @utility cursor-row-resize {
-  cursor: url('../cursors/row-resize.svg') 11 11, row-resize;
+  cursor: var(--cursor-row-resize), row-resize;
 }
 @utility cursor-not-allowed {
-  cursor: url('../cursors/not-allowed.svg') 4 2, not-allowed;
+  cursor: var(--cursor-not-allowed), not-allowed;
 }
 
 /* Base: flecha en todo; mano en lo que se pulsa; barra I donde se escribe. */
 html {
-  cursor: url('../cursors/default.svg') 4 2, default;
+  cursor: var(--cursor-default), default;
 }
 
 :where(a[href], button, summary, select, label[for], [role='button'], [role='tab'], [role='menuitem'],
   [role='option'], [role='switch'], [role='checkbox'], [role='radio'],
   input[type='checkbox'], input[type='radio'], input[type='range'], input[type='file']) {
-  cursor: url('../cursors/pointer.svg') 10 3, pointer;
+  cursor: var(--cursor-pointer), pointer;
 }
 
 :where(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='button'],
   [type='submit'], [type='color']), textarea, [contenteditable='true'], [contenteditable='']) {
-  cursor: url('../cursors/text.svg') 10 10, text;
+  cursor: var(--cursor-text), text;
 }
 
 :where([role='separator'][aria-orientation='vertical']) {
-  cursor: url('../cursors/col-resize.svg') 11 11, col-resize;
+  cursor: var(--cursor-col-resize), col-resize;
 }
 :where([role='separator'][aria-orientation='horizontal']) {
-  cursor: url('../cursors/row-resize.svg') 11 11, row-resize;
+  cursor: var(--cursor-row-resize), row-resize;
 }
 
 :where(button:disabled, [aria-disabled='true'], [data-disabled], input:disabled, select:disabled,
   textarea:disabled) {
-  cursor: url('../cursors/not-allowed.svg') 4 2, not-allowed;
+  cursor: var(--cursor-not-allowed), not-allowed;
 }
 
 /* Pulsado: respuesta inmediata en cualquier botón, sin tocar sus colores de hover. */
 :where(button:not(:disabled), [role='button']:not([aria-disabled='true'])):active {
   opacity: 0.8;
+}
+
+/* Arrastrando (SortableJS con fallback propio): mano cerrada en toda la pantalla. */
+:root:has(.sortable-fallback) * {
+  cursor: var(--cursor-grabbing), grabbing !important;
 }

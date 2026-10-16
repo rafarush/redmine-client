@@ -242,6 +242,8 @@ const suggestions = computed(() => [...session.catalogs.projects].sort((a, b) =>
       filter="button, a, input"
       :prevent-on-filter="false"
       ghost-class="opacity-40"
+      :force-fallback="true"
+      :fallback-on-body="true"
       class="grid grid-cols-1 items-start gap-4 px-3 wide:grid-cols-2 wide:px-6"
       @end="onSortEnd"
     >

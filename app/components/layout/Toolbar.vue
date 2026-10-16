@@ -67,6 +67,9 @@ const title = computed(() => pageTitle.value ?? (typeof route.meta.title === 'st
 
     <LayoutThemeSwitcher />
 
+    <!-- Cronómetro activo (F4-T08), en cualquier pantalla salvo el workspace. -->
+    <LayoutTimerIndicator />
+
     <Can permission="add_issues">
       <UiTooltip
         text="Nueva tarea"

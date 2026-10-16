@@ -4,7 +4,7 @@ import type { FilterSentence } from '../../shared/redmine/filters'
 import type { Issue } from '../../shared/redmine/types'
 import { useQueries, useQuery } from '@tanstack/vue-query'
 import { computed, toValue } from 'vue'
-import { customFieldsFromAdmin, customFieldsFromIssues, mergePeople } from '../../shared/redmine/filter-fields'
+import { categoryOptions, customFieldsFromAdmin, customFieldsFromIssues, mergePeople } from '../../shared/redmine/filter-fields'
 import { conditionFor } from '../../shared/redmine/filters'
 
 /**
@@ -57,5 +57,17 @@ export function useFilterCatalog(sentence: MaybeRefOrGetter<FilterSentence>, iss
     return mergePeople(fromMembers, fromList)
   })
 
-  return { customFields, people }
+  const details = useQueries({
+    queries: computed(() => projectIds.value.map(id => ({
+      queryKey: ['project', id],
+      queryFn: () => redmine.getProject(id),
+      staleTime: 2 * 60_000,
+    }))),
+  })
+
+  const categories = computed<FilterOption[]>(() => categoryOptions(
+    details.value.flatMap(q => q.data ? [{ name: q.data.name, categories: q.data.issue_categories ?? [] }] : []),
+  ))
+
+  return { customFields, people, categories }
 }

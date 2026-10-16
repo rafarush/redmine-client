@@ -86,7 +86,7 @@ function onKeydown(event: KeyboardEvent): void {
     :open="open"
     @update:open="emit('update:open', $event)"
   >
-    <span class="group inline-flex shrink-0 items-baseline gap-1 whitespace-nowrap text-[length:var(--text-body)]">
+    <span class="group inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[length:var(--text-body)]">
       <span
         v-if="lead"
         class="text-secondary"

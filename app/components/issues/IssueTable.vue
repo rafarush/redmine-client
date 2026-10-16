@@ -8,6 +8,7 @@ import { useVirtualizer } from '@tanstack/vue-virtual'
 import { DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
 import { ISSUE_COLUMN_IDS, ISSUE_COLUMN_LABELS, REQUIRED_COLUMNS, SORT_FIELD } from '../../../shared/redmine/issue-columns'
 import { PRIORITY_ICON, priorityLevel, statusIcon, statusTone } from '../../../shared/redmine/issue-display'
+import { timerFor } from '../../../shared/workspace/flow'
 
 /**
  * Lista virtualizada de tareas (F2-T03).
@@ -45,6 +46,21 @@ const emit = defineEmits<{
 
 const ui = useUiStore()
 const session = useSessionStore()
+const flow = useCardFlow()
+const workspace = useWorkspaceStore()
+
+/** ▶ sin cronómetro o en pausa; ⏸ si corre. */
+function timerOf(issue: Issue) {
+  return timerFor(workspace.timers, issue.id)
+}
+function timerLabel(issue: Issue): string {
+  const timer = timerOf(issue)
+  return !timer ? `Iniciar el cronómetro de #${issue.id}` : timer.paused ? `Reanudar el cronómetro de #${issue.id}` : `Pausar el cronómetro de #${issue.id}`
+}
+function timerIcon(issue: Issue): string {
+  const timer = timerOf(issue)
+  return !timer || timer.paused ? 'lucide:play' : 'lucide:pause'
+}
 /** Cabecera de columnas: su alto se mide al usarlo (cambia con el zoom). */
 const header = ref<HTMLElement | null>(null)
 
@@ -166,6 +182,13 @@ function onKeydown(event: KeyboardEvent): void {
   else if (event.key === 'Enter' && selectedIndex.value >= 0) {
     event.preventDefault()
     emit('open', rows.value[selectedIndex.value]!.original)
+  }
+  // `P`: iniciar, pausar o reanudar el cronómetro de la fila (F4-T08).
+  else if ((event.key === 'p' || event.key === 'P') && props.timeLogging && selectedIndex.value >= 0) {
+    const issue = rows.value[selectedIndex.value]!.original
+    if (!session.can('log_time', issue.project.id)) return
+    event.preventDefault()
+    flow.toggleTimer(issue)
   }
   // `T`: registrar tiempo en la fila seleccionada (F4-T03), anclado a su ⏱.
   else if ((event.key === 't' || event.key === 'T') && props.timeLogging && selectedIndex.value >= 0) {
@@ -573,6 +596,15 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
                     permission="log_time"
                     :project="rows[item.index]!.original.project.id"
                   >
+                    <!-- Cronómetro (F4-T08): el mismo del workspace; arrancarlo pone la tarea en curso. -->
+                    <UiButton
+                      :label="timerLabel(rows[item.index]!.original)"
+                      :icon="timerIcon(rows[item.index]!.original)"
+                      icon-only
+                      variant="ghost"
+                      tabindex="-1"
+                      @click.stop="flow.toggleTimer(rows[item.index]!.original)"
+                    />
                     <UiButton
                       label="Registrar tiempo"
                       icon="lucide:timer"

@@ -154,7 +154,7 @@ function logTime(issue: Issue, anchor?: Element): void {
 }
 
 /** Personas y campos personalizados que ofrece la frase (F2-T10). */
-const { people, customFields } = useFilterCatalog(sentence, issues)
+const { people, customFields, categories } = useFilterCatalog(sentence, issues)
 </script>
 
 <template>
@@ -187,6 +187,7 @@ const { people, customFields } = useFilterCatalog(sentence, issues)
       :model-value="sentence"
       :people="people"
       :custom-fields="customFields"
+      :categories="categories"
       @update:model-value="setSentence"
     >
       <template #trailing>
