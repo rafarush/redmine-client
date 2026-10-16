@@ -70,9 +70,6 @@ onBeforeUnmount(() => mediaQueries.forEach(media => media.removeEventListener('c
 const features = tableFeatures({})
 
 const dateFormat = new Intl.DateTimeFormat('es', { day: '2-digit', month: 'short', year: 'numeric' })
-const hoursFormat = new Intl.NumberFormat('es', { minimumFractionDigits: 1, maximumFractionDigits: 2 })
-/** Sin horas no se escribe "0,0": un guion se lee más rápido. */
-const formatHours = (hours: number | null | undefined): string => hours ? hoursFormat.format(hours) : '—'
 
 const columns = computed(() =>
   ISSUE_COLUMN_IDS.filter(id => ui.issueColumns.includes(id)).map(id => ({
@@ -559,7 +556,10 @@ const errorMessage = computed(() => props.error?.message || 'Redmine no respondi
                   role="gridcell"
                   class="data px-3 text-right text-secondary"
                 >
-                  {{ formatHours(rows[item.index]!.original.spent_hours) }}
+                  <TimeRollingHours
+                    :hours="rows[item.index]!.original.spent_hours"
+                    :issue-id="rows[item.index]!.original.id"
+                  />
                 </div>
                 <!-- Acciones: al pasar el ratón, enfocar o seleccionar; siempre en táctil. -->
                 <div
