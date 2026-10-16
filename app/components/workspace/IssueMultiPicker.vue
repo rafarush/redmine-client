@@ -68,12 +68,19 @@ function clear(): void {
       multiple
       class="overflow-hidden rounded-[var(--radius-control)] border border-separator"
     >
-      <ListboxFilter
-        v-model="text"
-        placeholder="Buscar por #número o por asunto…"
-        aria-label="Buscar tareas"
-        class="w-full border-b border-separator bg-surface px-2.5 py-2"
-      />
+      <div class="relative border-b border-separator bg-surface">
+        <Icon
+          name="lucide:search"
+          class="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-secondary"
+          aria-hidden="true"
+        />
+        <ListboxFilter
+          v-model="text"
+          placeholder="Buscar por #número o por asunto…"
+          aria-label="Buscar tareas"
+          class="min-h-[var(--control-min)] w-full bg-transparent pl-8 pr-2.5 outline-none placeholder:text-secondary focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+        />
+      </div>
       <ListboxContent
         class="max-h-64 overflow-y-auto p-1"
         aria-label="Tareas encontradas"
