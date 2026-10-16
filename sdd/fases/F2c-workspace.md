@@ -50,14 +50,16 @@
   - _Depende:_ F2c-T09, F3-T01
   - _Acepta:_ e2e de clic → detalle y clic derecho → menú; la lista y el kanban usan el mismo menú.
 
-- [~] **F2c-T11** Lista con buscador de tareas (pedido del usuario, 2026-10-15) — en "Añadir board" de tipo Lista, un selector con búsqueda por `#número` o por asunto y marcado múltiple (`workspace/IssueMultiPicker.vue`) sustituye al campo de números. El menú "…" de una lista gana "Añadir tareas" (reabre el diálogo solo con el selector) y el menú contextual de una tarea, dentro de una lista, gana "Quitar de esta lista" con deshacer.
+- [x] **F2c-T11** Lista con buscador de tareas (pedido del usuario, 2026-10-15) — en "Añadir board" de tipo Lista, un selector con búsqueda por `#número` o por asunto y marcado múltiple (`workspace/IssueMultiPicker.vue`) sustituye al campo de números. El menú "…" de una lista gana "Añadir tareas" (reabre el diálogo solo con el selector) y el menú contextual de una tarea, dentro de una lista, gana "Quitar de esta lista" con deshacer.
   - _Depende:_ F2c-T05, F2c-T10
   - _Nota:_ una lista muestra las tareas elegidas sean de quien sean (se quita `assigned_to_id=me`; sigue siendo solo abiertas).
-  - _Acepta:_ tests unitarios de `addIssuesToBoard`/`removeIssueFromBoard` y de la consulta de una lista.
+  - _Acepta:_ tests unitarios de `addIssuesToBoard`/`removeIssueFromBoard` y de la consulta de una lista. · ✔ 0b2b8e6
+  - _Nota:_ el menú contextual conoce la lista por `boardId` (`useIssueMenu`, `IssueCard`). Falta verificarlo a mano contra el Redmine local.
 
-- [ ] **F2c-T12** Ajustes del workspace por categorías y atajos personalizables (pedido del usuario, 2026-10-15) — el diálogo de ajustes pasa a ser más grande con dos categorías: "Integración con Redmine" (lo de ahora: mapeo de estados) y "Atajos de teclado". Atajos por defecto: Alt+T nueva tarea (Ctrl+T lo intercepta el navegador, se puede elegir en ajustes con aviso), Ctrl+B nuevo board y Ctrl+L candado; estos dos solo actúan en el workspace. `shared/shortcuts/keymap.ts` con tests (combinación, conflictos, reservados del navegador), `stores/shortcuts.ts` persistido en `localStorage`.
+- [x] **F2c-T12** Ajustes del workspace por categorías y atajos personalizables (pedido del usuario, 2026-10-15) — el diálogo de ajustes pasa a ser más grande con dos categorías: "Integración con Redmine" (lo de ahora: mapeo de estados) y "Atajos de teclado". Atajos por defecto: Alt+T nueva tarea (Ctrl+T lo intercepta el navegador, se puede elegir en ajustes con aviso), Ctrl+B nuevo board y Ctrl+L candado; estos dos solo actúan en el workspace. `shared/shortcuts/keymap.ts` con tests (combinación, conflictos, reservados del navegador), `stores/shortcuts.ts` persistido en `localStorage`.
   - _Depende:_ F2c-T06
-  - _Acepta:_ tests unitarios; los atajos nuevos salen en la hoja de atajos (`?`) y en los tooltips; cambiar un atajo sobrevive a una recarga.
+  - _Acepta:_ tests unitarios; los atajos nuevos salen en la hoja de atajos (`?`) y en los tooltips; cambiar un atajo sobrevive a una recarga. · ✔ fd324ad
+  - _Nota:_ los atajos se despachan desde el layout (`runShortcut`) y cada pantalla registra los suyos (`useShortcut`); se ignoran al escribir y con un diálogo abierto. Falta el e2e (lo cubre F2c-T08) y probarlo a mano.
 
 ## Definición de hecho
 
