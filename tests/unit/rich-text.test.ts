@@ -41,8 +41,11 @@ describe('render saneado', () => {
     expect(html).toContain('<code>#456</code>')
   })
 
-  it('abre los enlaces externos en otra pestaña', () => {
+  it('abre los enlaces externos en otra pestaña y deja dentro las rutas de la app', () => {
     expect(renderRichText('[web](https://x.es)', 'markdown')).toContain('target="_blank"')
+    const internal = renderRichText('[guía](/projects/p/wiki/Guia)', 'markdown')
+    expect(internal).toContain('data-internal')
+    expect(internal).not.toContain('target=')
   })
 })
 

@@ -114,6 +114,12 @@ export function renderRichText(text: string, format: TextFormat): string {
   linkIssueRefs(template.content)
   for (const link of template.content.querySelectorAll<HTMLAnchorElement>('a[href]')) {
     if (link.dataset.issue) continue
+    // Rutas de la app (p. ej. `[[Página]]` de la wiki): se navega sin salir.
+    const href = link.getAttribute('href') ?? ''
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      link.dataset.internal = ''
+      continue
+    }
     link.target = '_blank'
     link.rel = 'noopener noreferrer'
   }

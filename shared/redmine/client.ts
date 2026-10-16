@@ -13,6 +13,8 @@ import type {
   SavedQuery,
   TimeEntry,
   Version,
+  WikiPage,
+  WikiPageRef,
 } from './types'
 import {
   currentUserSchema,
@@ -27,7 +29,10 @@ import {
   savedQuerySchema,
   timeEntrySchema,
   versionSchema,
+  wikiPageRefSchema,
+  wikiPageSchema,
 } from './types'
+import { encodeSegment } from './paths'
 
 /** Tope de Redmine por página. */
 const PAGE_LIMIT = 100
@@ -185,5 +190,33 @@ export class RedmineClient {
 
   async deleteTimeEntry(id: number): Promise<void> {
     await this.transport.request({ method: 'DELETE', path: `/time_entries/${id}.json` })
+  }
+
+  // ------------------------------------------------------------------- wiki
+
+  /** Índice de páginas de la wiki de un proyecto (sin texto). */
+  async listWikiPages(projectId: string | number): Promise<WikiPageRef[]> {
+    const { wiki_pages } = await this.transport.request<{ wiki_pages?: unknown }>({ path: `/projects/${projectId}/wiki/index.json` })
+    return wikiPageRefSchema.array().parse(wiki_pages ?? [])
+  }
+
+  async getWikiPage(projectId: string | number, title: string): Promise<WikiPage> {
+    const { wiki_page } = await this.transport.request<{ wiki_page: unknown }>({
+      path: `/projects/${projectId}/wiki/${encodeSegment(title)}.json`,
+      query: { include: 'attachments' },
+    })
+    return wikiPageSchema.parse(wiki_page)
+  }
+
+  /**
+   * Crea o actualiza una página. Con `version`, Redmine responde 409 si alguien la
+   * cambió entretanto: nunca se sobrescribe en silencio (F7-T03).
+   */
+  async saveWikiPage(projectId: string | number, title: string, page: { text: string, comments?: string, version?: number }): Promise<void> {
+    await this.transport.request({
+      method: 'PUT',
+      path: `/projects/${projectId}/wiki/${encodeSegment(title)}.json`,
+      body: { wiki_page: page },
+    })
   }
 }

@@ -191,6 +191,27 @@ export const timeEntrySchema = z.object({
 }).loose()
 export type TimeEntry = z.infer<typeof timeEntrySchema>
 
+// -------------------------------------------------------------------- wiki
+
+/** Entrada del índice de la wiki (`/projects/:id/wiki/index.json`). */
+export const wikiPageRefSchema = z.object({
+  title: z.string(),
+  parent: z.object({ title: z.string() }).loose().optional(),
+  version: z.number().optional(),
+  created_on: z.string().optional(),
+  updated_on: z.string().optional(),
+}).loose()
+export type WikiPageRef = z.infer<typeof wikiPageRefSchema>
+
+export const wikiPageSchema = wikiPageRefSchema.extend({
+  text: z.string().default(''),
+  version: z.number(),
+  author: refSchema.optional(),
+  comments: z.string().nullish(),
+  attachments: z.array(attachmentSchema).optional(),
+}).loose()
+export type WikiPage = z.infer<typeof wikiPageSchema>
+
 // ------------------------------------------------------------- paginación
 
 /** Envoltura de las listas de Redmine: `{ issues: [...], total_count, offset, limit }`. */
