@@ -45,10 +45,11 @@
   - _Depende:_ F2-T03, F1-T07
   - _Acepta:_ si Redmine rechaza el cambio (workflow), la fila vuelve a su estado y el toast explica el motivo.
 
-- [ ] **F2-T09** Estados vacío, cargando y error — skeleton de filas; vacío con sugerencia de quitar el filtro más restrictivo (`02-diseno.md › Escritura`); error de red con banner y Reintentar.
+- [~] **F2-T09** Estados vacío, cargando y error — skeleton de filas; vacío con sugerencia de quitar el filtro más restrictivo (`02-diseno.md › Escritura`); error de red con banner y Reintentar.
   - _Depende:_ F2-T03
   - _Acepta:_ las tres situaciones se ven en la ruta de desarrollo `/_demo/estados` (excluida del build de producción).
   - _Nota (crítica de diseño, 2026-10-15):_ skeleton, vacío (con "Quitar filtros"), error (con "Reintentar") y "Actualizando…" ya están en `IssueTable.vue`. También: tarjetas en compacto con menú "Ordenar", acciones de fila solo al pasar/enfocar/seleccionar, estado y prioridad con tono + icono + texto, hoja de atajos con `?` y `aria-activedescendant` en la rejilla. Enter y doble clic muestran un toast hasta F3; el botón de tiempo (`timeLogging`) sale con F4. Falta la ruta `/_demo/estados` y la revisión visual.
+  - _Hecho:_ badaaab. `/_demo/estados` muestra cargando, vacío, vacío con filtros y error; un módulo en línea de `nuxt.config.ts` quita `/_demo/*` del build (comprobado: no aparece en `.output`). Falta la revisión visual.
 
 ## Definición de hecho
 
