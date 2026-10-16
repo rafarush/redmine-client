@@ -212,6 +212,28 @@ export const wikiPageSchema = wikiPageRefSchema.extend({
 }).loose()
 export type WikiPage = z.infer<typeof wikiPageSchema>
 
+// ---------------------------------------------------------------- noticias
+
+export const newsCommentSchema = z.object({
+  id: z.number(),
+  author: refSchema.optional(),
+  content: z.string().nullish(),
+  created_on: z.string().optional(),
+}).loose()
+
+export const newsSchema = z.object({
+  id: z.number(),
+  project: refSchema,
+  author: refSchema.optional(),
+  title: z.string(),
+  summary: z.string().nullish(),
+  description: z.string().nullish(),
+  created_on: z.string(),
+  comments: z.array(newsCommentSchema).optional(),
+  attachments: z.array(attachmentSchema).optional(),
+}).loose()
+export type News = z.infer<typeof newsSchema>
+
 // ------------------------------------------------------------- paginación
 
 /** Envoltura de las listas de Redmine: `{ issues: [...], total_count, offset, limit }`. */

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
+import { unseenCount } from '../../../shared/redmine/news'
 import { activeView, ISSUES_PATH, PRESET_VIEWS, viewLocation } from '../../../shared/redmine/views'
 
 /** Navegación de primer nivel en ancho regular. Dos niveles como máximo (HIG sidebars.md). */
@@ -21,6 +23,18 @@ const current = computed(() => route.path === ISSUES_PATH ? activeView(typeof ro
 
 /** Un solo nivel de selección: blanco con anillo, como el panel; hover neutro. */
 const NAV_ITEM = 'flex min-h-[var(--control-min)] items-center gap-2 rounded-[var(--radius-control)] px-2 text-[length:var(--text-body)] text-secondary transition-colors hover:bg-fill-hover hover:text-content aria-[current=page]:bg-raised aria-[current=page]:font-semibold aria-[current=page]:text-content aria-[current=page]:shadow-panel aria-[current=page]:ring-1 aria-[current=page]:ring-separator'
+
+/** Noticias (F7-T04): punto de "Novedades" si hay publicadas desde la última visita. */
+const redmine = useRedmine()
+const newsStore = useNewsStore()
+const canReadNews = computed(() => session.can('view_news'))
+const latestNews = useQuery({
+  queryKey: ['news', 'latest'],
+  queryFn: async () => (await redmine.listNews(undefined, { limit: 10 })).items,
+  enabled: canReadNews,
+  staleTime: 5 * 60_000,
+})
+const unseenNews = computed(() => unseenCount(latestNews.data.value ?? [], newsStore.lastSeen))
 
 function isInProject(identifier: string): boolean {
   const base = `/projects/${identifier}`
@@ -51,6 +65,29 @@ function deleteSaved(id: string, name: string): void {
           aria-hidden="true"
         />
         {{ item.label }}
+      </NuxtLink>
+      <NuxtLink
+        v-if="canReadNews"
+        to="/news"
+        :class="NAV_ITEM"
+      >
+        <Icon
+          name="lucide:newspaper"
+          class="size-4 shrink-0"
+          aria-hidden="true"
+        />
+        Noticias
+        <span
+          v-if="unseenNews > 0"
+          class="ml-auto inline-flex items-center gap-1 text-[length:var(--text-caption)] font-semibold text-content"
+        >
+          <span
+            class="size-2 rounded-full bg-content"
+            aria-hidden="true"
+          />
+          <span class="sr-only">Novedades: {{ unseenNews }} {{ unseenNews === 1 ? 'noticia nueva' : 'noticias nuevas' }}</span>
+          <span aria-hidden="true">{{ unseenNews }}</span>
+        </span>
       </NuxtLink>
     </nav>
 

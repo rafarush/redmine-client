@@ -5,6 +5,7 @@ import type {
   Enumeration,
   Issue,
   IssueStatus,
+  News,
   Paginated,
   Project,
   ProjectMember,
@@ -21,6 +22,7 @@ import {
   enumerationSchema,
   issueSchema,
   issueStatusSchema,
+  newsSchema,
   paginatedSchema,
   projectMemberSchema,
   projectSchema,
@@ -218,5 +220,23 @@ export class RedmineClient {
       path: `/projects/${projectId}/wiki/${encodeSegment(title)}.json`,
       body: { wiki_page: page },
     })
+  }
+
+  // --------------------------------------------------------------- noticias
+
+  /** Noticias de un proyecto o de todos los visibles, las más recientes primero. */
+  async listNews(projectId?: string | number, query: Query = {}): Promise<Paginated<News>> {
+    const path = projectId === undefined ? '/news.json' : `/projects/${projectId}/news.json`
+    return this.get(path, paginatedSchema('news', newsSchema), { limit: 25, ...query })
+  }
+
+  async getNews(id: number): Promise<News> {
+    const { news } = await this.transport.request<{ news: unknown }>({ path: `/news/${id}.json`, query: { include: 'comments,attachments' } })
+    return newsSchema.parse(news)
+  }
+
+  /** Publica una noticia (Redmine ≥ 5.1, `manage_news`). Responde 204 sin cuerpo. */
+  async createNews(projectId: string | number, news: { title: string, summary?: string, description: string }): Promise<void> {
+    await this.transport.request({ method: 'POST', path: `/projects/${projectId}/news.json`, body: { news } })
   }
 }
