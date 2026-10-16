@@ -1,6 +1,17 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { availableFields, dateRange, removeLast, setValues, toggleValue } from '../../shared/redmine/filter-fields'
+import {
+  availableFields,
+  customFieldsFromAdmin,
+  customFieldsFromIssues,
+  dateRange,
+  emptyCondition,
+  fieldMeta,
+  mergePeople,
+  removeLast,
+  setValues,
+  toggleValue,
+} from '../../shared/redmine/filter-fields'
 
 describe('frase de filtros: edición', () => {
   it('marcar un valor crea el token y desmarcar el último lo quita', () => {
@@ -36,5 +47,42 @@ describe('frase de filtros: edición', () => {
     let s = toggleValue({ conditions: [] }, 'status_id', 'open')
     s = toggleValue(s, 'tracker_id', '3')
     expect(removeLast(s).conditions.map(c => c.field)).toEqual(['status_id'])
+  })
+})
+
+describe('campos personalizados y personas (F2-T10)', () => {
+  it('lee las definiciones de admin: solo de tareas y filtrables', () => {
+    const defs = customFieldsFromAdmin([
+      { id: 1, name: 'Cliente', customized_type: 'issue', is_filter: true, field_format: 'list', possible_values: [{ value: 'Acme' }, { value: 'Beta', label: 'Beta S.L.' }] },
+      { id: 2, name: 'Entrega', customized_type: 'issue', is_filter: true, field_format: 'date' },
+      { id: 3, name: 'Oculto', customized_type: 'issue', is_filter: false, field_format: 'string' },
+      { id: 4, name: 'De usuario', customized_type: 'user', is_filter: true, field_format: 'string' },
+      { id: 5, name: 'Notas', customized_type: 'issue', is_filter: true, field_format: 'text' },
+    ])
+    expect(defs.map(d => [d.id, d.kind])).toEqual([[1, 'list'], [2, 'date'], [5, 'text']])
+    expect(defs[0]!.options).toEqual([{ value: 'Acme', label: 'Acme' }, { value: 'Beta', label: 'Beta S.L.' }])
+  })
+
+  it('sin admin, los deduce de las tareas vistas', () => {
+    const defs = customFieldsFromIssues([
+      { custom_fields: [{ id: 1, name: 'Cliente', value: 'Beta' }, { id: 7, name: 'Etiquetas', value: ['a', 'b'] }] },
+      { custom_fields: [{ id: 1, name: 'Cliente', value: 'Acme' }, { id: 9, name: 'Vacío', value: null }] },
+    ])
+    expect(defs.map(d => d.name)).toEqual(['Cliente', 'Etiquetas', 'Vacío'])
+    expect(defs[0]!.options?.map(o => o.value)).toEqual(['Acme', 'Beta'])
+    expect(defs[2]!.kind).toBe('text')
+  })
+
+  it('los ofrece en "+ Filtro" y nacen con el operador de su tipo', () => {
+    const defs = [{ id: 1, name: 'Cliente', kind: 'list' as const }, { id: 5, name: 'Notas', kind: 'text' as const }]
+    expect(availableFields({ conditions: [] }, defs).slice(-2)).toEqual(['cf_1', 'cf_5'])
+    expect(fieldMeta('cf_5', defs)).toEqual({ label: 'Notas', kind: 'text' })
+    expect(emptyCondition('cf_5', defs).operator).toBe('~')
+    expect(emptyCondition('cf_1', defs).operator).toBe('=')
+  })
+
+  it('mezcla personas sin repetir', () => {
+    expect(mergePeople([{ value: '2', label: 'Zoe' }], [{ value: '1', label: 'Ana' }, { value: '2', label: 'Zoe' }]))
+      .toEqual([{ value: '1', label: 'Ana' }, { value: '2', label: 'Zoe' }])
   })
 })

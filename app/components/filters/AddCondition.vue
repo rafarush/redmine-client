@@ -4,7 +4,12 @@ import { PopoverContent, PopoverPortal, PopoverRoot, PopoverTrigger } from 'reka
 import { FIELD_META } from '../../../shared/redmine/filter-fields'
 
 /** "+ Filtro": ofrece los campos que aún no están en la frase. */
-defineProps<{ fields: FilterField[], open: boolean }>()
+defineProps<{
+  fields: FilterField[]
+  open: boolean
+  /** Nombre de cada campo; hace falta para los personalizados (F2-T10). */
+  labels?: (field: FilterField) => string
+}>()
 const emit = defineEmits<{ 'update:open': [open: boolean], 'pick': [field: FilterField] }>()
 </script>
 
@@ -38,7 +43,7 @@ const emit = defineEmits<{ 'update:open': [open: boolean], 'pick': [field: Filte
           class="flex min-h-[var(--control-min)] w-full items-center rounded-[var(--radius-control)] px-2 text-left text-[length:var(--text-body)] text-content hover:bg-surface"
           @click="emit('pick', field)"
         >
-          {{ FIELD_META[field]?.label }}
+          {{ labels ? labels(field) : FIELD_META[field]?.label }}
         </button>
       </PopoverContent>
     </PopoverPortal>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FilterCondition, FilterField, FilterSentence } from '../../../shared/redmine/filters'
-import type { FilterOption } from '../../../shared/redmine/filter-fields'
-import { availableFields, emptyCondition, FIELD_META, removeLast, setValues, toggleValue } from '../../../shared/redmine/filter-fields'
+import type { CustomFieldDef, FieldMeta, FilterOption } from '../../../shared/redmine/filter-fields'
+import { availableFields, emptyCondition, fieldMeta, removeLast, setValues, toggleValue } from '../../../shared/redmine/filter-fields'
 import { conditionFor, describe, describeConditionParts, withoutField } from '../../../shared/redmine/filters'
 
 /**
@@ -11,13 +11,25 @@ import { conditionFor, describe, describeConditionParts, withoutField } from '..
  */
 const props = defineProps<{
   modelValue: FilterSentence
-  /** Personas vistas en la lista actual (Redmine no deja listar usuarios a quien no es admin). */
+  /**
+   * Personas que ofrecer en "Asignado a" y "Autor": miembros de los proyectos y las
+   * vistas en la lista (Redmine no deja listar usuarios a quien no es admin).
+   */
   people?: FilterOption[]
+  /** Campos personalizados filtrables (F2-T10). */
+  customFields?: CustomFieldDef[]
 }>()
 const emit = defineEmits<{ 'update:modelValue': [sentence: FilterSentence] }>()
 
-const options = useFilterOptions(() => props.people ?? [])
-const lookup = (field: FilterField, value: string) => options(field).find(o => o.value === value)?.label
+const customFields = computed(() => props.customFields ?? [])
+const options = useFilterOptions(() => props.people ?? [], customFields)
+/** Un `cf_` de un enlace viejo que ya no se conoce se edita como texto. */
+const metaOf = (field: FilterField): FieldMeta => fieldMeta(field, customFields.value) ?? { label: 'Campo personalizado', kind: 'text' }
+const lookup = (field: FilterField, value: string) => {
+  // Sin valor, la frase pide cómo nombrar el campo personalizado: "con Cliente".
+  if (value === '' && field.startsWith('cf_')) return `con ${metaOf(field).label}`
+  return options(field).find(o => o.value === value)?.label
+}
 const summary = computed(() => describe(props.modelValue, lookup))
 
 /** Campo cuyo popover está abierto; `'add'` es el selector de "+ Filtro". */
@@ -33,7 +45,7 @@ const conditions = computed(() => {
   return list
 })
 
-const addable = computed(() => availableFields({ conditions: conditions.value }))
+const addable = computed(() => availableFields({ conditions: conditions.value }, customFields.value))
 
 watch(openField, (field) => {
   if (pending.value && field !== pending.value.field) pending.value = null
@@ -49,7 +61,7 @@ function setOpen(key: FilterField | 'add', open: boolean): void {
 }
 
 function pick(field: FilterField): void {
-  pending.value = emptyCondition(field)
+  pending.value = emptyCondition(field, customFields.value)
   openField.value = field
 }
 
@@ -148,7 +160,7 @@ const showRow = computed(() => !compact.value || expanded.value)
       >
         <FiltersFilterToken
           :condition="condition"
-          :meta="FIELD_META[condition.field]!"
+          :meta="metaOf(condition.field)"
           :lead="describeConditionParts(condition, lookup).lead"
           :text="describeConditionParts(condition, lookup).value"
           :options="options(condition.field)"
@@ -167,6 +179,7 @@ const showRow = computed(() => !compact.value || expanded.value)
 
       <FiltersAddCondition
         :fields="addable"
+        :labels="(field: FilterField) => metaOf(field).label"
         :open="openField === 'add'"
         @update:open="setOpen('add', $event)"
         @pick="pick"

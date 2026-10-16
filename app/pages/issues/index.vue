@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FilterOption } from '../../../shared/redmine/filter-fields'
 import type { FilterSentence } from '../../../shared/redmine/filters'
 import type { IssueSort } from '../../../shared/redmine/issue-query'
 import type { Issue } from '../../../shared/redmine/types'
@@ -50,15 +49,8 @@ function openIssue(issue: Issue): void {
   void navigateTo(`/issues/${issue.id}`)
 }
 
-/** Personas que aparecen en la lista, para ofrecerlas en "Asignado a" y "Autor". */
-const people = computed<FilterOption[]>(() => {
-  const seen = new Map<number, string>()
-  for (const issue of issues.value) {
-    if (issue.assigned_to) seen.set(issue.assigned_to.id, issue.assigned_to.name)
-    if (issue.author) seen.set(issue.author.id, issue.author.name)
-  }
-  return [...seen].map(([id, name]) => ({ value: String(id), label: name }))
-})
+/** Personas y campos personalizados que ofrece la frase (F2-T10). */
+const { people, customFields } = useFilterCatalog(sentence, issues)
 </script>
 
 <template>
@@ -87,6 +79,7 @@ const people = computed<FilterOption[]>(() => {
       v-else
       :model-value="sentence"
       :people="people"
+      :custom-fields="customFields"
       @update:model-value="setSentence"
     >
       <template #trailing>

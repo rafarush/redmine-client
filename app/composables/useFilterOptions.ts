@@ -1,7 +1,8 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { FilterOption } from '../../shared/redmine/filter-fields'
+import type { CustomFieldDef, FilterOption } from '../../shared/redmine/filter-fields'
 import type { FilterField } from '../../shared/redmine/filters'
 import { toValue } from 'vue'
+import { customFieldKey } from '../../shared/redmine/filter-fields'
 
 const STATUS_SHORTCUTS: FilterOption[] = [
   { value: 'open', label: 'Cualquier estado abierto' },
@@ -14,7 +15,7 @@ const STATUS_SHORTCUTS: FilterOption[] = [
  * sesión: solo proyectos visibles, solo estados y tipos que existen.
  * Devuelve una función `campo → opciones`.
  */
-export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>) {
+export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>, customFields: MaybeRefOrGetter<CustomFieldDef[]> = []) {
   const session = useSessionStore()
   const toOptions = (items: { id: number, name: string }[]): FilterOption[] =>
     items.map(item => ({ value: String(item.id), label: item.name }))
@@ -35,7 +36,7 @@ export function useFilterOptions(people: MaybeRefOrGetter<FilterOption[]>) {
       case 'author_id':
         return [{ value: 'me', label: 'Yo' }, ...toValue(people)]
       default:
-        return []
+        return toValue(customFields).find(def => customFieldKey(def) === field)?.options ?? []
     }
   }
 }

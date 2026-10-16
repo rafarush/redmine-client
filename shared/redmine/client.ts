@@ -150,6 +150,15 @@ export class RedmineClient {
     await this.transport.request({ method: 'PUT', path: `/versions/${id}.json`, body: { version } })
   }
 
+  /**
+   * Definiciones de los campos personalizados (F2-T10). Redmine solo las da a
+   * administradores: para el resto lanza 403. Se devuelven en crudo.
+   */
+  async listCustomFields(): Promise<unknown[]> {
+    const { custom_fields } = await this.transport.request<{ custom_fields?: unknown[] }>({ path: '/custom_fields.json' })
+    return custom_fields ?? []
+  }
+
   async listVersions(projectId: string | number): Promise<Version[]> {
     return this.getAll<Version>(`/projects/${projectId}/versions.json`, 'versions', versionSchema)
   }
