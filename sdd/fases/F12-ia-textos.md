@@ -42,8 +42,9 @@
   - _Acepta:_ solo propone valores que existen en el proyecto.
   - _Hecho:_ dce76ba. En `NewIssueDialog.vue`: propuesta con "Aplicar" por campo y "Aplicar todo", que no cambia descripción ni estimación ya escritas (uno a uno dice "Reemplazar"). Valores mapeados con `resolveSuggestion`. Pendiente de verificar en el navegador.
 
-- [ ] **F12-T07** e2e — mejorar y reemplazar, tono personalizado y texto fantasma con el motor simulado (1280 y 375).
+- [x] **F12-T07** e2e — mejorar y reemplazar, tono personalizado y texto fantasma con el motor simulado (1280 y 375).
   - _Depende:_ F12-T04, F12-T05, F12-T06
+  - _Hecho:_ 691768f. `tests/e2e/ai.spec.ts` (1280 y 375) con `/api/ai/*` simulado: tono nuevo en Ajustes, mejorar lo seleccionado y reemplazar con Deshacer, texto fantasma con Tab y sugerir campos sin pisar lo escrito. De paso: "Ajustes" en el menú de cuenta (antes solo desde el workspace) y el Deshacer de un aviso ya no cierra el diálogo abierto.
 
 ## Definición de hecho
 
