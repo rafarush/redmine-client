@@ -47,7 +47,11 @@ const conditions = computed(() => {
 
 const addable = computed(() => availableFields({ conditions: conditions.value }, customFields.value))
 
+/** Entre elegir el campo y abrir su editor no se descarta la condición pendiente. */
+let opening = false
+
 watch(openField, (field) => {
+  if (opening) return
   if (pending.value && field !== pending.value.field) pending.value = null
 })
 
@@ -62,7 +66,14 @@ function setOpen(key: FilterField | 'add', open: boolean): void {
 
 function pick(field: FilterField): void {
   pending.value = emptyCondition(field, customFields.value)
-  openField.value = field
+  // Se cierra el selector y, ya con el foco asentado, se abre el editor del token nuevo;
+  // si se abre a la vez, el cambio de foco lo descarta al instante.
+  opening = true
+  openField.value = null
+  setTimeout(() => {
+    opening = false
+    if (pending.value?.field === field) openField.value = field
+  }, 50)
 }
 
 function focusFirst(): void {
