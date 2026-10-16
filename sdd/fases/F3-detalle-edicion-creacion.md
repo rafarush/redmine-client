@@ -11,9 +11,10 @@
   - _Acepta:_ abrir otra tarea desde la lista reemplaza el panel sin recargar; `Esc` cierra el panel y devuelve el foco a la fila.
   - _Nota (2026-10-15):_ adelantada una primera versión como página `/issues/:id` (código en inglés, ver CLAUDE.md), para el clic del workspace (F2c-T10): cabecera, cronómetro y flujo, descripción en texto plano, comentarios y datos. Falta el split view junto a la lista, `Esc` y recordar el ancho.
 
-- [ ] **F3-T02** Edición inline de campos — estado (con `allowed_statuses`), asignado, prioridad, versión, categoría, fechas, estimación, % hecho y campos personalizados según tipo (lista, fecha, número, booleano, usuario, texto). Cada campo se guarda solo, con indicador "Guardado" y Deshacer. Campos sin permiso de edición se muestran como texto.
+- [~] **F3-T02** Edición inline de campos — estado (con `allowed_statuses`), asignado, prioridad, versión, categoría, fechas, estimación, % hecho y campos personalizados según tipo (lista, fecha, número, booleano, usuario, texto). Cada campo se guarda solo, con indicador "Guardado" y Deshacer. Campos sin permiso de edición se muestran como texto.
   - _Depende:_ F3-T01, F1-T07
   - _Acepta:_ errores 422 aparecen junto al campo; un usuario con `edit_own_issues` solo edita las suyas.
+  - _Hecho:_ 529586b. `issues/IssueFields.vue` sustituye al panel de datos de `/issues/:id`: estado (`allowed_statuses`), asignada (miembros), prioridad, sprint (versiones abiertas), categoría, fechas (coherentes entre sí), estimado (número suelto = horas, también > 24) y % hecho, más los campos personalizados de un valor como texto (sin admin no se conoce su tipo). Enter o elegir guarda, Esc cancela, "Guardado" junto al campo y "Deshacer" en el aviso; un 422 sale bajo el campo. `canEditIssue` y `toFieldPayload` en `shared/redmine/issue-fields.ts`, con tests. Pendiente de verificar.
 
 - [~] **F3-T03** Descripción y formato de texto — render de textile o markdown según la detección (`03-api-redmine.md › Riesgos`), sanitizado con DOMPurify. Edición con un textarea con preview y atajos básicos (negrita, lista, código). Preferencia manual del formato en Preferencias.
   - _Depende:_ F3-T01
