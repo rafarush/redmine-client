@@ -14,7 +14,7 @@ import { RedmineError } from '../../../shared/redmine/transport'
 const DRAFT_KEY = 'redmine-client:new-issue-draft'
 const PROJECT_KEY = 'redmine-client:new-issue-project'
 
-const { isOpen } = useNewIssue()
+const { isOpen, prefill } = useNewIssue()
 const redmine = useRedmine()
 const session = useSessionStore()
 const toasts = useToastStore()
@@ -58,7 +58,16 @@ function defaultPriority(): string {
 /** Al abrir: el borrador guardado, o uno nuevo en el último proyecto usado. */
 function prepare(): void {
   const saved = sanitizeDraft(JSON.parse(read(DRAFT_KEY) ?? 'null'))
-  if (saved && isDraftDirty(saved) && projects.value.some(p => String(p.id) === saved.project_id)) {
+  if (prefill.value) {
+    // "Duplicar" (F3-T08): manda sobre el borrador guardado.
+    draft.value = prefill.value
+    prefill.value = null
+    // Sin `add_issues` en el proyecto de origen, la copia va al primero donde sí se puede.
+    if (!projects.value.some(p => String(p.id) === draft.value.project_id)) {
+      draft.value.project_id = projects.value[0] ? String(projects.value[0].id) : ''
+    }
+  }
+  else if (saved && isDraftDirty(saved) && projects.value.some(p => String(p.id) === saved.project_id)) {
     draft.value = saved
   }
   else {

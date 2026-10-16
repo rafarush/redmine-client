@@ -135,6 +135,64 @@ export function toCreatePayload(draft: IssueDraft): Record<string, unknown> {
   return payload
 }
 
+/** Lo que se copia de una tarea al duplicarla (F3-T08). El asunto lleva "(copia)" para distinguirla. */
+export interface DuplicableIssue {
+  project: { id: number }
+  tracker: { id: number }
+  subject: string
+  description?: string | null
+  assigned_to?: { id: number }
+  priority: { id: number }
+  fixed_version?: { id: number }
+  category?: { id: number }
+  start_date?: string | null
+  due_date?: string | null
+  estimated_hours?: number | null
+  parent?: { id: number }
+  custom_fields?: { id: number, value: string | string[] | null, multiple?: boolean }[]
+}
+
+export function draftFromIssue(issue: DuplicableIssue): IssueDraft {
+  const id = (ref?: { id: number }) => ref ? String(ref.id) : ''
+  const custom: Record<string, string> = {}
+  for (const field of issue.custom_fields ?? []) {
+    if (!field.multiple && typeof field.value === 'string' && field.value) custom[String(field.id)] = field.value
+  }
+  return emptyDraft({
+    project_id: id(issue.project),
+    tracker_id: id(issue.tracker),
+    subject: `${issue.subject} (copia)`.slice(0, 255),
+    description: issue.description ?? '',
+    assigned_to_id: id(issue.assigned_to),
+    priority_id: id(issue.priority),
+    fixed_version_id: id(issue.fixed_version),
+    category_id: id(issue.category),
+    start_date: issue.start_date ?? '',
+    due_date: issue.due_date ?? '',
+    estimated_hours: issue.estimated_hours ? String(issue.estimated_hours) : '',
+    parent_issue_id: id(issue.parent),
+    custom,
+  })
+}
+
+/**
+ * Mover a otro proyecto: si el tipo actual no existe allí hay que elegir otro antes
+ * de guardar. Devuelve el cuerpo del `PUT` o qué falta.
+ */
+export function movePayload(
+  target: { id: number, trackers?: { id: number }[] },
+  currentTrackerId: number,
+  chosenTrackerId?: number,
+): { ok: true, payload: Record<string, unknown> } | { ok: false, needsTracker: true } {
+  const trackers = target.trackers ?? []
+  const keeps = trackers.length === 0 || trackers.some(t => t.id === currentTrackerId)
+  if (keeps && chosenTrackerId === undefined) return { ok: true, payload: { project_id: target.id } }
+  if (chosenTrackerId !== undefined && (trackers.length === 0 || trackers.some(t => t.id === chosenTrackerId))) {
+    return { ok: true, payload: { project_id: target.id, tracker_id: chosenTrackerId } }
+  }
+  return { ok: false, needsTracker: true }
+}
+
 /** "Crear y otra": se queda el proyecto, el tipo y la prioridad; lo demás se vacía. */
 export function nextDraft(draft: IssueDraft): IssueDraft {
   return emptyDraft({ project_id: draft.project_id, tracker_id: draft.tracker_id, priority_id: draft.priority_id })

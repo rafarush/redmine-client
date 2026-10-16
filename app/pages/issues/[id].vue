@@ -2,6 +2,8 @@
 import type { Issue, Paginated } from '../../../shared/redmine/types'
 import { useQuery } from '@tanstack/vue-query'
 import { PRIORITY_ICON, priorityLevel, projectCode } from '../../../shared/redmine/issue-display'
+import { canEditIssue } from '../../../shared/redmine/issue-fields'
+import { draftFromIssue } from '../../../shared/redmine/new-issue'
 import { formatClock } from '../../../shared/time/duration'
 import { elapsedMs, timerFor } from '../../../shared/workspace/flow'
 
@@ -23,6 +25,13 @@ const session = useSessionStore()
 const workspace = useWorkspaceStore()
 const flow = useCardFlow()
 const menu = useIssueMenu()
+const newIssue = useNewIssue()
+
+/** Mover (F3-T08): editar la tarea aquí y poder crear tareas en algún otro proyecto. */
+const moving = ref(false)
+const canMove = computed(() => !!issue.value
+  && canEditIssue(issue.value, session.user?.id, (p, projectId) => session.can(p, projectId))
+  && session.catalogs.projects.some(p => p.id !== issue.value!.project.id && p.status === 1 && session.can('add_issues', p.id)))
 
 const id = computed(() => Number(route.params.id))
 
@@ -103,6 +112,22 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
         @click="menu.openAt(issue, $event.currentTarget as Element)"
       />
       <UiButton
+        v-if="issue && newIssue.allowed.value"
+        label="Duplicar"
+        icon="lucide:copy-plus"
+        icon-only
+        variant="ghost"
+        @click="newIssue.openWith(draftFromIssue(issue))"
+      />
+      <UiButton
+        v-if="issue && canMove"
+        label="Mover a proyecto"
+        icon="lucide:folder-input"
+        icon-only
+        variant="ghost"
+        @click="moving = true"
+      />
+      <UiButton
         label="Abrir en Redmine"
         icon="lucide:external-link"
         icon-only
@@ -110,6 +135,12 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
         @click="openInRedmine"
       />
     </Teleport>
+
+    <IssuesIssueMoveDialog
+      v-if="issue"
+      v-model:open="moving"
+      :issue="issue"
+    />
 
     <div
       v-if="query.isPending.value"

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { emptyDraft, isDraftDirty, nextDraft, sanitizeDraft, toCreatePayload, validateDraft } from '../../shared/redmine/new-issue'
+import { draftFromIssue, emptyDraft, isDraftDirty, movePayload, nextDraft, sanitizeDraft, toCreatePayload, validateDraft } from '../../shared/redmine/new-issue'
 
 const base = emptyDraft({ project_id: '1', tracker_id: '2', priority_id: '4' })
 
@@ -49,5 +49,30 @@ describe('borrador', () => {
   it('limpia lo guardado', () => {
     expect(sanitizeDraft({ subject: 'Hola', project_id: 3, custom: { 7: 'x', no: 'y' } })).toEqual(emptyDraft({ subject: 'Hola', custom: { 7: 'x' } }))
     expect(sanitizeDraft('basura')).toBeNull()
+  })
+})
+
+describe('duplicar y mover (F3-T08)', () => {
+  it('duplicar copia los campos y marca el asunto', () => {
+    const draft = draftFromIssue({
+      project: { id: 1 },
+      tracker: { id: 2 },
+      subject: 'Login',
+      description: 'Texto',
+      priority: { id: 4 },
+      assigned_to: { id: 5 },
+      due_date: '2026-10-20',
+      estimated_hours: 3,
+      custom_fields: [{ id: 7, value: 'Acme' }, { id: 8, value: ['a'], multiple: true }],
+    })
+    expect(draft).toMatchObject({ project_id: '1', tracker_id: '2', subject: 'Login (copia)', assigned_to_id: '5', due_date: '2026-10-20', estimated_hours: '3', custom: { 7: 'Acme' } })
+  })
+
+  it('mover pide tipo si el actual no existe en el destino', () => {
+    const target = { id: 9, trackers: [{ id: 1 }, { id: 3 }] }
+    expect(movePayload(target, 1)).toEqual({ ok: true, payload: { project_id: 9 } })
+    expect(movePayload(target, 2)).toEqual({ ok: false, needsTracker: true })
+    expect(movePayload(target, 2, 3)).toEqual({ ok: true, payload: { project_id: 9, tracker_id: 3 } })
+    expect(movePayload(target, 2, 5)).toEqual({ ok: false, needsTracker: true })
   })
 })
