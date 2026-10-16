@@ -41,9 +41,10 @@
   - _Acepta:_ crear una tarea con el teclado solo (N, escribir, Tab, Ctrl+Enter); el toast dice "Tarea #N creada" con enlace; solo aparecen proyectos donde hay `add_issues`.
   - _Hecho:_ 3743d5b. `issues/NewIssueDialog.vue`, una instancia en el layout; `useNewIssue` (botón de la toolbar y atajo `newIssue`) ya no abre Redmine, abre el diálogo. Proyectos activos con `add_issues`, recuerda el último; tipos del proyecto; asignada entre los miembros; prioridad por defecto. "Más campos": sprint, categoría, fechas, estimado, tarea padre y campos personalizados del proyecto (como texto). Validación con Zod (`shared/redmine/new-issue.ts`, con tests); un 422 de Redmine (p. ej. un campo obligatorio del tipo) sale arriba del formulario. Borrador en `localStorage`; cerrar con algo escrito pregunta *Seguir editando* / *Descartar* dentro del mismo diálogo (un solo modal). Mod+Enter crea, Mod+Shift+Enter o "Crear y otra" mantiene proyecto, tipo y prioridad. Aviso "Tarea #N creada" con "Abrir". "Nueva tarea" en la paleta (pendiente de F2-T07). Pendiente de verificar.
 
-- [ ] **F3-T08** Copiar y mover — "Duplicar" (abre el diálogo prellenado) y "Mover a proyecto" según permisos.
+- [~] **F3-T08** Copiar y mover — "Duplicar" (abre el diálogo prellenado) y "Mover a proyecto" según permisos.
   - _Depende:_ F3-T07
   - _Acepta:_ mover a un proyecto sin el tracker actual pide elegir uno nuevo antes de guardar.
+  - _Hecho:_ 6ceff3c. En la barra de `/issues/:id`: "Duplicar" abre "Nueva tarea" con la tarea copiada (`draftFromIssue`, asunto con "(copia)"; si no puedes crear en su proyecto, va al primero donde sí) y "Mover a proyecto" (`issues/IssueMoveDialog.vue`) con destinos activos con `add_issues`, visible si puedes editar la tarea. Sin el tipo actual en el destino, el botón queda apagado hasta elegir otro (`movePayload`, con tests). Pendiente de verificar.
 
 ## Definición de hecho
 
