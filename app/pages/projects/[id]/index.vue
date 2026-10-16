@@ -50,6 +50,7 @@ const shortcuts = computed(() => {
   return [
     { label: 'Tareas', icon: 'lucide:ticket', permission: 'view_issues', to: issuesLink([...inProject.value, status('open')]) },
     { label: 'Roadmap', icon: 'lucide:flag', permission: 'view_issues', to: `/projects/${p.identifier}/versions` },
+    { label: 'Miembros', icon: 'lucide:users-round', permission: 'view_issues', to: `/projects/${p.identifier}/members` },
     { label: 'Tiempo', icon: 'lucide:timer', permission: 'view_time_entries', href: `${redmine}/projects/${p.identifier}/time_entries` },
     { label: 'Wiki', icon: 'lucide:book-open', permission: 'view_wiki_pages', href: `${redmine}/projects/${p.identifier}/wiki` },
     { label: 'Noticias', icon: 'lucide:newspaper', permission: 'view_news', href: `${redmine}/projects/${p.identifier}/news` },

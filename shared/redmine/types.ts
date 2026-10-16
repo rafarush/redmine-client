@@ -20,10 +20,12 @@ export const customFieldValueSchema = z.object({
 }).loose()
 export type CustomFieldValue = z.infer<typeof customFieldValueSchema>
 
-/** Persona asignable de un proyecto. Las membresías de grupo no tienen `user`. */
+/** Persona asignable de un proyecto. Las membresías de grupo no tienen `user`, sino `group`. */
 export const projectMemberSchema = z.object({
   id: z.number(),
   user: refSchema.optional(),
+  group: refSchema.optional(),
+  roles: z.array(refSchema.extend({ inherited: z.boolean().optional() }).loose()).default([]),
 }).loose()
 export type ProjectMember = z.infer<typeof projectMemberSchema>
 

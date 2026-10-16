@@ -117,6 +117,20 @@ export class RedmineClient {
     return members.flatMap(m => m.user ? [m.user] : [])
   }
 
+  /** Membresías completas de un proyecto: personas y grupos, con sus roles (F6-T05). */
+  async listProjectMemberships(projectId: string | number): Promise<ProjectMember[]> {
+    return this.getAll<ProjectMember>(`/projects/${projectId}/memberships.json`, 'memberships', projectMemberSchema)
+  }
+
+  /** Personas de un grupo. Redmine solo lo deja ver a administradores: si no, lanza 403. */
+  async getGroupUsers(groupId: number): Promise<Ref[]> {
+    const { group } = await this.transport.request<{ group: { users?: unknown } }>({
+      path: `/groups/${groupId}.json`,
+      query: { include: 'users' },
+    })
+    return refSchema.array().parse(group.users ?? [])
+  }
+
   async listVersions(projectId: string | number): Promise<Version[]> {
     return this.getAll<Version>(`/projects/${projectId}/versions.json`, 'versions', versionSchema)
   }
