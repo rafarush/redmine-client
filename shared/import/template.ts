@@ -31,6 +31,15 @@ function listsFor(catalog: ImportCatalog): { header: string, values: string[] }[
   ]
 }
 
+/**
+ * `worksheet.dataValidations.add(rango, …)` existe en exceljs 4 pero sus tipos no lo
+ * declaran. Validar un rango entero evita 500 validaciones sueltas por columna.
+ */
+function addValidation(sheet: ExcelJS.Worksheet, range: string, validation: ExcelJS.DataValidation): void {
+  (sheet as unknown as { dataValidations: { add: (range: string, validation: ExcelJS.DataValidation) => void } })
+    .dataValidations.add(range, validation)
+}
+
 export function buildTemplate(catalog: ImportCatalog, now = new Date()): ExcelJS.Workbook {
   const workbook = new ExcelJS.Workbook()
   workbook.creator = 'Redmine Client'
@@ -87,7 +96,7 @@ export function buildTemplate(catalog: ImportCatalog, now = new Date()): ExcelJS
     const target = indexOf(list.header)
     if (target <= 0 || list.values.length === 0) return
     const letter = columnLetter(target)
-    sheet.dataValidations.add(`${letter}${FIRST_DATA_ROW}:${letter}${last}`, {
+    addValidation(sheet, `${letter}${FIRST_DATA_ROW}:${letter}${last}`, {
       type: 'list',
       allowBlank: true,
       formulae: [`'${SHEET_LISTS}'!$${listColumn}$2:$${listColumn}$${list.values.length + 1}`],
@@ -101,7 +110,7 @@ export function buildTemplate(catalog: ImportCatalog, now = new Date()): ExcelJS
   for (const name of ['Fecha de inicio', 'Fecha de fin']) {
     const letter = columnLetter(indexOf(name))
     sheet.getColumn(indexOf(name)).numFmt = 'yyyy-mm-dd'
-    sheet.dataValidations.add(`${letter}${FIRST_DATA_ROW}:${letter}${last}`, {
+    addValidation(sheet, `${letter}${FIRST_DATA_ROW}:${letter}${last}`, {
       type: 'date',
       operator: 'greaterThan',
       allowBlank: true,

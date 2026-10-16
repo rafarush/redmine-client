@@ -1,6 +1,6 @@
 // @vitest-environment node
 import type { RawRow } from '../../shared/import/read'
-import ExcelJS from 'exceljs'
+import type ExcelJS from 'exceljs'
 import { describe, expect, it } from 'vitest'
 import { readWorkbook } from '../../shared/import/read'
 import { buildTemplate } from '../../shared/import/template'
@@ -72,7 +72,7 @@ describe('leer el libro', () => {
 describe('validar', () => {
   it('cada tipo de error en su celda', () => {
     const { errors, rows } = validateRows([
-      raw(3, { 'Fila': '1', 'Asunto': '', 'Tracker': 'Inventado' }),
+      raw(3, { Fila: '1', Asunto: '', Tracker: 'Inventado' }),
       raw(4, { 'Fila': '2', 'Asunto': 'x', 'Tracker': 'Tareas', 'Fecha de inicio': '2026-10-20', 'Fecha de fin': '2026-10-10', 'Estimación (h)': 'mucho' }),
       raw(5, { 'Fila': '3', 'Asunto': 'x', 'Tracker': 'Tareas', 'Fecha de inicio': '31/02/2026', 'Cliente': 'Gamma', 'Padre (fila)': '9' }),
       raw(6, { 'Fila': '4', 'Asunto': 'x', 'Tracker': 'Tareas', 'Padre (fila)': '#77' }),
