@@ -1,8 +1,28 @@
 <script setup lang="ts">
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuPortal, DropdownMenuRoot, DropdownMenuSeparator, DropdownMenuTrigger } from 'reka-ui'
+import type { FormatPreference } from '../../../shared/redmine/rich-text'
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuItemIndicator,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuRoot,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from 'reka-ui'
 
 /** Quién eres, contra qué Redmine, y cómo salir (F1-T08). */
 const session = useSessionStore()
+const preferences = usePreferencesStore()
+
+/** Formato del texto de Redmine (F3-T03): la API no lo dice, así que se adivina o se fija aquí. */
+const FORMATS: { value: FormatPreference, label: string }[] = [
+  { value: 'auto', label: 'Detectar solo' },
+  { value: 'textile', label: 'Textile' },
+  { value: 'markdown', label: 'Markdown' },
+]
 
 /** Host sin esquema: lo que identifica la instancia de un vistazo. */
 const host = computed(() => session.url.replace(/^https?:\/\//, ''))
@@ -54,6 +74,35 @@ async function disconnect(): Promise<void> {
           />
           Abrir en Redmine
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator class="my-1 h-px bg-separator" />
+
+        <DropdownMenuLabel :class="MENU_LABEL">
+          Formato del texto
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          :model-value="preferences.textFormat"
+          @update:model-value="preferences.setTextFormat($event as FormatPreference)"
+        >
+          <DropdownMenuRadioItem
+            v-for="format in FORMATS"
+            :key="format.value"
+            :value="format.value"
+            :class="MENU_ITEM"
+            @select.prevent
+          >
+            <span class="grid size-4 place-items-center">
+              <DropdownMenuItemIndicator>
+                <Icon
+                  name="lucide:check"
+                  class="size-4"
+                  aria-hidden="true"
+                />
+              </DropdownMenuItemIndicator>
+            </span>
+            {{ format.label }}
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
 
         <DropdownMenuSeparator class="my-1 h-px bg-separator" />
 

@@ -8,8 +8,7 @@ import { formatHours } from '../../../../shared/time/duration'
  * están habilitados y que el usuario puede ver, tareas por tracker (abiertas y
  * cerradas) y horas del mes. Cada número es un enlace a la lista ya filtrada.
  *
- * La descripción va como texto plano: el render de textile/markdown sanitizado
- * llega con F3-T03 y se reutilizará aquí.
+ * La descripción usa el mismo render saneado que las tareas (F3-T03).
  */
 definePageMeta({ title: 'Proyecto' })
 
@@ -248,9 +247,10 @@ const dueFormat = new Intl.DateTimeFormat('es', { day: 'numeric', month: 'long' 
                 Descripción
               </h2>
             </template>
-            <p class="whitespace-pre-wrap break-words px-4 pb-4 leading-relaxed">
-              {{ description }}
-            </p>
+            <TextRichText
+              :text="description"
+              class="px-4 pb-4"
+            />
           </UiPanel>
         </div>
 

@@ -162,12 +162,11 @@ function submit(): void {
               {{ change.text }}
             </li>
           </ul>
-          <p
+          <TextRichText
             v-if="item.notes"
-            class="mt-1 whitespace-pre-wrap break-words"
-          >
-            {{ item.notes }}
-          </p>
+            :text="item.notes"
+            class="mt-1"
+          />
         </div>
       </li>
     </ol>

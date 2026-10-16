@@ -251,25 +251,7 @@ const STAGE_LABEL = { idle: 'Pendiente', in_progress: 'En curso', done: 'Complet
 
       <div class="grid items-start gap-4 wide:grid-cols-[minmax(0,1fr)_20rem]">
         <div class="flex min-w-0 flex-col gap-4">
-          <UiPanel label="Descripción">
-            <template #header>
-              <h2 class="panel-label !text-content">
-                Descripción
-              </h2>
-            </template>
-            <p
-              v-if="issue.description?.trim()"
-              class="whitespace-pre-wrap break-words px-4 pb-4 leading-relaxed"
-            >
-              {{ issue.description }}
-            </p>
-            <p
-              v-else
-              class="px-4 pb-4 text-secondary"
-            >
-              Sin descripción.
-            </p>
-          </UiPanel>
+          <IssuesIssueDescription :issue="issue" />
 
           <IssuesIssueHistory :issue="issue" />
         </div>
