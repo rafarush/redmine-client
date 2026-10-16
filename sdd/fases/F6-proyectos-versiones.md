@@ -21,9 +21,10 @@
   - _Acepta:_ el avance coincide con el roadmap de Redmine para la misma versión.
   - _Hecho:_ 2e10178. `versionProgress` replica `Version#completed_percent` (peso por estimación, media si falta, cerradas al 100 %). Pendiente de comparar con el roadmap de Redmine.
 
-- [ ] **F6-T04** Detalle de versión — tareas de la versión agrupadas por estado, con la misma tabla de F2; acciones de `manage_versions` (editar fecha, estado, descripción) si el permiso existe.
+- [~] **F6-T04** Detalle de versión — tareas de la versión agrupadas por estado, con la misma tabla de F2; acciones de `manage_versions` (editar fecha, estado, descripción) si el permiso existe.
   - _Depende:_ F6-T03, F2-T03
   - _Acepta:_ sin `manage_versions` no se ve ninguna acción de edición.
+  - _Hecho:_ f30cd9b. `/projects/:id/versions/:versionId` (el roadmap pasa a `versions/index.vue` y cada versión enlaza a su detalle). Avance, tareas agrupadas por estado en el orden del catálogo y "Abrir en la lista" con la versión filtrada. Desviación: los grupos usan filas compactas, no la tabla virtualizada de F2, que no está pensada para varias instancias en una página; la tabla completa queda a un clic. Editar fecha, estado y descripción solo con `manage_versions` en el proyecto dueño de la versión (`getVersion`/`updateVersion` en el cliente). Pendiente de verificar.
 
 - [~] **F6-T05** Miembros — lista de miembros del proyecto con roles; clic lleva a "tareas asignadas a *persona* en este proyecto".
   - _Depende:_ F6-T02
