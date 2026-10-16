@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
       @update:model-value="setMode"
     />
 
-    <KanbanKanbanView
+    <KanbanView
       v-if="board"
       :board="board"
       :mode="mode"

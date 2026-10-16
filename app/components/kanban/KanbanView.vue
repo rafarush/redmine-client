@@ -114,6 +114,30 @@ function onKeydown(event: KeyboardEvent): void {
   }
 }
 
+// Colapsar: filas (sprints de la matriz) y columnas (se pliegan a una tira, en todas las filas a la vez para que sigan alineadas).
+// Las filas empiezan colapsadas: se guardan las abiertas, así las que llegan después también lo están.
+const expandedRows = ref(new Set<string>())
+const collapsedLanes = ref(new Set<string>())
+const isLaneCollapsed = (laneId: number | null) => props.mode === 'matrix' && collapsedLanes.value.has(laneKey(laneId))
+const laneKey = (laneId: number | null) => String(laneId ?? 'none')
+const rowKey = (rowId: number | null) => String(rowId ?? 'none')
+
+function toggleCollapsed(kind: 'rows' | 'lanes', key: string): void {
+  const target = kind === 'rows' ? expandedRows : collapsedLanes
+  const next = new Set(target.value)
+  if (!next.delete(key)) next.add(key)
+  target.value = next
+}
+
+// Solo en la matriz (estado / sprint) hay colapso: el botón global pliega los sprints.
+const collapsibleKeys = computed(() => props.mode === 'matrix' ? rows.value.map(row => rowKey(row.id)) : [])
+const isCollapsed = (key: string) => !expandedRows.value.has(key)
+const allCollapsed = computed(() => collapsibleKeys.value.length > 0 && collapsibleKeys.value.every(isCollapsed))
+function toggleAll(): void {
+  const collapse = !allCollapsed.value
+  expandedRows.value = collapse ? new Set() : new Set(collapsibleKeys.value)
+}
+
 const LANE_ICON: Record<KanbanMode, string> = { status: 'lucide:circle-dot', sprint: 'lucide:flag', matrix: 'lucide:circle-dot' }
 </script>
 
@@ -152,6 +176,17 @@ const LANE_ICON: Record<KanbanMode, string> = { status: 'lucide:circle-dot', spr
     </div>
 
     <template v-else>
+      <div
+        v-if="collapsibleKeys.length > 1"
+        class="flex justify-end"
+      >
+        <UiButton
+          :label="allCollapsed ? 'Expandir sprints' : 'Colapsar sprints'"
+          :icon="allCollapsed ? 'lucide:chevrons-up-down' : 'lucide:chevrons-down-up'"
+          variant="ghost"
+          @click="toggleAll"
+        />
+      </div>
       <section
         v-for="row in rows"
         :key="row.id ?? 'none'"
@@ -160,23 +195,57 @@ const LANE_ICON: Record<KanbanMode, string> = { status: 'lucide:circle-dot', spr
       >
         <h2
           v-if="row.label"
-          class="flex items-center gap-2 text-[15px] font-semibold"
+          class="text-[15px] font-semibold"
         >
-          <Icon
-            name="lucide:flag"
-            class="size-4 text-tertiary"
-            aria-hidden="true"
-          />
-          {{ row.label }}
-          <span class="data text-[length:var(--text-caption)] font-normal text-secondary">
-            {{ row.lanes.reduce((sum, lane) => sum + lane.issues.length, 0) }}
-          </span>
+          <button
+            type="button"
+            class="flex items-center gap-2 rounded-md py-1 pr-2 text-left hover:bg-fill-selected"
+            :aria-expanded="expandedRows.has(rowKey(row.id))"
+            @click="toggleCollapsed('rows', rowKey(row.id))"
+          >
+            <Icon
+              name="lucide:chevron-down"
+              class="size-4 text-tertiary transition-transform"
+              :class="!expandedRows.has(rowKey(row.id)) && '-rotate-90'"
+              aria-hidden="true"
+            />
+            <Icon
+              name="lucide:flag"
+              class="size-4 text-tertiary"
+              aria-hidden="true"
+            />
+            {{ row.label }}
+            <span class="data text-[length:var(--text-caption)] font-normal text-secondary">
+              {{ row.lanes.reduce((sum, lane) => sum + lane.issues.length, 0) }}
+            </span>
+          </button>
         </h2>
 
-        <div class="flex min-h-0 gap-3 overflow-x-auto pb-2">
+        <div
+          v-show="!row.label || expandedRows.has(rowKey(row.id))"
+          class="flex min-h-0 gap-3 overflow-x-auto pb-2"
+        >
+          <button
+            v-for="lane in row.lanes.filter(l => isLaneCollapsed(l.id))"
+            :key="`c-${lane.id ?? 'none'}`"
+            type="button"
+            class="flex w-11 shrink-0 flex-col items-center gap-2 rounded-[var(--radius-surface)] border border-separator bg-sidebar py-3 hover:bg-fill-selected"
+            :style="{ order: row.lanes.indexOf(lane) }"
+            :aria-label="`Expandir ${lane.label}, ${lists[keyOf(row.id, lane.id)]?.length ?? 0} tareas`"
+            @click="toggleCollapsed('lanes', laneKey(lane.id))"
+          >
+            <Icon
+              name="lucide:chevrons-left-right"
+              class="size-3.5 text-tertiary"
+              aria-hidden="true"
+            />
+            <span class="data text-[length:var(--text-caption)] text-secondary">{{ lists[keyOf(row.id, lane.id)]?.length ?? 0 }}</span>
+            <span class="panel-label !text-content [writing-mode:vertical-rl]">{{ lane.label }}</span>
+          </button>
           <div
-            v-for="lane in row.lanes"
+            v-for="lane in row.lanes.filter(l => !isLaneCollapsed(l.id))"
             :key="lane.id ?? 'none'"
+            :style="{ order: row.lanes.indexOf(lane) }"
             class="flex w-72 shrink-0 flex-col rounded-[var(--radius-surface)] border border-separator bg-sidebar"
             role="group"
             :aria-label="`${lane.label}, ${lists[keyOf(row.id, lane.id)]?.length ?? 0} tareas`"
@@ -189,6 +258,14 @@ const LANE_ICON: Record<KanbanMode, string> = { status: 'lucide:circle-dot', spr
               />
               <span class="panel-label !text-content">{{ lane.label }}</span>
               <span class="data ml-auto text-[length:var(--text-caption)] text-secondary">{{ lists[keyOf(row.id, lane.id)]?.length ?? 0 }}</span>
+              <UiButton
+                v-if="mode === 'matrix'"
+                :label="`Colapsar ${lane.label}`"
+                icon="lucide:chevrons-right-left"
+                icon-only
+                variant="ghost"
+                @click="toggleCollapsed('lanes', laneKey(lane.id))"
+              />
             </header>
             <VueDraggable
               v-model="lists[keyOf(row.id, lane.id)]!"
