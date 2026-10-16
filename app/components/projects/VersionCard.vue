@@ -12,6 +12,8 @@ const props = defineProps<{
   version: Version
   /** Para el enlace a sus tareas. */
   projectId: number
+  /** Para el enlace a su detalle. */
+  projectIdentifier: string
   load: boolean
 }>()
 
@@ -53,7 +55,10 @@ const link = computed(() => issuesLink([
   >
     <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
       <h3 class="text-[length:var(--text-title)] font-semibold">
-        {{ version.name }}
+        <NuxtLink
+          :to="`/projects/${projectIdentifier}/versions/${version.id}`"
+          class="hover:underline"
+        >{{ version.name }}</NuxtLink>
       </h3>
       <span
         v-if="version.status !== 'open'"

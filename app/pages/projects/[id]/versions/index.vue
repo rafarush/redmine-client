@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sortVersions } from '../../../../shared/redmine/projects'
+import { sortVersions } from '../../../../../shared/redmine/projects'
 
 /**
  * Roadmap del proyecto (F6-T03): versiones abiertas (y bloqueadas) por fecha con
@@ -93,6 +93,7 @@ const showClosed = ref(false)
             <ProjectsVersionCard
               :version="version"
               :project-id="project.id"
+              :project-identifier="project.identifier"
               load
             />
           </li>
@@ -140,6 +141,7 @@ const showClosed = ref(false)
             <ProjectsVersionCard
               :version="version"
               :project-id="project.id"
+              :project-identifier="project.identifier"
               :load="showClosed"
             />
           </li>

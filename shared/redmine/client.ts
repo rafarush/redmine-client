@@ -140,6 +140,16 @@ export class RedmineClient {
     return refSchema.array().parse(group.users ?? [])
   }
 
+  async getVersion(id: number): Promise<Version> {
+    const { version } = await this.transport.request<{ version: unknown }>({ path: `/versions/${id}.json` })
+    return versionSchema.parse(version)
+  }
+
+  /** Cambia fecha, estado o descripción de una versión (`manage_versions`). Responde 204. */
+  async updateVersion(id: number, version: { due_date?: string | null, status?: Version['status'], description?: string }): Promise<void> {
+    await this.transport.request({ method: 'PUT', path: `/versions/${id}.json`, body: { version } })
+  }
+
   async listVersions(projectId: string | number): Promise<Version[]> {
     return this.getAll<Version>(`/projects/${projectId}/versions.json`, 'versions', versionSchema)
   }
