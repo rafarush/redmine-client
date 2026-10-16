@@ -234,6 +234,16 @@ export const newsSchema = z.object({
 }).loose()
 export type News = z.infer<typeof newsSchema>
 
+// ---------------------------------------------------------------- archivos
+
+/** Archivo del proyecto (`/projects/:id/files.json`): un adjunto con versión y descargas. */
+export const projectFileSchema = attachmentSchema.extend({
+  version: refSchema.optional(),
+  downloads: z.number().optional(),
+  digest: z.string().nullish(),
+}).loose()
+export type ProjectFile = z.infer<typeof projectFileSchema>
+
 // ------------------------------------------------------------- paginación
 
 /** Envoltura de las listas de Redmine: `{ issues: [...], total_count, offset, limit }`. */

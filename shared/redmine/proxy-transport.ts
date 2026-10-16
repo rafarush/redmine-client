@@ -33,10 +33,16 @@ export class ProxyTransport implements RedmineTransport {
     if (isBinary) headers['Content-Type'] = 'application/octet-stream'
     else if (req.body !== undefined) headers['Content-Type'] = 'application/json'
 
+    // `fetch` no informa del progreso de subida: para eso se usa XHR (solo navegador).
+    if (isBinary && req.onUploadProgress && typeof XMLHttpRequest !== 'undefined') {
+      return uploadWithProgress<T>(url.toString(), method, headers, req.rawBody!, req.onUploadProgress, req.signal)
+    }
+
     const response = await this.fetchImpl(url.toString(), {
       method,
       headers,
       credentials: 'same-origin',
+      signal: req.signal,
       body: isBinary
         ? req.rawBody as BodyInit
         : req.body === undefined ? undefined : JSON.stringify(req.body),
@@ -63,4 +69,47 @@ export async function readError(response: Response): Promise<RedmineError> {
     // Sin cuerpo JSON: queda el status, que ya da un mensaje por defecto.
   }
   return new RedmineError(response.status, messages)
+}
+
+/** Subida binaria con progreso y cancelación, con el mismo trato de errores que `request`. */
+function uploadWithProgress<T>(
+  url: string,
+  method: string,
+  headers: Record<string, string>,
+  body: Blob | ArrayBuffer,
+  onProgress: (loaded: number, total: number) => void,
+  signal?: AbortSignal,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open(method, url)
+    xhr.withCredentials = true
+    for (const [name, value] of Object.entries(headers)) xhr.setRequestHeader(name, value)
+
+    const abort = () => xhr.abort()
+    signal?.addEventListener('abort', abort, { once: true })
+    if (signal?.aborted) {
+      reject(new DOMException('Subida cancelada', 'AbortError'))
+      return
+    }
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(event.loaded, event.total)
+    }
+    xhr.onabort = () => reject(new DOMException('Subida cancelada', 'AbortError'))
+    xhr.onerror = () => reject(new RedmineError(0, ['No se pudo contactar con el servidor.']))
+    xhr.onload = () => {
+      signal?.removeEventListener('abort', abort)
+      const response = new Response(xhr.status === 204 ? null : xhr.responseText, {
+        status: xhr.status,
+        headers: { 'content-type': xhr.getResponseHeader('content-type') ?? '' },
+      })
+      if (!response.ok) {
+        void readError(response).then(reject)
+        return
+      }
+      resolve((xhr.responseText ? JSON.parse(xhr.responseText) : undefined) as T)
+    }
+    xhr.send(body)
+  })
 }

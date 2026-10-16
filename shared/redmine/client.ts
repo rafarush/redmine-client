@@ -8,6 +8,7 @@ import type {
   News,
   Paginated,
   Project,
+  ProjectFile,
   ProjectMember,
   Ref,
   RoleDetail,
@@ -24,6 +25,7 @@ import {
   issueStatusSchema,
   newsSchema,
   paginatedSchema,
+  projectFileSchema,
   projectMemberSchema,
   projectSchema,
   refSchema,
@@ -238,5 +240,37 @@ export class RedmineClient {
   /** Publica una noticia (Redmine ≥ 5.1, `manage_news`). Responde 204 sin cuerpo. */
   async createNews(projectId: string | number, news: { title: string, summary?: string, description: string }): Promise<void> {
     await this.transport.request({ method: 'POST', path: `/projects/${projectId}/news.json`, body: { news } })
+  }
+
+  // --------------------------------------------------------------- archivos
+
+  async listProjectFiles(projectId: string | number): Promise<ProjectFile[]> {
+    const { files } = await this.transport.request<{ files?: unknown }>({ path: `/projects/${projectId}/files.json` })
+    return projectFileSchema.array().parse(files ?? [])
+  }
+
+  /**
+   * Sube el contenido a Redmine y devuelve el token con que se adjunta después. Un
+   * token que no se llega a usar no deja nada en el proyecto.
+   */
+  async upload(
+    file: Blob,
+    filename: string,
+    options: { signal?: AbortSignal, onProgress?: (loaded: number, total: number) => void } = {},
+  ): Promise<string> {
+    const { upload } = await this.transport.request<{ upload: { token: string } }>({
+      method: 'POST',
+      path: '/uploads.json',
+      query: { filename },
+      rawBody: file,
+      signal: options.signal,
+      onUploadProgress: options.onProgress,
+    })
+    return upload.token
+  }
+
+  /** Añade a los archivos del proyecto lo subido con `upload` (`manage_files`). */
+  async addProjectFile(projectId: string | number, file: { token: string, filename: string, version_id?: number, description?: string }): Promise<void> {
+    await this.transport.request({ method: 'POST', path: `/projects/${projectId}/files.json`, body: { file } })
   }
 }

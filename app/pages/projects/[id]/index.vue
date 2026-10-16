@@ -53,7 +53,7 @@ const shortcuts = computed(() => {
     { label: 'Tiempo', icon: 'lucide:timer', permission: 'view_time_entries', href: `${redmine}/projects/${p.identifier}/time_entries` },
     { label: 'Wiki', icon: 'lucide:book-open', permission: 'view_wiki_pages', to: `/projects/${p.identifier}/wiki` },
     { label: 'Noticias', icon: 'lucide:newspaper', permission: 'view_news', to: `/news?project=${p.identifier}` },
-    { label: 'Archivos', icon: 'lucide:folder-down', permission: 'view_files', href: `${redmine}/projects/${p.identifier}/files` },
+    { label: 'Archivos', icon: 'lucide:folder-down', permission: 'view_files', to: `/projects/${p.identifier}/files` },
   ].filter(s => session.can(s.permission, p.id))
 })
 

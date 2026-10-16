@@ -14,6 +14,10 @@ export interface RedmineRequest {
   body?: unknown
   /** Para /uploads.json (application/octet-stream) */
   rawBody?: Blob | ArrayBuffer
+  /** Cancela la petición (subidas largas, F7-T05). Lanza un `AbortError`. */
+  signal?: AbortSignal
+  /** Progreso de la subida del cuerpo, en bytes. Opcional: no todos los transports lo dan. */
+  onUploadProgress?: (loaded: number, total: number) => void
 }
 
 export interface RedmineTransport {
