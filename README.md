@@ -2,7 +2,7 @@
 
 Cliente web de [Redmine](https://www.redmine.org/) con una experiencia más simple que la original. Usa la REST API de Redmine 5.x/6.x con tu API key y solo te muestra lo que tu usuario puede hacer.
 
-## 1. Qué es
+## 1. Qué es?
 
 Redmine cubre bien la gestión de tareas, pero el día a día cuesta más de lo necesario: registrar tiempo obliga a abrir otra vista, los filtros se arman con selects y operadores pensados para la base de datos, y la interfaz muestra acciones que luego fallan por falta de permisos.
 
@@ -14,7 +14,7 @@ Redmine Client es una capa de interfaz encima de tu Redmine:
 
 Se despliega como SPA con un pequeño proxy ([Nuxt 4](https://nuxt.com/) + Nitro). Una versión de escritorio con Tauri 2 está planificada (fase F8) y la móvil, después.
 
-## 2. Qué hace
+## 2. Qué hace?
 
 - **Conexión simple**: configuras la URL de tu Redmine y tu API key una sola vez. En web la clave vive en una cookie de sesión sellada, nunca en `localStorage`.
 - **Permisos reales**: cada acción se protege con el permiso de Redmine correspondiente; lo que no puedes hacer se oculta (o se deshabilita con el motivo).
