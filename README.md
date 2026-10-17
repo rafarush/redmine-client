@@ -31,7 +31,7 @@ Se despliega como SPA con un pequeño proxy ([Nuxt 4](https://nuxt.com/) + Nitro
 
 > El progreso por fase está en [`sdd/README.md`](sdd/README.md).
 
-## 3. Cómo usarlo
+## 3. Cómo usarlo?
 
 ### Requisitos
 
